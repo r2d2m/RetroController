@@ -87,6 +87,31 @@ namespace vnc
             }
         }
 
+        /// <summary>
+        /// Entry point for feeding the controller.
+        /// You can use this function to receive player
+        /// inputs or AI commands.
+        /// Note that the float values should range from -1 to +1. 
+        /// </summary>
+        /// <param name="fwd">Foward input.</param>
+        /// <param name="strafe">Strafe input.</param>
+        /// <param name="swim">Swim input.</param>
+        /// <param name="jump">Jump command.</param>
+        /// <param name="sprint">Sprint command.</param>
+        public void SetInput(float fwd, float strafe, float swim, bool jump, bool sprint)
+        {
+            WalkForward = fwd;
+            Strafe = strafe;
+            Swim = swim;
+            JumpInput = jump;
+            Sprint = sprint;
+
+            if (JumpInput && triedJumping == 0)
+                triedJumping = Profile.JumpInputTimer;
+
+            inputDir = new Vector2(strafe, fwd);
+        }
+
         protected virtual void GroundMovementUpdate()
         {
             // reset the grounded state
@@ -414,7 +439,8 @@ namespace vnc
                     dist += Profile.Depenetration;
 
                     dot = Vector3.Dot(normal, Vector3.up);
-                    if (dot > Profile.SlopeLimit && dot <= 1)
+                    float slopeDot = (Profile.SlopeAngleLimit / 90f);
+                    if (dot > slopeDot && dot <= 1)
                     {
                         Collisions = Collisions | CC_Collision.CollisionBelow;
 
@@ -437,7 +463,7 @@ namespace vnc
                         position += normal * dist;
                     }
 
-                    if (dot >= 0 && dot < Profile.SlopeLimit)
+                    if (dot >= 0 && dot < Profile.SlopeAngleLimit)
                     {
                         Collisions = Collisions | CC_Collision.CollisionSides;
                     }

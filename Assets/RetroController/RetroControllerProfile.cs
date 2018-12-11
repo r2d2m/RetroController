@@ -32,6 +32,13 @@ namespace vnc
         /// </summary>
         [Tooltip("Ledge forgiveness")]
         public int JumpGraceTime = 5;
+        /// <summary>
+        /// Timer window for the player to hit the jump button
+        /// and make the controller jump before it reaches the 
+        /// ground, so you can control how precise the player 
+        /// must be to bunnyhop and gain mommentum.
+        /// </summary>
+        public int JumpInputTimer = 2;
         #endregion
 
         #region Speed
@@ -121,7 +128,11 @@ namespace vnc
         /// These are not affected by gravity. 
         /// </summary>
         public bool FlyingController = false;        // flying characters are not affected by gravity
-        public float SlopeLimit = 48f;              // tolerance dot product before sliding
+        /// <summary>
+        /// Tolerance angle for slopes. If the angle is bigger than
+        /// this value, the controller will slide
+        /// </summary>
+        [Range(1, 90)] public float SlopeAngleLimit = 48f;
         public float StepOffset = 5f;               // maximum step height
         public Vector3 Center;
         public float Radius = 1;
