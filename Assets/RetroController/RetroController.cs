@@ -3,15 +3,25 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace vnc
 {
     public class RetroController : MonoBehaviour
     {
+        [Header("Settings")]
         /// <summary>
         /// Set the settings for this Controller
         /// </summary>
         public RetroControllerProfile Profile;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public Transform controllerView;
+
         public bool showDebugStats = false;
 
         private const float STOP_EPSILON = 0.01f;
@@ -59,6 +69,9 @@ namespace vnc
         public UnityEvent OnJump;
         public UnityEvent OnLanding;
 
+        [Header("Debug GUI Style")]
+        public GUIStyle guiStyle;
+
         protected virtual void Awake()
         {
             State = CC_State.None;
@@ -78,7 +91,7 @@ namespace vnc
             {
                 if (IsSwimming)
                 {
-                    //WaterMovementUpdate();
+                    WaterMovementUpdate();
                 }
                 else
                 {
@@ -199,6 +212,35 @@ namespace vnc
             wasGrounded = IsGrounded;
             wasOnPlatform = OnPlatform;
         }
+
+
+        protected virtual void WaterMovementUpdate()
+        {
+            // player moved the character
+            var walk = inputDir.y * controllerView.forward;
+            var strafe = inputDir.x * transform.TransformDirection(Vector3.right);
+            wishdir = (walk + strafe) + (Vector3.up * Swim);
+            wishdir.Normalize();
+
+            wishspeed = wishdir.magnitude;
+
+            // Check if the player is in the border of the water, give it a little push
+            if (HasCollisionFlag(CC_Collision.CollisionSides)
+                && Swim > 0
+                && !IsUnderwater())
+            {
+                if (!Physics.Raycast(controllerView.position, controllerView.forward, 1.5f, Profile.SolidSurfaceLayers))
+                    velocity.y = Profile.JumpSpeed;
+            }
+
+            velocity = MoveWater(wishdir, velocity);
+
+            // simulate gravity while underwater
+            CalculateGravity(Profile.WaterGravityScale);
+
+            CharacterMove(velocity);
+        }
+
 
         /// <summary>
         /// Push the controller down the Y axis based on gravity value on settings
@@ -502,6 +544,11 @@ namespace vnc
             }
         }
 
+        public bool IsUnderwater()
+        {
+            return IsSwimming && controllerView.position.y < (waterSurfacePosY);
+        }
+
         /// <summary>
         /// Check for steps on the way and adjust the controller.
         /// </summary>
@@ -576,13 +623,13 @@ namespace vnc
         protected virtual void OnCCHit(Vector3 normal)
         {
             // reset Y speed 
-            if ((Collisions & CC_Collision.CollisionAbove) != 0 && velocity.y > 0)
+            if (HasCollisionFlag(CC_Collision.CollisionAbove) && velocity.y > 0)
             {
                 velocity.y = 0;
             }
 
             // adjust velocity on side surfaces
-            if ((Collisions & CC_Collision.CollisionSides) != 0)
+            if (HasCollisionFlag(CC_Collision.CollisionSides) || HasCollisionFlag(CC_Collision.CollisionBelow))
             {
                 var copyVelocity = velocity;
                 copyVelocity.y = 0;
@@ -667,6 +714,11 @@ namespace vnc
             return ((1 << obj.layer) & layerMask) != 0;
         }
 
+        private bool HasCollisionFlag(CC_Collision flag)
+        {
+            return (Collisions & flag) != 0;
+        }
+
         // do not modify
         private void _capsuleUpdate()
         {
@@ -689,15 +741,26 @@ namespace vnc
             }
         }
 
+#if UNITY_EDITOR
         private void OnGUI()
         {
             if (showDebugStats)
             {
                 Rect rect = new Rect(0, 0, 200, 200);
-                string debugText = "Velocity: " + Velocity;
-                GUI.Label(rect, debugText);
+                string debugText = "Press 'Esc' to unlock cursor:\n"
+                    + "\nSprinting: " + Sprint
+                    + "\nIs Grounded; " + IsGrounded
+                    + "\nIs Swimming; " + IsSwimming
+                    + "\nVelocity Vector: " + Velocity
+                    + "\nVelocity Magnitude: " + Velocity.magnitude;
+
+                if(guiStyle != null)
+                    GUI.Label(rect, debugText, guiStyle);
+                else
+                    GUI.Label(rect, debugText);
             }
         }
+#endif
         #endregion
     }
 }

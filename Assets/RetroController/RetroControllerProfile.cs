@@ -42,7 +42,7 @@ namespace vnc
         #endregion
 
         #region Speed
-        [Header("Speed")]
+        [Header("Max Speed")]
         /// <summary>
         /// Max speed on ground
         /// </summary>
