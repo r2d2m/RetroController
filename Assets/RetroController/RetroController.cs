@@ -54,6 +54,9 @@ namespace vnc
         [HideInInspector] public CC_State State { get; private set; }
         public bool IsGrounded { get { return (State & CC_State.IsGrounded) != 0; } }
         public bool OnPlatform { get { return (State & CC_State.OnPlatform) != 0; } }
+
+        // Water
+        [HideInInspector] public CC_Water WaterState { get; private set; }
         public bool IsSwimming { get; private set; }
         private float waterSurfacePosY;
 
@@ -75,6 +78,7 @@ namespace vnc
         protected virtual void Awake()
         {
             State = CC_State.None;
+            WaterState = CC_Water.None;
             jumpGraceTimer = Profile.JumpGraceTime;
 
             _capsuleCollider = gameObject.AddComponent<CapsuleCollider>();
@@ -227,17 +231,26 @@ namespace vnc
             // Check if the player is in the border of the water, give it a little push
             if (HasCollisionFlag(CC_Collision.CollisionSides)
                 && Swim > 0
-                && !IsUnderwater())
+                && WaterState == CC_Water.Partial)
             {
                 if (!Physics.Raycast(controllerView.position, controllerView.forward, 1.5f, Profile.SolidSurfaceLayers))
                     velocity.y = Profile.JumpSpeed;
             }
 
-            velocity = MoveWater(wishdir, velocity);
-
-            // simulate gravity while underwater
-            CalculateGravity(Profile.WaterGravityScale);
-
+            if (WaterState == CC_Water.Partial)
+            {
+                wishdir.y = 0f;
+                velocity = MoveWater(wishdir, velocity);
+                if(Swim <= 0f)
+                    CalculateGravity(Profile.WaterGravityScale);
+            }
+            else if(WaterState == CC_Water.Underwater)
+            {
+                velocity = MoveWater(wishdir, velocity);
+                // simulate gravity while underwater
+                CalculateGravity(Profile.WaterGravityScale);
+            }
+            
             CharacterMove(velocity);
         }
 
@@ -371,27 +384,6 @@ namespace vnc
             return wishspeed;
         }
         #endregion
-
-        #region Enums
-        [Flags]
-        public enum CC_State
-        {
-            None = 0,
-            IsGrounded = 2,
-            OnPlatform = 4
-        }
-
-        [Flags]
-        public enum CC_Collision
-        {
-            None = 0,
-            CollisionAbove = 2,
-            CollisionBelow = 4,
-            CollisionSides = 8,
-            WalkedStep = 16
-        }
-        #endregion
-
         #region Physics
         /// <summary>
         /// Moves the controller and calculates collision.
@@ -529,18 +521,32 @@ namespace vnc
         /// </summary>
         public void CheckWater()
         {
+            // Test collision with a water area
             int n_col = OverlapCapsuleNonAlloc(Vector3.zero, overlapingColliders, Profile.WaterSurfaceLayers, QueryTriggerInteraction.Collide);
             if (n_col > 0)
             {
-                var col = overlapingColliders[0];
+                var waterCollider = overlapingColliders[0];
+                // cast a ray from the sky and detect the topmost point
                 var ray = new Ray(transform.position + Vector3.up * 1000f, Vector3.down);
                 RaycastHit hit;
-                if (col.Raycast(ray, out hit, Mathf.Infinity))
+                if (waterCollider.Raycast(ray, out hit, Mathf.Infinity))
                 {
                     waterSurfacePosY = hit.point.y;
                     float fpsPosY = transform.position.y;
                     IsSwimming = fpsPosY < waterSurfacePosY;
                 }
+            }
+
+            if (IsSwimming)
+            {
+                if (controllerView.position.y > waterSurfacePosY)
+                    WaterState = CC_Water.Partial;
+                else
+                    WaterState = CC_Water.Underwater;
+            }
+            else
+            {
+                WaterState = CC_Water.None;
             }
         }
 
@@ -729,6 +735,33 @@ namespace vnc
 
         #endregion
 
+        #region Enums
+        [Flags]
+        public enum CC_State
+        {
+            None = 0,
+            IsGrounded = 2,
+            OnPlatform = 4
+        }
+
+        [Flags]
+        public enum CC_Collision
+        {
+            None = 0,
+            CollisionAbove = 2,
+            CollisionBelow = 4,
+            CollisionSides = 8,
+            WalkedStep = 16
+        }
+
+        public enum CC_Water
+        {
+            None,       // off water surfaces
+            Partial,    // body on water, face outside
+            Underwater  // submerged
+        }
+        #endregion
+
         #region Debug
         protected virtual void OnDrawGizmos()
         {
@@ -750,7 +783,8 @@ namespace vnc
                 string debugText = "Press 'Esc' to unlock cursor:\n"
                     + "\nSprinting: " + Sprint
                     + "\nIs Grounded; " + IsGrounded
-                    + "\nIs Swimming; " + IsSwimming
+                    + "\nIs Swimming:" + IsSwimming
+                    + "\nWater State; " + WaterState
                     + "\nVelocity Vector: " + Velocity
                     + "\nVelocity Magnitude: " + Velocity.magnitude;
 
