@@ -133,6 +133,11 @@ namespace vnc
         /// this value, the controller will slide
         /// </summary>
         [Range(1, 90)] public float SlopeAngleLimit = 48f;
+        /// <summary>
+        /// Uses the center of the controller to set a threshold for
+        /// swiming status. Check the manual for a more graphical explanation.
+        /// </summary>
+        public float SwimmingOffset = 0.0f;
         public float StepOffset = 5f;               // maximum step height
         public Vector3 Center;
         public float Radius = 1;

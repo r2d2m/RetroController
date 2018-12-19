@@ -1,0 +1,278 @@
+fileFormatVersion: 2
+guid: c81053c546a6a4141afc5aff8b88f4e7
+timeCreated: 1544666103
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: Aim
+    100002: Aim_Front
+    100004: Armature
+    100006: Armature 1
+    100008: Armature_end
+    100010: Barell_L
+    100012: Barell_R
+    100014: Barrel_L Lid
+    100016: Barrel_R Lid
+    100018: Bullet
+    100020: Bullet_end
+    100022: Bullet_L
+    100024: Bullet_R
+    100026: //RootNode
+    100028: Prop
+    100030: Support_Attached
+    100032: Support_Attached 1
+    100034: Support_Attached_end
+    100036: Support_Back
+    100038: Support_Back 1
+    400000: Aim
+    400002: Aim_Front
+    400004: Armature
+    400006: Armature 1
+    400008: Armature_end
+    400010: Barell_L
+    400012: Barell_R
+    400014: Barrel_L Lid
+    400016: Barrel_R Lid
+    400018: Bullet
+    400020: Bullet_end
+    400022: Bullet_L
+    400024: Bullet_R
+    400026: //RootNode
+    400028: Prop
+    400030: Support_Attached
+    400032: Support_Attached 1
+    400034: Support_Attached_end
+    400036: Support_Back
+    400038: Support_Back 1
+    4300000: Barell_L
+    4300002: Barrel_L Lid
+    4300004: Aim
+    4300006: Support_Back
+    4300008: Barrel_R Lid
+    4300010: Support_Attached
+    4300012: Aim_Front
+    4300014: Barell_R
+    4300016: Prop
+    4300018: Bullet_L
+    4300020: Bullet_R
+    7400000: Idle
+    7400002: Shoot
+    9500000: //RootNode
+    13700000: Aim
+    13700002: Aim_Front
+    13700004: Barell_L
+    13700006: Barell_R
+    13700008: Barrel_L Lid
+    13700010: Barrel_R Lid
+    13700012: Bullet_L
+    13700014: Bullet_R
+    13700016: Prop
+    13700018: Support_Attached
+    13700020: Support_Back
+  materials:
+    importMaterials: 0
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: Idle
+      takeName: Armature|ArmatureAction
+      firstFrame: 0
+      lastFrame: 1
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Aim
+        weight: 1
+      - path: Aim_Front
+        weight: 1
+      - path: Armature
+        weight: 1
+      - path: Armature/Armature 1
+        weight: 1
+      - path: Armature/Armature 1/Armature_end
+        weight: 1
+      - path: Armature/Support_Back 1
+        weight: 1
+      - path: Armature/Support_Back 1/Bullet
+        weight: 1
+      - path: Armature/Support_Back 1/Bullet/Bullet_end
+        weight: 1
+      - path: Armature/Support_Back 1/Support_Attached 1
+        weight: 1
+      - path: Armature/Support_Back 1/Support_Attached 1/Support_Attached_end
+        weight: 1
+      - path: Barell_L
+        weight: 1
+      - path: Barell_R
+        weight: 1
+      - path: Barrel_L Lid
+        weight: 1
+      - path: Barrel_R Lid
+        weight: 1
+      - path: Bullet_L
+        weight: 1
+      - path: Bullet_R
+        weight: 1
+      - path: Prop
+        weight: 1
+      - path: Support_Attached
+        weight: 1
+      - path: Support_Back
+        weight: 1
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Shoot
+      takeName: Armature|ArmatureAction
+      firstFrame: 1
+      lastFrame: 37
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Aim
+        weight: 1
+      - path: Aim_Front
+        weight: 1
+      - path: Armature
+        weight: 1
+      - path: Armature/Armature 1
+        weight: 1
+      - path: Armature/Armature 1/Armature_end
+        weight: 1
+      - path: Armature/Support_Back 1
+        weight: 1
+      - path: Armature/Support_Back 1/Bullet
+        weight: 1
+      - path: Armature/Support_Back 1/Bullet/Bullet_end
+        weight: 1
+      - path: Armature/Support_Back 1/Support_Attached 1
+        weight: 1
+      - path: Armature/Support_Back 1/Support_Attached 1/Support_Attached_end
+        weight: 1
+      - path: Barell_L
+        weight: 1
+      - path: Barell_R
+        weight: 1
+      - path: Barrel_L Lid
+        weight: 1
+      - path: Barrel_R Lid
+        weight: 1
+      - path: Bullet_L
+        weight: 1
+      - path: Bullet_R
+        weight: 1
+      - path: Prop
+        weight: 1
+      - path: Support_Attached
+        weight: 1
+      - path: Support_Back
+        weight: 1
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 0
+    keepQuads: 1
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 162
+    normalImportMode: 0
+    tangentImportMode: 0
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

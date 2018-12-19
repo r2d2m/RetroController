@@ -49,6 +49,7 @@ namespace vnc
         private bool wasGrounded = false;
         private float jumpGraceTimer;
         private bool sprintJump;
+        private Vector3 floorNormal;    // normal of the last ground
 
         // States
         [HideInInspector] public CC_State State { get; private set; }
@@ -93,12 +94,13 @@ namespace vnc
             }
             else
             {
-                if (IsSwimming)
+                if (IsSwimming && WaterState == CC_Water.Underwater)
                 {
                     WaterMovementUpdate();
                 }
                 else
                 {
+                    WaterEdgePush();
                     GroundMovementUpdate();
                 }
             }
@@ -115,7 +117,7 @@ namespace vnc
         /// <param name="swim">Swim input.</param>
         /// <param name="jump">Jump command.</param>
         /// <param name="sprint">Sprint command.</param>
-        public void SetInput(float fwd, float strafe, float swim, bool jump, bool sprint)
+        public virtual void SetInput(float fwd, float strafe, float swim, bool jump, bool sprint)
         {
             WalkForward = fwd;
             Strafe = strafe;
@@ -227,30 +229,10 @@ namespace vnc
             wishdir.Normalize();
 
             wishspeed = wishdir.magnitude;
-
-            // Check if the player is in the border of the water, give it a little push
-            if (HasCollisionFlag(CC_Collision.CollisionSides)
-                && Swim > 0
-                && WaterState == CC_Water.Partial)
-            {
-                if (!Physics.Raycast(controllerView.position, controllerView.forward, 1.5f, Profile.SolidSurfaceLayers))
-                    velocity.y = Profile.JumpSpeed;
-            }
-
-            if (WaterState == CC_Water.Partial)
-            {
-                wishdir.y = 0f;
-                velocity = MoveWater(wishdir, velocity);
-                if(Swim <= 0f)
-                    CalculateGravity(Profile.WaterGravityScale);
-            }
-            else if(WaterState == CC_Water.Underwater)
-            {
-                velocity = MoveWater(wishdir, velocity);
-                // simulate gravity while underwater
-                CalculateGravity(Profile.WaterGravityScale);
-            }
             
+            velocity = MoveWater(wishdir, velocity);
+            CalculateGravity(Profile.WaterGravityScale);
+
             CharacterMove(velocity);
         }
 
@@ -354,7 +336,7 @@ namespace vnc
         /// <summary>
         /// Generic friction, decrease the velocity of the controller.
         /// </summary>
-        private Vector3 Friction(Vector3 prevVelocity, float friction)
+        protected virtual Vector3 Friction(Vector3 prevVelocity, float friction)
         {
             var wishspeed = prevVelocity;
 
@@ -370,7 +352,7 @@ namespace vnc
             return wishspeed;
         }
 
-        private Vector3 WaterFriction(Vector3 prevVelocity)
+        protected virtual Vector3 WaterFriction(Vector3 prevVelocity)
         {
             var wishspeed = prevVelocity;
 
@@ -414,8 +396,6 @@ namespace vnc
             if (IsGrounded && !Profile.FlyingController)
                 MoveOnSteps(movNormalized);
 
-            //const float minimumStepDistance = 0.1f; // Greater than 0 to prevent infinite loop
-            //float stepDistance = Math.Min((ownCollider as CapsuleCollider).radius, minimumStepDistance);
             float stepDistance = 0.05f;
 
             Vector3 nResult;
@@ -448,7 +428,7 @@ namespace vnc
         /// </summary>
         /// <param name="position">start position. Bottom of the collider</param>
         /// <returns>Final position</returns>
-        Vector3 FixOverlaps(Vector3 position, Vector3 offset, out Vector3 nResult)
+        protected virtual Vector3 FixOverlaps(Vector3 position, Vector3 offset, out Vector3 nResult)
         {
             Vector3 nTemp = Vector3.zero;
 
@@ -477,8 +457,8 @@ namespace vnc
                     if (dot > slopeDot && dot <= 1)
                     {
                         Collisions = Collisions | CC_Collision.CollisionBelow;
-
                         position += Vector3.up * dist;
+                        floorNormal = normal;
 
                         // check if platform
                         if (CompareLayer(c.gameObject, Profile.PlatformSurfaceLayers))
@@ -519,8 +499,9 @@ namespace vnc
         /// <summary>
         /// Detect water surface.
         /// </summary>
-        public void CheckWater()
+        public virtual void CheckWater()
         {
+            float threshold = transform.position.y + Profile.SwimmingOffset;
             // Test collision with a water area
             int n_col = OverlapCapsuleNonAlloc(Vector3.zero, overlapingColliders, Profile.WaterSurfaceLayers, QueryTriggerInteraction.Collide);
             if (n_col > 0)
@@ -532,14 +513,20 @@ namespace vnc
                 if (waterCollider.Raycast(ray, out hit, Mathf.Infinity))
                 {
                     waterSurfacePosY = hit.point.y;
-                    float fpsPosY = transform.position.y;
-                    IsSwimming = fpsPosY < waterSurfacePosY;
+                    //float fpsPosY = transform.position.y;
+                    //IsSwimming = bottom < waterSurfacePosY;
+                    IsSwimming = transform.position.y < waterSurfacePosY;
                 }
+            }
+            else
+            {
+                if (IsSwimming && threshold > waterSurfacePosY)
+                    IsSwimming = false;
             }
 
             if (IsSwimming)
             {
-                if (controllerView.position.y > waterSurfacePosY)
+                if (threshold > waterSurfacePosY)
                     WaterState = CC_Water.Partial;
                 else
                     WaterState = CC_Water.Underwater;
@@ -550,16 +537,24 @@ namespace vnc
             }
         }
 
-        public bool IsUnderwater()
+        protected virtual void WaterEdgePush()
         {
-            return IsSwimming && controllerView.position.y < (waterSurfacePosY);
+
+            // Check if the player is in the border of the water, give it a little push
+            if (HasCollisionFlag(CC_Collision.CollisionSides)
+                && Swim > 0 
+                && WaterState == CC_Water.Partial)
+            {
+                if (!Physics.Raycast(controllerView.position, controllerView.forward, 1.5f, Profile.SolidSurfaceLayers))
+                    velocity.y = Profile.JumpSpeed;
+            }
         }
 
         /// <summary>
         /// Check for steps on the way and adjust the controller.
         /// </summary>
         /// <param name="movNormalized">Normalized vector.</param>
-        void MoveOnSteps(Vector3 movNormalized)
+        protected virtual void MoveOnSteps(Vector3 movNormalized)
         {
             RaycastHit stepHit;
             RaycastHit cornerHit;
@@ -771,6 +766,8 @@ namespace vnc
                 Vector3 end = transform.position + Profile.Center + (Vector3.down * (Profile.Height / 2f));
 
                 DebugExtension.DrawCapsule(start, end, Color.yellow, Profile.Radius);
+
+                DebugExtension.DrawCircle(transform.position + Vector3.up * Profile.SwimmingOffset, Color.blue, 1f);
             }
         }
 
@@ -788,7 +785,7 @@ namespace vnc
                     + "\nVelocity Vector: " + Velocity
                     + "\nVelocity Magnitude: " + Velocity.magnitude;
 
-                if(guiStyle != null)
+                if (guiStyle != null)
                     GUI.Label(rect, debugText, guiStyle);
                 else
                     GUI.Label(rect, debugText);
