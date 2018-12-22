@@ -66,8 +66,11 @@ namespace vnc
         /// </summary>
         public float MaxAirSprintSpeed;
         /// <summary>
+        /// Max speed when on a ladder.
+        /// </summary>
+        public float MaxLadderSpeed;
+        /// <summary>
         /// Max speed when underwater.
-        /// Relative to <para>MaxBaseSpeed</para>
         /// </summary>
         public float MaxWaterSpeed;
         /// <summary>

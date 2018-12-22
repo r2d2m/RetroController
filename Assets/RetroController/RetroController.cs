@@ -26,7 +26,8 @@ namespace vnc
 
         private const float STOP_EPSILON = 0.01f;
 
-        private Collider[] overlapingColliders = new Collider[16];
+        private Collider[] overlapingColliders = new Collider[8];
+        private bool foundLadder = false;
         [HideInInspector] public CC_Collision Collisions { get; private set; }
         private CapsuleCollider _capsuleCollider;
 
@@ -55,6 +56,7 @@ namespace vnc
         [HideInInspector] public CC_State State { get; private set; }
         public bool IsGrounded { get { return (State & CC_State.IsGrounded) != 0; } }
         public bool OnPlatform { get { return (State & CC_State.OnPlatform) != 0; } }
+        public bool OnLadder { get { return (State & CC_State.OnLadder) != 0; } }
 
         // Water
         [HideInInspector] public CC_Water WaterState { get; private set; }
@@ -95,13 +97,16 @@ namespace vnc
             }
             else
             {
-                if (IsSwimming && WaterState == CC_Water.Underwater)
+                if (OnLadder)
+                {
+                    LadderMovementUpdate();
+                }
+                else if (IsSwimming && WaterState == CC_Water.Underwater)
                 {
                     WaterMovementUpdate();
                 }
                 else
                 {
-                    //WaterEdgePush();
                     GroundMovementUpdate();
                 }
             }
@@ -220,7 +225,6 @@ namespace vnc
             wasOnPlatform = OnPlatform;
         }
 
-
         protected virtual void WaterMovementUpdate()
         {
             // player moved the character
@@ -237,6 +241,16 @@ namespace vnc
             CharacterMove(velocity);
         }
 
+        protected virtual void LadderMovementUpdate()
+        {
+            var walk = inputDir.y * transform.TransformDirection(Vector3.up);
+            var strafe = inputDir.x * transform.TransformDirection(Vector3.right);
+            wishdir = (walk + strafe);
+            wishdir.Normalize();
+
+            velocity = MoveGround(wishdir, velocity);
+            CharacterMove(velocity);
+        }
 
         /// <summary>
         /// Push the controller down the Y axis based on gravity value on settings
@@ -263,6 +277,12 @@ namespace vnc
             prevVelocity = Friction(prevVelocity, Profile.GroundFriction); // ground friction
             float maxVelocity = Sprint ? Profile.MaxGroundSprintSpeed : Profile.MaxGroundSpeed;
             prevVelocity = Accelerate(wishdir, prevVelocity, Profile.GroundAcceleration, maxVelocity);
+            return prevVelocity;
+        }
+
+        protected virtual Vector3 MoveLadder(Vector3 wishdir, Vector3 prevVelocity)
+        {
+            prevVelocity = Accelerate(wishdir, prevVelocity, Profile.GroundAcceleration, Profile.MaxLadderSpeed);
             return prevVelocity;
         }
 
@@ -441,6 +461,7 @@ namespace vnc
 
             // TODO: what about alive? disabling? entities?
 
+            foundLadder = false;
             int nColls = OverlapCapsuleNonAlloc(offset, overlapingColliders, Profile.SolidSurfaceLayers, QueryTriggerInteraction.Collide);
 
             for (int i = 0; i < nColls; i++)
@@ -457,13 +478,16 @@ namespace vnc
                     if (Physics.ComputePenetration(_capsuleCollider, position, transform.rotation,
                         c, c.transform.position, c.transform.rotation, out normal, out dist))
                     {
-                        // TODO: report bug
+                        // if this occur, it's a bug in the PhysX engine
                         if (float.IsNaN(normal.x) || float.IsNaN(normal.y) || float.IsNaN(normal.y))
                             continue;
 
                         dist += Profile.Depenetration;
 
                         dot = Vector3.Dot(normal, Vector3.up);
+
+                        // COLLISIONS BELOW
+
                         float slopeDot = (Profile.SlopeAngleLimit / 90f);
                         if (dot > slopeDot && dot <= 1)
                         {
@@ -471,31 +495,42 @@ namespace vnc
                             position += Vector3.up * dist;
                             floorNormal = normal;
 
-                            // check if platform
-                            if (CompareLayer(c.gameObject, Profile.PlatformSurfaceLayers))
+                            if (c.CompareTag(Profile.PlatformTag))
                             {
+                                // on a platform
                                 // send the platform message that the player collided
                                 State |= CC_State.OnPlatform;
                                 platformCollider = c;
                             }
-                            else // above a regular solid
+                            else
                             {
                                 State &= ~CC_State.OnPlatform;
                             }
                         }
-                        else
-                        {
-                            position += normal * dist;
-                        }
 
-                        if (dot >= 0 && dot < Profile.SlopeAngleLimit)
+                        // COLLISIONS ON SIDES
+
+                        if (dot >= 0 && dot < slopeDot)
                         {
                             Collisions = Collisions | CC_Collision.CollisionSides;
+
+                            if (c.CompareTag(Profile.LadderTag))
+                            {
+                                foundLadder = true;
+                                MoveOnLadder(normal);
+                            }
+                            else
+                            {
+                                position += normal * dist;
+                            }
                         }
+
+                        // COLLISIONS ABOVE
 
                         if (dot < 0)
                         {
                             Collisions = Collisions | CC_Collision.CollisionAbove;
+                            position += normal * dist;
                         }
 
                         nTemp += normal;
@@ -503,10 +538,15 @@ namespace vnc
                 }
 
             }
+
+            if(foundLadder) State |= CC_State.OnLadder;
+            else State &= ~CC_State.OnLadder;
+
             nResult = nTemp;
             return position;
         }
 
+        #region Water
         /// <summary>
         /// Detect water surface.
         /// </summary>
@@ -558,6 +598,7 @@ namespace vnc
                 }
             }
         }
+        #endregion
 
         /// <summary>
         /// Check for steps on the way and adjust the controller.
@@ -624,6 +665,14 @@ namespace vnc
 
                 }
             }
+        }
+
+        protected virtual void MoveOnLadder(Vector3 normal)
+        {
+            var copyVelocity = velocity;
+            var newDir = Vector3.ProjectOnPlane(copyVelocity.normalized, normal);
+            velocity.x = (newDir * copyVelocity.magnitude).x;
+            velocity.z = (newDir * copyVelocity.magnitude).z;
         }
 
         /// <summary>
@@ -747,7 +796,8 @@ namespace vnc
         {
             None = 0,
             IsGrounded = 2,
-            OnPlatform = 4
+            OnPlatform = 4,
+            OnLadder = 8
         }
 
         [Flags]
@@ -757,8 +807,7 @@ namespace vnc
             CollisionAbove = 2,
             CollisionBelow = 4,
             CollisionSides = 8,
-            WalkedStep = 16,
-            Ladder = 32
+            WalkedStep = 16
         }
 
         public enum CC_Water
@@ -788,7 +837,7 @@ namespace vnc
         {
             if (showDebugStats)
             {
-                Rect rect = new Rect(0, 0, 200, 200);
+                Rect rect = new Rect(0, 0, 300, 200);
                 string debugText = "Press 'Esc' to unlock cursor:\n"
                     + "\nSprinting: " + Sprint
                     + "\nIs Grounded; " + IsGrounded
@@ -796,7 +845,8 @@ namespace vnc
                     + "\nWater State; " + WaterState
                     + "\nVelocity Vector: " + Velocity
                     + "\nVelocity Magnitude: " + Velocity.magnitude
-                    + "\nCollisions: " + Collisions;
+                    + "\nCollisions: " + Collisions
+                    + "\nStates: " + State;
 
                 if (guiStyle != null)
                     GUI.Label(rect, debugText, guiStyle);
