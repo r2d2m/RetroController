@@ -39,6 +39,12 @@ namespace vnc
         /// must be to bunnyhop and gain mommentum.
         /// </summary>
         public int JumpInputTimer = 2;
+
+        /// <summary>
+        /// The speed when the controller is near the edge of a 
+        /// water surface, so it can get out of it.
+        /// </summary>
+        public float WaterEdgeJumpSpeed;
         #endregion
 
         #region Speed
@@ -164,6 +170,20 @@ namespace vnc
         /// when experiencing collision imprecision.
         /// </summary>
         public float Depenetration = 0.001f;
+
+        // TAGS
+        /// <summary>
+        /// Hidden property, used in <code>RetroControllerProfileEditor</code>
+        /// </summary>
+        [HideInInspector] public string PlatformTag;
+        /// <summary>
+        /// Hidden property, used in <code>RetroControllerProfileEditor</code>
+        /// </summary>
+        [HideInInspector] public string WaterTag;
+        /// <summary>
+        /// Hidden property, used in <code>RetroControllerProfileEditor</code>
+        /// </summary>
+        [HideInInspector] public string LadderTag;
 
     }
 

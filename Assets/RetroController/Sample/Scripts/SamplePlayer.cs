@@ -22,6 +22,8 @@ namespace vnc.Samples
         public bool autoJump = false;
         [ConditionalHide("autoInput")]
         public bool autoSprint = false;
+        [ConditionalHide("autoInput")]
+        public bool ignoreMouse = false;
 
         private void Awake()
         {
@@ -59,9 +61,12 @@ namespace vnc.Samples
             bool isShooting = Input.GetButton("Fire1");
             gunAnimator.SetBool("Shoot", isShooting);
 
-            // controls mouse look
-            mouseLook.LookRotation(transform, playerCamera.transform);
-            mouseLook.UpdateCursorLock();
+            if (!ignoreMouse)
+            {
+                // controls mouse look
+                mouseLook.LookRotation(transform, playerCamera.transform);
+                mouseLook.UpdateCursorLock();
+            }
 
             if (Input.GetKeyDown(KeyCode.Mouse0))
                 mouseLook.SetCursorLock(true);

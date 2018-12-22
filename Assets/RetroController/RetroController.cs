@@ -60,6 +60,7 @@ namespace vnc
         [HideInInspector] public CC_Water WaterState { get; private set; }
         public bool IsSwimming { get; private set; }
         private float waterSurfacePosY;
+        private float WaterThreshold { get { return transform.position.y + Profile.SwimmingOffset; } }
 
         /// Helps camera smoothing on step.
         public float StepDelta { get; private set; }
@@ -100,7 +101,7 @@ namespace vnc
                 }
                 else
                 {
-                    WaterEdgePush();
+                    //WaterEdgePush();
                     GroundMovementUpdate();
                 }
             }
@@ -252,6 +253,7 @@ namespace vnc
             // too much when falling or being propelled
             velocity.y = Mathf.Clamp(velocity.y, -Profile.MaxVerticalSpeedScale, Profile.MaxVerticalSpeedScale);
         }
+
         #region Movement
         /// <summary>
         /// Movement on the ground, most common operation.
@@ -366,6 +368,7 @@ namespace vnc
             return wishspeed;
         }
         #endregion
+
         #region Physics
         /// <summary>
         /// Moves the controller and calculates collision.
@@ -380,6 +383,7 @@ namespace vnc
 
             // reset all collision flags
             Collisions = CC_Collision.None;
+            IsSwimming = false;
 
             Vector3 movNormalized = movement.normalized;
             float distance = movement.magnitude;
@@ -417,7 +421,7 @@ namespace vnc
                 nTotal += nResult;
             }
 
-            CheckWater();
+            SetWaterLevel();
 
             // handles collision
             OnCCHit(nTotal.normalized);
@@ -431,66 +435,73 @@ namespace vnc
         protected virtual Vector3 FixOverlaps(Vector3 position, Vector3 offset, out Vector3 nResult)
         {
             Vector3 nTemp = Vector3.zero;
+            Vector3 normal;
+            float dist;
+            float dot;
 
             // TODO: what about alive? disabling? entities?
 
-            int nColls = OverlapCapsuleNonAlloc(offset, overlapingColliders, Profile.SolidSurfaceLayers, QueryTriggerInteraction.Ignore);
+            int nColls = OverlapCapsuleNonAlloc(offset, overlapingColliders, Profile.SolidSurfaceLayers, QueryTriggerInteraction.Collide);
 
             for (int i = 0; i < nColls; i++)
             {
                 Collider c = overlapingColliders[i];
 
-                Vector3 normal;
-                float dist;
-                float dot;
-                if (Physics.ComputePenetration(_capsuleCollider, position, transform.rotation,
-                    c, c.transform.position, c.transform.rotation, out normal, out dist))
+                if (c.isTrigger)
                 {
-                    // TODO: report bug
-                    if (float.IsNaN(normal.x) || float.IsNaN(normal.y) || float.IsNaN(normal.y))
-                        continue;
-
-                    dist += Profile.Depenetration;
-
-                    dot = Vector3.Dot(normal, Vector3.up);
-                    float slopeDot = (Profile.SlopeAngleLimit / 90f);
-                    if (dot > slopeDot && dot <= 1)
-                    {
-                        Collisions = Collisions | CC_Collision.CollisionBelow;
-                        position += Vector3.up * dist;
-                        floorNormal = normal;
-
-                        // check if platform
-                        if (CompareLayer(c.gameObject, Profile.PlatformSurfaceLayers))
-                        {
-                            // send the platform message that the player collided
-                            State |= CC_State.OnPlatform;
-                            platformCollider = c;
-                        }
-                        else // above a regular solid
-                        {
-                            State &= ~CC_State.OnPlatform;
-                        }
-                    }
-                    else
-                    {
-                        position += normal * dist;
-                    }
-
-                    if (dot >= 0 && dot < Profile.SlopeAngleLimit)
-                    {
-                        Collisions = Collisions | CC_Collision.CollisionSides;
-                    }
-
-                    if (dot < 0)
-                    {
-                        Collisions = Collisions | CC_Collision.CollisionAbove;
-                    }
-
-
-
-                    nTemp += normal;
+                    if (c.CompareTag(Profile.WaterTag))
+                        CheckWater(c);
                 }
+                else
+                {
+                    if (Physics.ComputePenetration(_capsuleCollider, position, transform.rotation,
+                        c, c.transform.position, c.transform.rotation, out normal, out dist))
+                    {
+                        // TODO: report bug
+                        if (float.IsNaN(normal.x) || float.IsNaN(normal.y) || float.IsNaN(normal.y))
+                            continue;
+
+                        dist += Profile.Depenetration;
+
+                        dot = Vector3.Dot(normal, Vector3.up);
+                        float slopeDot = (Profile.SlopeAngleLimit / 90f);
+                        if (dot > slopeDot && dot <= 1)
+                        {
+                            Collisions = Collisions | CC_Collision.CollisionBelow;
+                            position += Vector3.up * dist;
+                            floorNormal = normal;
+
+                            // check if platform
+                            if (CompareLayer(c.gameObject, Profile.PlatformSurfaceLayers))
+                            {
+                                // send the platform message that the player collided
+                                State |= CC_State.OnPlatform;
+                                platformCollider = c;
+                            }
+                            else // above a regular solid
+                            {
+                                State &= ~CC_State.OnPlatform;
+                            }
+                        }
+                        else
+                        {
+                            position += normal * dist;
+                        }
+
+                        if (dot >= 0 && dot < Profile.SlopeAngleLimit)
+                        {
+                            Collisions = Collisions | CC_Collision.CollisionSides;
+                        }
+
+                        if (dot < 0)
+                        {
+                            Collisions = Collisions | CC_Collision.CollisionAbove;
+                        }
+
+                        nTemp += normal;
+                    }
+                }
+
             }
             nResult = nTemp;
             return position;
@@ -499,34 +510,27 @@ namespace vnc
         /// <summary>
         /// Detect water surface.
         /// </summary>
-        public virtual void CheckWater()
+        public virtual void CheckWater(Collider waterCollider)
         {
-            float threshold = transform.position.y + Profile.SwimmingOffset;
-            // Test collision with a water area
-            int n_col = OverlapCapsuleNonAlloc(Vector3.zero, overlapingColliders, Profile.WaterSurfaceLayers, QueryTriggerInteraction.Collide);
-            if (n_col > 0)
-            {
-                var waterCollider = overlapingColliders[0];
-                // cast a ray from the sky and detect the topmost point
-                var ray = new Ray(transform.position + Vector3.up * 1000f, Vector3.down);
-                RaycastHit hit;
-                if (waterCollider.Raycast(ray, out hit, Mathf.Infinity))
-                {
-                    waterSurfacePosY = hit.point.y;
-                    //float fpsPosY = transform.position.y;
-                    //IsSwimming = bottom < waterSurfacePosY;
-                    IsSwimming = transform.position.y < waterSurfacePosY;
-                }
-            }
-            else
-            {
-                if (IsSwimming && threshold > waterSurfacePosY)
-                    IsSwimming = false;
-            }
+            IsSwimming = true;
 
+            // cast a ray from the sky and detect the topmost point
+            var ray = new Ray(transform.position + Vector3.up * 1000f, Vector3.down);
+            RaycastHit hit;
+            if (waterCollider.Raycast(ray, out hit, Mathf.Infinity))
+            {
+                waterSurfacePosY = hit.point.y;
+            }
+        }
+
+        /// <summary>
+        /// Calculate the water level
+        /// </summary>
+        public virtual void SetWaterLevel()
+        {
             if (IsSwimming)
             {
-                if (threshold > waterSurfacePosY)
+                if (WaterThreshold > waterSurfacePosY)
                     WaterState = CC_Water.Partial;
                 else
                     WaterState = CC_Water.Underwater;
@@ -537,16 +541,21 @@ namespace vnc
             }
         }
 
-        protected virtual void WaterEdgePush()
+        protected virtual void WaterEdgePush(Vector3 normal)
         {
+            Vector3 horizontalVel = wishdir;
+            horizontalVel.y = 0;
 
             // Check if the player is in the border of the water, give it a little push
             if (HasCollisionFlag(CC_Collision.CollisionSides)
                 && Swim > 0 
-                && WaterState == CC_Water.Partial)
+                && WaterState == CC_Water.Partial
+                && Vector3.Dot(normal, horizontalVel) < -0.8f)
             {
-                if (!Physics.Raycast(controllerView.position, controllerView.forward, 1.5f, Profile.SolidSurfaceLayers))
-                    velocity.y = Profile.JumpSpeed;
+                if (!Physics.Raycast(controllerView.position, horizontalVel, 1.5f, Profile.SolidSurfaceLayers))
+                {
+                    velocity.y = Profile.WaterEdgeJumpSpeed;
+                }
             }
         }
 
@@ -638,6 +647,8 @@ namespace vnc
                 velocity.x = (newDir * copyVelocity.magnitude).x;
                 velocity.z = (newDir * copyVelocity.magnitude).z;
             }
+
+            WaterEdgePush(normal);
         }
 
         #endregion
@@ -746,7 +757,8 @@ namespace vnc
             CollisionAbove = 2,
             CollisionBelow = 4,
             CollisionSides = 8,
-            WalkedStep = 16
+            WalkedStep = 16,
+            Ladder = 32
         }
 
         public enum CC_Water
@@ -783,7 +795,8 @@ namespace vnc
                     + "\nIs Swimming:" + IsSwimming
                     + "\nWater State; " + WaterState
                     + "\nVelocity Vector: " + Velocity
-                    + "\nVelocity Magnitude: " + Velocity.magnitude;
+                    + "\nVelocity Magnitude: " + Velocity.magnitude
+                    + "\nCollisions: " + Collisions;
 
                 if (guiStyle != null)
                     GUI.Label(rect, debugText, guiStyle);
