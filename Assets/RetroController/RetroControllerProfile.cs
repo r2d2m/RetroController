@@ -45,9 +45,14 @@ namespace vnc
         /// water surface, so it can get out of it.
         /// </summary>
         public float WaterEdgeJumpSpeed;
+
+        /// <summary>
+        /// The speed applied when player jumps from the ladder
+        /// </summary>
+        public float LadderDetachJumpSpeed;
         #endregion
 
-        #region Speed
+        #region Max Speed
         [Header("Max Speed")]
         /// <summary>
         /// Max speed on ground
@@ -66,10 +71,6 @@ namespace vnc
         /// </summary>
         public float MaxAirSprintSpeed;
         /// <summary>
-        /// Max speed when on a ladder.
-        /// </summary>
-        public float MaxLadderSpeed;
-        /// <summary>
         /// Max speed when underwater.
         /// </summary>
         public float MaxWaterSpeed;
@@ -82,6 +83,10 @@ namespace vnc
         /// Max absolute speed on the Y axis (limits postive and negative values)
         /// </summary>
         public float MaxVerticalSpeedScale;
+        /// <summary>
+        /// Speed when on a ladder.
+        /// </summary>
+        public float LadderSpeed;
         #endregion
 
         #region Acceleration

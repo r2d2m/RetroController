@@ -27,7 +27,6 @@ namespace vnc
         private const float STOP_EPSILON = 0.01f;
 
         private Collider[] overlapingColliders = new Collider[8];
-        private bool foundLadder = false;
         [HideInInspector] public CC_Collision Collisions { get; private set; }
         private CapsuleCollider _capsuleCollider;
 
@@ -51,6 +50,7 @@ namespace vnc
         private float jumpGraceTimer;
         private bool sprintJump;
         private Vector3 floorNormal;    // normal of the last ground
+        private Vector3 ladderNormal;   // normal of the current ladder
 
         // States
         [HideInInspector] public CC_State State { get; private set; }
@@ -64,13 +64,17 @@ namespace vnc
         private float waterSurfacePosY;
         private float WaterThreshold { get { return transform.position.y + Profile.SwimmingOffset; } }
 
-        /// Helps camera smoothing on step.
-        public float StepDelta { get; private set; }
-
         // Platforms
         private Platform currentPlatform;
         private Collider platformCollider;
         private bool wasOnPlatform;
+
+        // Ladders
+        private bool foundLadder = false;   // when one of the collisions found is a ladder
+        private bool detachLadder = false;  // detach from previous ladder
+
+        // Helps camera smoothing on step.
+        public float StepDelta { get; private set; }
 
         [Header("Events")]
         public UnityEvent OnJump;
@@ -97,7 +101,7 @@ namespace vnc
             }
             else
             {
-                if (OnLadder)
+                if (OnLadder && !detachLadder)
                 {
                     LadderMovementUpdate();
                 }
@@ -243,13 +247,44 @@ namespace vnc
 
         protected virtual void LadderMovementUpdate()
         {
-            var walk = inputDir.y * transform.TransformDirection(Vector3.up);
+            // cannot be grounded when on platforms
+            State &= ~CC_State.IsGrounded;
+
+            var forward = inputDir.y * controllerView.forward;
             var strafe = inputDir.x * transform.TransformDirection(Vector3.right);
-            wishdir = (walk + strafe);
+            wishdir = (forward + strafe);
             wishdir.Normalize();
 
-            velocity = MoveGround(wishdir, velocity);
+            wishdir = AlignOnLadder(wishdir);
+
+            velocity = MoveLadder(wishdir, velocity);
+
+            if(triedJumping > 0)
+            {
+                // detach and jump away from ladder
+                velocity = ladderNormal * Profile.LadderDetachJumpSpeed;
+                triedJumping = 0;
+                detachLadder = true;
+            }
+
             CharacterMove(velocity);
+
+            wasGrounded = IsGrounded;
+        }
+
+        protected virtual Vector3 AlignOnLadder(Vector3 direction)
+        {
+            var perp = Vector3.Cross(direction, ladderNormal);
+            if (perp == Vector3.zero)
+                perp = Vector3.left;
+
+            perp.Normalize();
+
+            var newDir = Vector3.Cross(ladderNormal, perp);
+            newDir *= Vector3.Magnitude(direction);
+            newDir.Normalize();
+
+            return newDir;
         }
 
         /// <summary>
@@ -282,7 +317,7 @@ namespace vnc
 
         protected virtual Vector3 MoveLadder(Vector3 wishdir, Vector3 prevVelocity)
         {
-            prevVelocity = Accelerate(wishdir, prevVelocity, Profile.GroundAcceleration, Profile.MaxLadderSpeed);
+            prevVelocity = wishdir * Profile.LadderSpeed;
             return prevVelocity;
         }
 
@@ -454,10 +489,11 @@ namespace vnc
         /// <returns>Final position</returns>
         protected virtual Vector3 FixOverlaps(Vector3 position, Vector3 offset, out Vector3 nResult)
         {
-            Vector3 nTemp = Vector3.zero;
-            Vector3 normal;
-            float dist;
-            float dot;
+            Vector3 nTemp, normal;
+            nTemp = normal = Vector3.zero;
+
+            float dist, dot;
+            dist = dot = 0f;
 
             // TODO: what about alive? disabling? entities?
 
@@ -506,6 +542,8 @@ namespace vnc
                             {
                                 State &= ~CC_State.OnPlatform;
                             }
+
+                            nTemp += normal;
                         }
 
                         // COLLISIONS ON SIDES
@@ -517,30 +555,34 @@ namespace vnc
                             if (c.CompareTag(Profile.LadderTag))
                             {
                                 foundLadder = true;
-                                MoveOnLadder(normal);
+                                ladderNormal = normal;
                             }
                             else
                             {
                                 position += normal * dist;
+                                nTemp += normal;
                             }
                         }
 
                         // COLLISIONS ABOVE
 
-                        if (dot < 0)
+                        if (dot < -0.001)
                         {
                             Collisions = Collisions | CC_Collision.CollisionAbove;
                             position += normal * dist;
+                            nTemp += normal;
                         }
-
-                        nTemp += normal;
                     }
                 }
 
             }
 
-            if(foundLadder) State |= CC_State.OnLadder;
-            else State &= ~CC_State.OnLadder;
+            if (foundLadder) State |= CC_State.OnLadder;
+            else
+            {
+                State &= ~CC_State.OnLadder;
+                detachLadder = false;
+            }
 
             nResult = nTemp;
             return position;
@@ -666,15 +708,6 @@ namespace vnc
                 }
             }
         }
-
-        protected virtual void MoveOnLadder(Vector3 normal)
-        {
-            var copyVelocity = velocity;
-            var newDir = Vector3.ProjectOnPlane(copyVelocity.normalized, normal);
-            velocity.x = (newDir * copyVelocity.magnitude).x;
-            velocity.z = (newDir * copyVelocity.magnitude).z;
-        }
-
         /// <summary>
         /// Called when hitting surfaces.
         /// </summary>
@@ -688,7 +721,7 @@ namespace vnc
             }
 
             // adjust velocity on side surfaces
-            if (HasCollisionFlag(CC_Collision.CollisionSides) || HasCollisionFlag(CC_Collision.CollisionBelow))
+            if (HasCollisionFlag(CC_Collision.CollisionSides))
             {
                 var copyVelocity = velocity;
                 copyVelocity.y = 0;
@@ -827,8 +860,10 @@ namespace vnc
                 Vector3 end = transform.position + Profile.Center + (Vector3.down * (Profile.Height / 2f));
 
                 DebugExtension.DrawCapsule(start, end, Color.yellow, Profile.Radius);
-
                 DebugExtension.DrawCircle(transform.position + Vector3.up * Profile.SwimmingOffset, Color.blue, 1f);
+                DebugExtension.DrawArrow(transform.position, ladderNormal, Color.green);
+                DebugExtension.DrawArrow(transform.position, wishdir, Color.red);
+
             }
         }
 
@@ -840,9 +875,7 @@ namespace vnc
                 Rect rect = new Rect(0, 0, 300, 200);
                 string debugText = "Press 'Esc' to unlock cursor:\n"
                     + "\nSprinting: " + Sprint
-                    + "\nIs Grounded; " + IsGrounded
-                    + "\nIs Swimming:" + IsSwimming
-                    + "\nWater State; " + WaterState
+                    + "\nWishdir: " + wishdir
                     + "\nVelocity Vector: " + Velocity
                     + "\nVelocity Magnitude: " + Velocity.magnitude
                     + "\nCollisions: " + Collisions
