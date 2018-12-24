@@ -96,6 +96,9 @@ namespace vnc
 
         protected virtual void FixedUpdate()
         {
+            if (Profile == null || controllerView == null)
+                return;
+
             if (Profile.FlyingController)
             {
                 //FlyMovementUpdate();
@@ -142,6 +145,7 @@ namespace vnc
             inputDir = new Vector2(strafe, fwd);
         }
 
+        #region Movement Update
         /// <summary>
         /// Update loop for when the controller is grounded
         /// or in mid air
@@ -319,8 +323,9 @@ namespace vnc
             // too much when falling or being propelled
             velocity.y = Mathf.Clamp(velocity.y, -Profile.MaxVerticalSpeedScale, Profile.MaxVerticalSpeedScale);
         }
+        #endregion
 
-        #region Movement
+        #region Movement Calculation
         /// <summary>
         /// Movement on the ground, most common operation.
         /// </summary>
