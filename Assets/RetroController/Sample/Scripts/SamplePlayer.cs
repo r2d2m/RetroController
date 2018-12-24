@@ -28,6 +28,8 @@ namespace vnc.Samples
         private void Awake()
         {
             mouseLook.Init(transform, playerCamera.transform);
+
+            retroController.OnLanding.AddListener(() => { Debug.Log("Landed"); });
         }
 
         void Update()

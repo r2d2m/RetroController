@@ -101,7 +101,7 @@ namespace vnc
 
             if (Profile.FlyingController)
             {
-                //FlyMovementUpdate();
+                FlyMovementUpdate();
             }
             else
             {
@@ -253,6 +253,24 @@ namespace vnc
             
             velocity = MoveWater(wishdir, velocity);
             CalculateGravity(Profile.WaterGravityScale);
+
+            CharacterMove(velocity);
+        }
+
+        protected virtual void FlyMovementUpdate()
+        {
+            State &= ~CC_State.IsGrounded; // never on ground
+
+            // player moved the character
+            var walk = inputDir.y * controllerView.transform.forward;
+            var strafe = inputDir.x * transform.TransformDirection(Vector3.right);
+            wishdir = (walk + strafe) + (Vector3.up * Swim);
+            wishdir.Normalize();
+
+            wishspeed = wishdir.magnitude;
+            
+            // fall when dead
+            velocity = MoveFly(wishdir, velocity);
 
             CharacterMove(velocity);
         }
