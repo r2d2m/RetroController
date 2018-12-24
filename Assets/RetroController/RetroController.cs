@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using vnc.Utilities;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -41,16 +42,16 @@ namespace vnc
         // Velocity
         private Vector3 velocity;
         public Vector3 Velocity { get { return velocity; } private set { velocity = value; } }
-        private Vector3 wishdir;
+        private Vector3 wishdir;    // the direction from the input
         private float wishspeed;
 
         // Jumping
-        private int triedJumping = 0;
-        private bool wasGrounded = false;
-        private float jumpGraceTimer;
-        private bool sprintJump;
-        private Vector3 floorNormal;    // normal of the last ground
-        private Vector3 ladderNormal;   // normal of the current ladder
+        private int triedJumping = 0;       // jumping timer for bunnyhopping
+        private bool wasGrounded = false;   // if player was on ground on previous update
+        private float jumpGraceTimer;       // time window for jumping just before reaching the ground
+        private bool sprintJump;            // jump while sprinting
+        private Vector3 floorNormal;        // normal of the last ground
+        private Vector3 ladderNormal;       // normal of the current ladder
 
         // States
         [HideInInspector] public CC_State State { get; private set; }
@@ -141,6 +142,10 @@ namespace vnc
             inputDir = new Vector2(strafe, fwd);
         }
 
+        /// <summary>
+        /// Update loop for when the controller is grounded
+        /// or in mid air
+        /// </summary>
         protected virtual void GroundMovementUpdate()
         {
             // reset the grounded state
@@ -229,6 +234,9 @@ namespace vnc
             wasOnPlatform = OnPlatform;
         }
 
+        /// <summary>
+        /// Update loop for when the controller is underwater
+        /// </summary>
         protected virtual void WaterMovementUpdate()
         {
             // player moved the character
@@ -237,7 +245,7 @@ namespace vnc
             wishdir = (walk + strafe) + (Vector3.up * Swim);
             wishdir.Normalize();
 
-            wishspeed = wishdir.magnitude;
+            //wishspeed = wishdir.magnitude;
             
             velocity = MoveWater(wishdir, velocity);
             CalculateGravity(Profile.WaterGravityScale);
@@ -245,18 +253,16 @@ namespace vnc
             CharacterMove(velocity);
         }
 
+        /// <summary>
+        /// Update loop for when the controller is attached
+        /// to a ladder
+        /// </summary>
         protected virtual void LadderMovementUpdate()
         {
             // cannot be grounded when on platforms
             State &= ~CC_State.IsGrounded;
-
-            var forward = inputDir.y * controllerView.forward;
-            var strafe = inputDir.x * transform.TransformDirection(Vector3.right);
-            wishdir = (forward + strafe);
-            wishdir.Normalize();
-
-            wishdir = AlignOnLadder(wishdir);
-
+            
+            wishdir = AlignOnLadder();
             velocity = MoveLadder(wishdir, velocity);
 
             if(triedJumping > 0)
@@ -272,18 +278,29 @@ namespace vnc
             wasGrounded = IsGrounded;
         }
 
-        protected virtual Vector3 AlignOnLadder(Vector3 direction)
+        /// <summary>
+        /// Align the input direction alongside the ladder plane
+        /// </summary>
+        /// <param name="direction">The input direction</param>
+        /// <returns>Vector aligned with the ladder</returns>
+        protected virtual Vector3 AlignOnLadder()
         {
-            var perp = Vector3.Cross(direction, ladderNormal);
-            if (perp == Vector3.zero)
-                perp = Vector3.left;
+            var forward = inputDir.y * controllerView.forward;
+            var strafe = inputDir.x * transform.TransformDirection(Vector3.right);
 
+            // Calculate player wish direction
+            Vector3 dir = forward + strafe;
+
+            var perp = Vector3.Cross(Vector3.up, ladderNormal);
             perp.Normalize();
+            // Perpendicular in the ladder plane
+            var climbDirection = Vector3.Cross(ladderNormal, perp);
 
-            var newDir = Vector3.Cross(ladderNormal, perp);
-            newDir *= Vector3.Magnitude(direction);
-            newDir.Normalize();
+            var dNormal = Vector3.Dot(dir, ladderNormal);
+            var cross = ladderNormal * dNormal;
+            var lateral = dir - cross;
 
+            var newDir = lateral + -dNormal * climbDirection;
             return newDir;
         }
 
@@ -555,7 +572,11 @@ namespace vnc
                             if (c.CompareTag(Profile.LadderTag))
                             {
                                 foundLadder = true;
-                                ladderNormal = normal;
+                                
+                                // pick the first normal on contact
+                                if(!OnLadder)
+                                    ladderNormal = normal;
+                                
                             }
                             else
                             {
@@ -587,6 +608,20 @@ namespace vnc
             nResult = nTemp;
             return position;
         }
+
+        //protected virtual void FindLadderNormal(Collider ladder)
+        //{
+        //    Vector3 point0, point1;
+        //    float radius;
+
+        //    PhysicsExtensions.ToWorldSpaceCapsule(_capsuleCollider, out point0, out point1, out radius);
+        //    Vector3[] points = { point0, transform.position, point1 };
+        //    for (int i = 0; i < points.Length; i++)
+        //    {
+        //        Ray r = new Ray(points[1], transform)
+        //        _capsuleCollider.Raycast()
+        //    }
+        //}
 
         #region Water
         /// <summary>
@@ -876,6 +911,7 @@ namespace vnc
                 string debugText = "Press 'Esc' to unlock cursor:\n"
                     + "\nSprinting: " + Sprint
                     + "\nWishdir: " + wishdir
+                    + "\nLadder Normal" + ladderNormal
                     + "\nVelocity Vector: " + Velocity
                     + "\nVelocity Magnitude: " + Velocity.magnitude
                     + "\nCollisions: " + Collisions
