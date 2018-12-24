@@ -898,6 +898,7 @@ namespace vnc
                 DebugExtension.DrawCircle(transform.position + Vector3.up * Profile.SwimmingOffset, Color.blue, 1f);
                 DebugExtension.DrawArrow(transform.position, ladderNormal, Color.green);
                 DebugExtension.DrawArrow(transform.position, wishdir, Color.red);
+                DebugExtension.DrawArrow(transform.position, velocity.normalized, Color.yellow);
 
             }
         }
