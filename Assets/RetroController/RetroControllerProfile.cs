@@ -161,18 +161,10 @@ namespace vnc
 
         [Header("Collision")]
         /// <summary>
-        /// Define which layers will the controller collide with
+        /// Define which layers will the controller collide with.
+        /// This include solid surfaces, platforms and water.
         /// </summary>
-        public LayerMask SolidSurfaceLayers;
-        /// <summary>
-        /// Check the docs on Platforms.
-        /// </summary>
-        public LayerMask PlatformSurfaceLayers;
-        /// <summary>
-        /// Define which layers will be considered water.
-        /// Make sure to set the colliders as triggers.
-        /// </summary>
-        public LayerMask WaterSurfaceLayers;
+        public LayerMask SurfaceLayers;
         /// <summary>
         /// Advanced settings. Do not change this, except
         /// when experiencing collision imprecision.

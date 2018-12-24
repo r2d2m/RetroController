@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using vnc.Utilities;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 namespace vnc
 {
@@ -19,7 +13,7 @@ namespace vnc
         public RetroControllerProfile Profile;
 
         /// <summary>
-        /// 
+        /// Controller view, tipically the first person camera
         /// </summary>
         public Transform controllerView;
 
@@ -42,16 +36,16 @@ namespace vnc
         // Velocity
         private Vector3 velocity;
         public Vector3 Velocity { get { return velocity; } private set { velocity = value; } }
-        private Vector3 wishdir;    // the direction from the input
-        private float wishspeed;
+        protected Vector3 wishdir;    // the direction from the input
+        protected float wishspeed;
 
         // Jumping
-        private int triedJumping = 0;       // jumping timer for bunnyhopping
-        private bool wasGrounded = false;   // if player was on ground on previous update
-        private float jumpGraceTimer;       // time window for jumping just before reaching the ground
-        private bool sprintJump;            // jump while sprinting
-        private Vector3 floorNormal;        // normal of the last ground
-        private Vector3 ladderNormal;       // normal of the current ladder
+        protected int triedJumping = 0;       // jumping timer for bunnyhopping
+        protected bool wasGrounded = false;   // if player was on ground on previous update
+        protected float jumpGraceTimer;       // time window for jumping just before reaching the ground
+        protected bool sprintJump;            // jump while sprinting
+        protected Vector3 floorNormal;        // normal of the last ground
+        protected Vector3 ladderNormal;       // normal of the current ladder
 
         // States
         [HideInInspector] public CC_State State { get; private set; }
@@ -66,13 +60,13 @@ namespace vnc
         private float WaterThreshold { get { return transform.position.y + Profile.SwimmingOffset; } }
 
         // Platforms
-        private Platform currentPlatform;
-        private Collider platformCollider;
-        private bool wasOnPlatform;
+        protected Platform currentPlatform;
+        protected Collider platformCollider;
+        protected bool wasOnPlatform;
 
         // Ladders
-        private bool foundLadder = false;   // when one of the collisions found is a ladder
-        private bool detachLadder = false;  // detach from previous ladder
+        protected bool foundLadder = false;   // when one of the collisions found is a ladder
+        protected bool detachLadder = false;  // detach from previous ladder
 
         // Helps camera smoothing on step.
         public float StepDelta { get; private set; }
@@ -390,7 +384,7 @@ namespace vnc
         #endregion Acceleration
 
         #region Acceleration
-        private Vector3 Accelerate(Vector3 wishdir, Vector3 prevVelocity, float accelerate, float max_velocity)
+        protected virtual Vector3 Accelerate(Vector3 wishdir, Vector3 prevVelocity, float accelerate, float max_velocity)
         {
             var projVel = Vector3.Dot(prevVelocity, wishdir);
             float accelSpeed = accelerate * Profile.AccelerationScale;
@@ -402,7 +396,7 @@ namespace vnc
             return newVel;
         }
 
-        private Vector3 AccelerateAir(Vector3 accelDir, Vector3 prevVelocity, float accelerate, float max_velocity)
+        protected virtual Vector3 AccelerateAir(Vector3 accelDir, Vector3 prevVelocity, float accelerate, float max_velocity)
         {
             var projVel = Vector3.Dot(prevVelocity, accelDir);
             if (Profile.AirboneControl)
@@ -538,7 +532,7 @@ namespace vnc
             // TODO: what about alive? disabling? entities?
 
             foundLadder = false;
-            int nColls = OverlapCapsuleNonAlloc(offset, overlapingColliders, Profile.SolidSurfaceLayers, QueryTriggerInteraction.Collide);
+            int nColls = OverlapCapsuleNonAlloc(offset, overlapingColliders, Profile.SurfaceLayers, QueryTriggerInteraction.Collide);
 
             for (int i = 0; i < nColls; i++)
             {
@@ -632,20 +626,6 @@ namespace vnc
             return position;
         }
 
-        //protected virtual void FindLadderNormal(Collider ladder)
-        //{
-        //    Vector3 point0, point1;
-        //    float radius;
-
-        //    PhysicsExtensions.ToWorldSpaceCapsule(_capsuleCollider, out point0, out point1, out radius);
-        //    Vector3[] points = { point0, transform.position, point1 };
-        //    for (int i = 0; i < points.Length; i++)
-        //    {
-        //        Ray r = new Ray(points[1], transform)
-        //        _capsuleCollider.Raycast()
-        //    }
-        //}
-
         #region Water
         /// <summary>
         /// Detect water surface.
@@ -692,7 +672,7 @@ namespace vnc
                 && WaterState == CC_Water.Partial
                 && Vector3.Dot(normal, horizontalVel) < -0.8f)
             {
-                if (!Physics.Raycast(controllerView.position, horizontalVel, 1.5f, Profile.SolidSurfaceLayers))
+                if (!Physics.Raycast(controllerView.position, horizontalVel, 1.5f, Profile.SurfaceLayers))
                 {
                     velocity.y = Profile.WaterEdgeJumpSpeed;
                 }
@@ -730,7 +710,7 @@ namespace vnc
                 return;
 
             // check if collides in the next step
-            if (Physics.CheckCapsule(p0, p1, radius, Profile.SolidSurfaceLayers, QueryTriggerInteraction.Ignore))
+            if (Physics.CheckCapsule(p0, p1, radius, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore))
             {
                 // collided with a solid object, probably a wall
                 return; // doesn't do anything
@@ -742,12 +722,12 @@ namespace vnc
                 stepCenter = ((p0 + p1) / 2) + stepDir * radius;
                 Vector3 size = new Vector3(Profile.Radius * 2, Profile.Height, Profile.Radius * 2);
 
-                if (Physics.CapsuleCast(p0 + stepDir * radius, p1 + stepDir * radius, radius, Vector3.down, out stepHit, Mathf.Infinity, Profile.SolidSurfaceLayers, QueryTriggerInteraction.Ignore))
+                if (Physics.CapsuleCast(p0 + stepDir * radius, p1 + stepDir * radius, radius, Vector3.down, out stepHit, Mathf.Infinity, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore))
                 {
                     var bottom = Profile.Center + transform.position + (Vector3.down * Profile.Height / 2);
 
                     if (Physics.Raycast(stepHit.point + Vector3.up * Profile.StepOffset,
-                        Vector3.down, out cornerHit, Mathf.Infinity, Profile.SolidSurfaceLayers, QueryTriggerInteraction.Ignore))
+                        Vector3.down, out cornerHit, Mathf.Infinity, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore))
                     {
                         var dot = Vector3.Dot(cornerHit.normal, Vector3.up);
                         if (stepHit.point.y > bottom.y && dot >= 0.98999999f)
@@ -866,7 +846,7 @@ namespace vnc
             return ((1 << obj.layer) & layerMask) != 0;
         }
 
-        private bool HasCollisionFlag(CC_Collision flag)
+        public bool HasCollisionFlag(CC_Collision flag)
         {
             return (Collisions & flag) != 0;
         }
@@ -926,10 +906,9 @@ namespace vnc
             }
         }
 
-#if UNITY_EDITOR
-        private void OnGUI()
+        protected virtual void OnGUI()
         {
-            if (showDebugStats)
+            if (showDebugStats && Application.isEditor)
             {
                 Rect rect = new Rect(0, 0, 300, 200);
                 string debugText = "Press 'Esc' to unlock cursor:\n"
@@ -947,7 +926,6 @@ namespace vnc
                     GUI.Label(rect, debugText);
             }
         }
-#endif
         #endregion
     }
 }

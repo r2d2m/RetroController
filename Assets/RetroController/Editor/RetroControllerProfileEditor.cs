@@ -21,6 +21,8 @@ namespace vnc.Editor
         {
             base.OnInspectorGUI();
 
+            EditorUtils.SetIcon(serializedObject.targetObject, "retro_controller_profile");
+
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Collision Tags", EditorStyles.boldLabel);
             waterTag.stringValue = EditorGUILayout.TagField("Water Tag", waterTag.stringValue);

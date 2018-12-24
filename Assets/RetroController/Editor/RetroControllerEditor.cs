@@ -1,4 +1,6 @@
-﻿using UnityEditor;
+﻿using System.Reflection;
+using UnityEditor;
+using UnityEngine;
 
 namespace vnc.Editor
 {
@@ -18,9 +20,19 @@ namespace vnc.Editor
         {
             if (profile.objectReferenceValue == null)
                 EditorGUILayout.HelpBox("The controller doesn't have a Profile attached and won't work.", MessageType.Warning);
+            else
+            {
+                if (GUILayout.Button("Open Profile"))
+                {
+                    //EditorGUIUtility.PingObject(profile.objectReferenceValue);
+                    Selection.activeObject = profile.objectReferenceValue;
+                }
+            }
 
             if (view.objectReferenceValue == null)
                 EditorGUILayout.HelpBox("The controller doesn't have a view object attached and won't work.", MessageType.Warning);
+
+            EditorUtils.SetIcon(serializedObject.targetObject, "retro_controller");
 
             base.OnInspectorGUI();
         }
