@@ -276,8 +276,8 @@ namespace vnc
         protected virtual void LadderMovementUpdate()
         {
             // cannot be grounded when on platforms
-            State &= ~CC_State.IsGrounded;
-            
+            State = (Collisions & CC_Collision.CollisionBelow) != 0 ? State | CC_State.IsGrounded : State & ~CC_State.IsGrounded;
+
             wishdir = AlignOnLadder();
             velocity = MoveLadder(wishdir, velocity);
 
@@ -317,6 +317,11 @@ namespace vnc
             var lateral = dir - cross;
 
             var newDir = lateral + -dNormal * climbDirection;
+            if(IsGrounded && dNormal > 0)
+            {
+                newDir = ladderNormal;
+            }
+
             return newDir;
         }
 

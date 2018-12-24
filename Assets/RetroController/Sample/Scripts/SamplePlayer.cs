@@ -46,11 +46,11 @@ namespace vnc.Samples
             else
             {
                 // Here the sample gets input from the player
-                fwd = (Input.GetButton("Forward") ? 1 : 0) - (Input.GetButton("Backwards") ? 1 : 0);
-                strafe = (Input.GetButton("Strafe_Right") ? 1 : 0) - (Input.GetButton("Strafe_Left") ? 1 : 0);
-                swim = Input.GetAxisRaw("Swim");
-                jump = Input.GetButtonDown("Jump");
-                sprint = Input.GetButton("Sprint");
+                fwd = (Input.GetKey(KeyCode.W) ? 1 : 0) - (Input.GetKey(KeyCode.S) ? 1 : 0);
+                strafe = (Input.GetKey(KeyCode.D) ? 1 : 0) - (Input.GetKey(KeyCode.A) ? 1 : 0);
+                swim = (Input.GetKey(KeyCode.Space) ? 1 : 0) - (Input.GetKey(KeyCode.LeftControl) ? 1 : 0);
+                jump = Input.GetKeyDown(KeyCode.Space);
+                sprint = Input.GetKey(KeyCode.LeftShift);
             }
 
             // these inputs are fed into the controller
@@ -58,7 +58,7 @@ namespace vnc.Samples
             retroController.SetInput(fwd, strafe, swim, jump, sprint);
 
             // animation for the sample
-            bool isShooting = Input.GetButton("Fire1");
+            bool isShooting = Input.GetMouseButton(0);
             gunAnimator.SetBool("Shoot", isShooting);
 
             if (!ignoreMouse)
