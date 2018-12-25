@@ -46,8 +46,9 @@ namespace vnc
         protected bool wasGrounded = false;   // if player was on ground on previous update
         protected float jumpGraceTimer;       // time window for jumping just before reaching the ground
         protected bool sprintJump;            // jump while sprinting
-        protected Vector3 floorNormal;        // normal of the last ground
-        protected Vector3 ladderNormal;       // normal of the current ladder
+
+        //protected Vector3 floorNormal;        // normal of the last ground
+        //protected Vector3 ladderNormal;       // normal of the current ladder
 
         // Ducking
         protected float duckingTimer;
@@ -59,6 +60,7 @@ namespace vnc
         public bool OnPlatform { get { return (State & CC_State.OnPlatform) != 0; } }
         public bool OnLadder { get { return (State & CC_State.OnLadder) != 0; } }
         public bool IsDucking { get { return (State & CC_State.Ducking) != 0; } }
+        public SurfaceNormals surfaceNormals = new SurfaceNormals();
 
         // Water
         [HideInInspector] public CC_Water WaterState { get; private set; }
@@ -329,7 +331,7 @@ namespace vnc
             if (triedJumping > 0)
             {
                 // detach and jump away from ladder
-                velocity = ladderNormal * Profile.LadderDetachJumpSpeed;
+                velocity = surfaceNormals.ladder * Profile.LadderDetachJumpSpeed;
                 triedJumping = 0;
                 detachLadder = true;
             }
@@ -352,19 +354,19 @@ namespace vnc
             // Calculate player wish direction
             Vector3 dir = forward + strafe;
 
-            var perp = Vector3.Cross(Vector3.up, ladderNormal);
+            var perp = Vector3.Cross(Vector3.up, surfaceNormals.ladder);
             perp.Normalize();
             // Perpendicular in the ladder plane
-            var climbDirection = Vector3.Cross(ladderNormal, perp);
+            var climbDirection = Vector3.Cross(surfaceNormals.ladder, perp);
 
-            var dNormal = Vector3.Dot(dir, ladderNormal);
-            var cross = ladderNormal * dNormal;
+            var dNormal = Vector3.Dot(dir, surfaceNormals.ladder);
+            var cross = surfaceNormals.ladder * dNormal;
             var lateral = dir - cross;
 
             var newDir = lateral + -dNormal * climbDirection;
             if (IsGrounded && dNormal > 0)
             {
-                newDir = ladderNormal;
+                newDir = surfaceNormals.ladder;
             }
 
             return newDir;
@@ -624,7 +626,7 @@ namespace vnc
                         {
                             Collisions = Collisions | CC_Collision.CollisionBelow;
                             position += Vector3.up * dist;
-                            floorNormal = normal;
+                            surfaceNormals.floor = normal;
 
                             if (c.CompareTag(Profile.PlatformTag))
                             {
@@ -653,12 +655,13 @@ namespace vnc
 
                                 // pick the first normal on contact
                                 if (!OnLadder)
-                                    ladderNormal = normal;
+                                    surfaceNormals.ladder = normal;
 
                             }
                             else
                             {
                                 position += normal * dist;
+                                surfaceNormals.wall = normal;
                                 nTemp += normal;
                             }
                         }
@@ -671,6 +674,7 @@ namespace vnc
                             position += normal * dist;
                             nTemp += normal;
                         }
+
                     }
                 }
 
@@ -817,12 +821,12 @@ namespace vnc
         {
             if (IsDucking)
             {
-                float t = Profile.DuckingLerpSpeed* Time.fixedDeltaTime;
+                float t = Profile.DuckingLerpSpeed * Time.fixedDeltaTime;
                 _capsuleCollider.height = Mathf.Lerp(_capsuleCollider.height, Profile.DuckingHeight, t);
                 _capsuleCollider.center = Vector3.Lerp(_capsuleCollider.center, Profile.DuckingCenter, t);
 
                 Vector3 diff = Profile.DuckingCenter - Profile.Center;
-                controllerView.localPosition = Vector3.Lerp(controllerView.localPosition, 
+                controllerView.localPosition = Vector3.Lerp(controllerView.localPosition,
                     viewPosition + (Vector3.down * Profile.DuckingViewOffset), t);
             }
             else
@@ -1034,7 +1038,7 @@ namespace vnc
 
                 DebugExtension.DrawCapsule(start, end, Color.yellow, Profile.Radius);
                 DebugExtension.DrawCircle(transform.position + Vector3.up * Profile.SwimmingOffset, Color.blue, 1f);
-                DebugExtension.DrawArrow(transform.position, ladderNormal, Color.green);
+                DebugExtension.DrawArrow(transform.position, surfaceNormals.ladder, Color.green);
                 DebugExtension.DrawArrow(transform.position, wishdir, Color.red);
                 DebugExtension.DrawArrow(transform.position, velocity.normalized, Color.yellow);
 
@@ -1049,7 +1053,7 @@ namespace vnc
                 string debugText = "Press 'Esc' to unlock cursor:\n"
                     + "\nSprinting: " + Sprint
                     + "\nWishdir: " + wishdir
-                    + "\nLadder Normal" + ladderNormal
+                    + "\nWall Normals" + surfaceNormals.wall
                     + "\nVelocity Vector: " + Velocity
                     + "\nVelocity Magnitude: " + Velocity.magnitude
                     + "\nCollisions: " + Collisions
@@ -1063,4 +1067,11 @@ namespace vnc
         }
         #endregion
     }
+}
+
+public struct SurfaceNormals
+{
+    public Vector3 floor;
+    public Vector3 ladder;
+    public Vector3 wall;
 }

@@ -10,7 +10,6 @@ namespace vnc.Samples
         public Camera playerCamera;
         public Animator gunAnimator;
 
-        [Header("Input Testing")]
         public bool autoInput = false;
         [ConditionalHide("autoInput")]
         public float autoFoward = 0f;
