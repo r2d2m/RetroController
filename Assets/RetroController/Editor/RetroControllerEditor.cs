@@ -19,6 +19,8 @@ namespace vnc.Editor
 
         public override void OnInspectorGUI()
         {
+            EditorGUILayout.Space();
+
             if (profile.objectReferenceValue == null)
                 EditorGUILayout.HelpBox("The controller doesn't have a Profile attached and won't work.", MessageType.Warning);
             else
@@ -35,7 +37,27 @@ namespace vnc.Editor
 
             EditorUtils.SetIcon(serializedObject.targetObject, "retro_controller");
 
-            base.OnInspectorGUI();
+            DrawDefaultInspectorWithoutScriptField();
+        }
+
+        public bool DrawDefaultInspectorWithoutScriptField()
+        {
+            EditorGUI.BeginChangeCheck();
+
+            serializedObject.Update();
+
+            SerializedProperty Iterator = serializedObject.GetIterator();
+
+            Iterator.NextVisible(true);
+
+            while (Iterator.NextVisible(false))
+            {
+                EditorGUILayout.PropertyField(Iterator, true);
+            }
+
+            serializedObject.ApplyModifiedProperties();
+
+            return (EditorGUI.EndChangeCheck());
         }
     }
 

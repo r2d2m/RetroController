@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using vnc;
+using vnc.Utils;
 
 namespace vnc.Samples
 {

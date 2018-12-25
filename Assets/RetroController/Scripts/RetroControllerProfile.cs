@@ -1,6 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using vnc.Utils;
 
 namespace vnc
 {
@@ -13,7 +12,7 @@ namespace vnc
         /// <summary>
         /// Default base gravity value
         /// </summary>
-        [Header("Gravity")]
+        [FancyHeader("Gravity")]
         public float Gravity;
         /// <summary>
         /// Gravity scale when underwater, relative to the Gravity value
@@ -22,7 +21,7 @@ namespace vnc
         #endregion
 
         #region Jumping
-        [Header("Jumping")]
+        [FancyHeader("Jumping")]
         /// <summary>
         /// Speed on the jump
         /// </summary>
@@ -53,7 +52,7 @@ namespace vnc
         #endregion
 
         #region Ducking
-        [Header("Ducking")]
+        [FancyHeader("Ducking")]
         /// <summary>
         /// Delay between issuing duck command and 
         /// getting in the ducked state
@@ -80,7 +79,7 @@ namespace vnc
         #endregion
 
         #region Max Speed
-        [Header("Max Speed")]
+        [FancyHeader("Max Speed")]
         /// <summary>
         /// Max speed on ground
         /// </summary>
@@ -122,7 +121,7 @@ namespace vnc
         #endregion
 
         #region Acceleration
-        [Header("Acceleration")]
+        [FancyHeader("Acceleration")]
         /// <summary>
         /// Scales all the acceleration properties in the profile.
         /// </summary>
@@ -151,7 +150,7 @@ namespace vnc
         #endregion
 
         #region Friction
-        [Header("Friction")]
+        [FancyHeader("Friction")]
         /// <summary>
         /// Scales all the friction properties in the profile.
         /// </summary>
@@ -171,7 +170,7 @@ namespace vnc
         #endregion
 
         #region Controller
-        [Header("Controller")]
+        [FancyHeader("Controller Properties")]
         /// <summary>
         /// Defines if a character naturally flies.
         /// These are not affected by gravity. 
@@ -194,7 +193,7 @@ namespace vnc
         public ControllerDirection AxisOrientation = ControllerDirection.Y;
         #endregion
 
-        [Header("Collision")]
+        [FancyHeader("Collision and Tags")]
         /// <summary>
         /// Define which layers will the controller collide with.
         /// This include solid surfaces, platforms and water.
