@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 
@@ -8,15 +7,23 @@ namespace vnc.Editor.Utils
 {
     public class OnImport : AssetPostprocessor
     {
-        static string configPath = "Assets/RetroPackageConfig";
+        static string configPath
+        {
+            get
+            {
+                var root = Directory.GetParent(Application.dataPath);
+                string path = Path.Combine(root.FullName, "ProjectSettings\\RetroPackageConfig.asset");
+                return path;
+            }
+        }
 
         static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
         {
             if (importedAssets.Length == 0)
                 return;
 
-            var config = AssetDatabase.LoadAssetAtPath<RetroPackageConfig>(configPath);
-            if (config == null)
+            //var config = AssetDatabase.LoadAssetAtPath<RetroPackageConfig>(configPath);
+            if (!File.Exists(configPath))
             {
                 bool hasPlatform, hasWater, hasLadder;
 
@@ -45,10 +52,15 @@ namespace vnc.Editor.Utils
                     }
                 }
 
-                config = ScriptableObject.CreateInstance<RetroPackageConfig>();
+                var config = ScriptableObject.CreateInstance<RetroPackageConfig>();
                 config.importedTime = DateTime.Now;
 
-                AssetDatabase.CreateAsset(config, configPath);
+                AssetDatabase.CreateAsset(config, "Assets/RetroPackageConfig.asset");
+                string sourcePath = Path.Combine(Application.dataPath, "RetroPackageConfig.asset");
+                if (File.Exists(sourcePath))
+                    File.Move(sourcePath, configPath);
+                else
+                    Debug.LogError(string.Format("Error while creating RetroPackageConfig.\n'{0}' does not exist.", sourcePath));
             }
 
         }
