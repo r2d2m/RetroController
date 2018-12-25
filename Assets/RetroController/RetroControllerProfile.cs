@@ -52,6 +52,33 @@ namespace vnc
         public float LadderDetachJumpSpeed;
         #endregion
 
+        #region Ducking
+        [Header("Ducking")]
+        /// <summary>
+        /// Delay between issuing duck command and 
+        /// getting in the ducked state
+        /// </summary>
+        public float DuckingTimeDelay = 0.3f;
+        /// <summary>
+        /// Controller center when ducking
+        /// </summary>
+        public Vector3 DuckingCenter = new Vector3(0f, -.5f, 0f);
+        /// <summary>
+        /// Controller height when ducking
+        /// </summary>
+        public float DuckingHeight = 1f;
+        /// <summary>
+        /// View offset based on initial view position on
+        /// the controller axis orientation
+        /// </summary>
+        public float DuckingViewOffset = 0.8f;
+        /// <summary>
+        /// Transition speed of the controller collider
+        /// size from standing to ducking
+        /// </summary>
+        public float DuckingLerpSpeed = 6;
+        #endregion
+
         #region Max Speed
         [Header("Max Speed")]
         /// <summary>
@@ -75,6 +102,11 @@ namespace vnc
         /// </summary>
         public float MaxWaterSpeed;
         /// <summary>
+        /// Max speed when ducking.
+        /// Only applicable while on ground.
+        /// </summary>
+        public float MaxDuckingSpeed;
+        /// <summary>
         /// When the controller speed reaches a really small value,
         /// it stops completely.
         /// </summary>
@@ -97,9 +129,12 @@ namespace vnc
         public float AccelerationScale = 1f;
         /// <summary>
         /// Normal Acceleration on ground.
-        /// Used as a base.
         /// </summary>
         public float GroundAcceleration;
+        /// <summary>
+        /// Acceleration while ducking on ground.
+        /// </summary>
+        public float DuckingAcceleration;
         /// <summary>
         /// Acceleration while on mid-air.
         /// </summary>
@@ -156,7 +191,7 @@ namespace vnc
         public Vector3 Center;
         public float Radius = 1;
         public float Height = 2;
-        public ControllerDirection Direction = ControllerDirection.Y;
+        public ControllerDirection AxisOrientation = ControllerDirection.Y;
         #endregion
 
         [Header("Collision")]

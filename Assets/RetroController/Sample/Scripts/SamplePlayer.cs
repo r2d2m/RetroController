@@ -23,6 +23,8 @@ namespace vnc.Samples
         [ConditionalHide("autoInput")]
         public bool autoSprint = false;
         [ConditionalHide("autoInput")]
+        public bool autoDuck = false;
+        [ConditionalHide("autoInput")]
         public bool ignoreMouse = false;
 
         private void Awake()
@@ -33,7 +35,7 @@ namespace vnc.Samples
         void Update()
         {
             float fwd, strafe, swim = 0f;
-            bool jump, sprint = false;
+            bool jump, sprint, duck = false;
 
             if (autoInput)
             {
@@ -42,6 +44,7 @@ namespace vnc.Samples
                 swim = autoSwim;
                 jump = autoJump;
                 sprint = autoSprint;
+                duck = autoDuck;
             }
             else
             {
@@ -51,17 +54,18 @@ namespace vnc.Samples
                 swim = (Input.GetKey(KeyCode.Space) ? 1 : 0) - (Input.GetKey(KeyCode.LeftControl) ? 1 : 0);
                 jump = Input.GetKeyDown(KeyCode.Space);
                 sprint = Input.GetKey(KeyCode.LeftShift);
+                duck = Input.GetKey(KeyCode.LeftControl);
             }
 
             // these inputs are fed into the controller
             // this is the main entry point for the controller
-            retroController.SetInput(fwd, strafe, swim, jump, sprint);
+            retroController.SetInput(fwd, strafe, swim, jump, sprint, duck);
 
             // animation for the sample
             bool isShooting = Input.GetMouseButton(0);
             gunAnimator.SetBool("Shoot", isShooting);
 
-            if (!ignoreMouse)
+            if (!(autoInput && ignoreMouse))
             {
                 // controls mouse look
                 mouseLook.LookRotation(transform, playerCamera.transform);

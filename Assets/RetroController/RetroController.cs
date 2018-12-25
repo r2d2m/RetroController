@@ -16,6 +16,7 @@ namespace vnc
         /// Controller view, tipically the first person camera
         /// </summary>
         public Transform controllerView;
+        public Vector3 viewPosition;
 
         public bool showDebugStats = false;
 
@@ -32,6 +33,7 @@ namespace vnc
         public float Swim { get; set; }
         public bool JumpInput { get; set; }
         public bool Sprint { get; set; }
+        public bool DuckInput { get; set; }
 
         // Velocity
         private Vector3 velocity;
@@ -47,11 +49,16 @@ namespace vnc
         protected Vector3 floorNormal;        // normal of the last ground
         protected Vector3 ladderNormal;       // normal of the current ladder
 
+        // Ducking
+        protected float duckingTimer;
+        protected bool wasDucking;
+
         // States
         [HideInInspector] public CC_State State { get; private set; }
         public bool IsGrounded { get { return (State & CC_State.IsGrounded) != 0; } }
         public bool OnPlatform { get { return (State & CC_State.OnPlatform) != 0; } }
         public bool OnLadder { get { return (State & CC_State.OnLadder) != 0; } }
+        public bool IsDucking { get { return (State & CC_State.Ducking) != 0; } }
 
         // Water
         [HideInInspector] public CC_Water WaterState { get; private set; }
@@ -82,7 +89,11 @@ namespace vnc
         {
             State = CC_State.None;
             WaterState = CC_Water.None;
+            Collisions = CC_Collision.None;
             jumpGraceTimer = Profile.JumpGraceTime;
+
+            if (controllerView)
+                viewPosition = controllerView.localPosition;
 
             _capsuleCollider = gameObject.AddComponent<CapsuleCollider>();
             _capsuleCollider.hideFlags = HideFlags.NotEditable;
@@ -112,6 +123,8 @@ namespace vnc
                     GroundMovementUpdate();
                 }
             }
+
+            OnDuckState();
         }
 
         /// <summary>
@@ -125,19 +138,40 @@ namespace vnc
         /// <param name="swim">Swim input.</param>
         /// <param name="jump">Jump command.</param>
         /// <param name="sprint">Sprint command.</param>
-        public virtual void SetInput(float fwd, float strafe, float swim, bool jump, bool sprint)
+        public virtual void SetInput(float fwd, float strafe, float swim, bool jump, bool sprint, bool duck)
         {
             WalkForward = fwd;
             Strafe = strafe;
             Swim = swim;
             JumpInput = jump;
             Sprint = sprint;
+            DuckInput = duck;
 
             if (JumpInput && triedJumping == 0)
                 triedJumping = Profile.JumpInputTimer;
 
             inputDir = new Vector2(strafe, fwd);
         }
+
+        /// <summary>
+        /// Set the Ducking state on the controller
+        /// </summary>
+        protected virtual void OnDuckState()
+        {
+            if (!wasDucking && DuckInput)
+                duckingTimer = Time.time;
+
+            if (Time.time > duckingTimer + Profile.DuckingTimeDelay && DuckInput)
+                AddState(CC_State.Ducking);
+
+            if (!DuckInput && CanStand())
+            {
+                RemoveState(CC_State.Ducking);
+            }
+
+            wasDucking = DuckInput;
+        }
+
 
         #region Movement Update
         /// <summary>
@@ -147,9 +181,15 @@ namespace vnc
         protected virtual void GroundMovementUpdate()
         {
             // reset the grounded state
-            State = (Collisions & CC_Collision.CollisionBelow) != 0 ? State | CC_State.IsGrounded : State & ~CC_State.IsGrounded;
+            if (HasCollisionFlag(CC_Collision.CollisionBelow))
+                AddState(CC_State.IsGrounded);
+            else
+                RemoveState(CC_State.IsGrounded);
+
+
             if (!IsGrounded)
-                State &= ~CC_State.OnPlatform;
+                RemoveState(CC_State.OnPlatform);
+            //State &= ~CC_State.OnPlatform;
 
             jumpGraceTimer = Mathf.Clamp(jumpGraceTimer - 1, 0, Profile.JumpGraceTime);
 
@@ -160,7 +200,10 @@ namespace vnc
 
             if (wasGrounded)
             {
-                velocity = MoveGround(wishdir, velocity);
+                if (IsDucking)
+                    velocity = MoveGroundDucking(wishdir, velocity);
+                else
+                    velocity = MoveGround(wishdir, velocity);
             }
             else
             {
@@ -244,7 +287,7 @@ namespace vnc
             wishdir.Normalize();
 
             //wishspeed = wishdir.magnitude;
-            
+
             velocity = MoveWater(wishdir, velocity);
             CalculateGravity(Profile.WaterGravityScale);
 
@@ -253,7 +296,7 @@ namespace vnc
 
         protected virtual void FlyMovementUpdate()
         {
-            State &= ~CC_State.IsGrounded; // never on ground
+            RemoveState(CC_State.IsGrounded);
 
             // player moved the character
             var walk = inputDir.y * controllerView.transform.forward;
@@ -262,7 +305,7 @@ namespace vnc
             wishdir.Normalize();
 
             wishspeed = wishdir.magnitude;
-            
+
             // fall when dead
             velocity = MoveFly(wishdir, velocity);
 
@@ -275,13 +318,15 @@ namespace vnc
         /// </summary>
         protected virtual void LadderMovementUpdate()
         {
-            // cannot be grounded when on platforms
-            State = (Collisions & CC_Collision.CollisionBelow) != 0 ? State | CC_State.IsGrounded : State & ~CC_State.IsGrounded;
+            if (HasCollisionFlag(CC_Collision.CollisionBelow))
+                AddState(CC_State.IsGrounded);
+            else
+                RemoveState(CC_State.IsGrounded);
 
             wishdir = AlignOnLadder();
             velocity = MoveLadder(wishdir, velocity);
 
-            if(triedJumping > 0)
+            if (triedJumping > 0)
             {
                 // detach and jump away from ladder
                 velocity = ladderNormal * Profile.LadderDetachJumpSpeed;
@@ -317,7 +362,7 @@ namespace vnc
             var lateral = dir - cross;
 
             var newDir = lateral + -dNormal * climbDirection;
-            if(IsGrounded && dNormal > 0)
+            if (IsGrounded && dNormal > 0)
             {
                 newDir = ladderNormal;
             }
@@ -351,6 +396,16 @@ namespace vnc
             prevVelocity = Friction(prevVelocity, Profile.GroundFriction); // ground friction
             float maxVelocity = Sprint ? Profile.MaxGroundSprintSpeed : Profile.MaxGroundSpeed;
             prevVelocity = Accelerate(wishdir, prevVelocity, Profile.GroundAcceleration, maxVelocity);
+            return prevVelocity;
+        }
+
+        /// <summary>
+        /// Movement on the ground but while ducking.
+        /// </summary>
+        protected virtual Vector3 MoveGroundDucking(Vector3 wishDir, Vector3 prevVelocity)
+        {
+            prevVelocity = Friction(prevVelocity, Profile.GroundFriction); // ground friction
+            prevVelocity = Accelerate(wishdir, prevVelocity, Profile.DuckingAcceleration, Profile.MaxDuckingSpeed);
             return prevVelocity;
         }
 
@@ -470,7 +525,8 @@ namespace vnc
         /// <param name="movement">Final movement</param>
         protected virtual void CharacterMove(Vector3 movement)
         {
-            _capsuleUpdate();
+            SetDuckHull();
+
             movement = VelocityFixer(movement);
 
             Vector3 nTotal = Vector3.zero;
@@ -594,11 +650,11 @@ namespace vnc
                             if (c.CompareTag(Profile.LadderTag))
                             {
                                 foundLadder = true;
-                                
+
                                 // pick the first normal on contact
-                                if(!OnLadder)
+                                if (!OnLadder)
                                     ladderNormal = normal;
-                                
+
                             }
                             else
                             {
@@ -673,7 +729,7 @@ namespace vnc
 
             // Check if the player is in the border of the water, give it a little push
             if (HasCollisionFlag(CC_Collision.CollisionSides)
-                && Swim > 0 
+                && Swim > 0
                 && WaterState == CC_Water.Partial
                 && Vector3.Dot(normal, horizontalVel) < -0.8f)
             {
@@ -707,7 +763,8 @@ namespace vnc
 
             stepDist = stepDir.magnitude; // for debug purposes
 
-            ToWorldSpaceControllerCapsule(out p0, out p1, out radius);
+            var center = IsDucking ? transform.TransformPoint(Profile.DuckingCenter) : transform.TransformPoint(Profile.Center);
+            ToWorldSpaceControllerCapsule(center, out p0, out p1, out radius);
             p0 += (stepDir * stepDist) + (Vector3.up * Profile.StepOffset);
             p1 += (stepDir * stepDist) + (Vector3.up * Profile.StepOffset);
 
@@ -751,6 +808,43 @@ namespace vnc
                 }
             }
         }
+
+        /// <summary>
+        /// Controls the collision area of the capsule collider with 
+        /// the Ducking state
+        /// </summary>
+        protected virtual void SetDuckHull()
+        {
+            if (IsDucking)
+            {
+                float t = Profile.DuckingLerpSpeed* Time.fixedDeltaTime;
+                _capsuleCollider.height = Mathf.Lerp(_capsuleCollider.height, Profile.DuckingHeight, t);
+                _capsuleCollider.center = Vector3.Lerp(_capsuleCollider.center, Profile.DuckingCenter, t);
+
+                Vector3 diff = Profile.DuckingCenter - Profile.Center;
+                controllerView.localPosition = Vector3.Lerp(controllerView.localPosition, 
+                    viewPosition + (Vector3.down * Profile.DuckingViewOffset), t);
+            }
+            else
+            {
+                _capsuleUpdate();
+                controllerView.localPosition = viewPosition;
+            }
+        }
+
+        bool CanStand()
+        {
+            // calculate if the standing capsule won't collider with anything
+            Vector3 point0, point1, duckingCenter;
+            float radius;
+            var center = transform.TransformPoint(Profile.Center);
+            ToWorldSpaceControllerCapsule(center, out point0, out point1, out radius);
+            radius -= 0.01f;
+            duckingCenter = transform.TransformPoint(Profile.DuckingCenter);
+            bool isBlocking = Physics.CheckCapsule(point0, point1, radius, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
+            return !isBlocking;
+        }
+
         /// <summary>
         /// Called when hitting surfaces.
         /// </summary>
@@ -795,15 +889,21 @@ namespace vnc
             return vel;
         }
 
-        public void ToWorldSpaceControllerCapsule(out Vector3 point0, out Vector3 point1, out float radius)
+        /// <summary>
+        /// Convert the capsule's local space positions to world space positions
+        /// </summary>
+        /// <param name="center">Center of the capsule, can change if controller is ducking</param>
+        /// <param name="point0">Point on top</param>
+        /// <param name="point1">Point on bottom</param>
+        /// <param name="radius">Capsule radius.</param>
+        public void ToWorldSpaceControllerCapsule(Vector3 center, out Vector3 point0, out Vector3 point1, out float radius)
         {
-            var center = transform.TransformPoint(Profile.Center);
             radius = 0f;
             float height = 0f;
             Vector3 lossyScale = AbsVec3(transform.lossyScale);
             Vector3 dir = Vector3.zero;
 
-            switch (Profile.Direction)
+            switch (Profile.AxisOrientation)
             {
                 case ControllerDirection.X:
                     radius = Mathf.Max(lossyScale.y, lossyScale.z) * Profile.Radius;
@@ -835,7 +935,8 @@ namespace vnc
         {
             Vector3 point0, point1;
             float radius;
-            ToWorldSpaceControllerCapsule(out point0, out point1, out radius);
+            var center = IsDucking ? transform.TransformPoint(Profile.DuckingCenter) : transform.TransformPoint(Profile.Center);
+            ToWorldSpaceControllerCapsule(center, out point0, out point1, out radius);
             point0 += offset;
             point1 += offset;
             return Physics.OverlapCapsuleNonAlloc(point0, point1, radius, results, layerMask, queryTriggerInteraction);
@@ -856,6 +957,23 @@ namespace vnc
             return (Collisions & flag) != 0;
         }
 
+        #region State
+        public bool HasState(CC_State state)
+        {
+            return (State & state) != 0;
+        }
+
+        public void AddState(CC_State state)
+        {
+            State |= state;
+        }
+
+        public void RemoveState(CC_State state)
+        {
+            State &= ~state;
+        }
+        #endregion
+
         // do not modify
         private void _capsuleUpdate()
         {
@@ -873,7 +991,8 @@ namespace vnc
             None = 0,
             IsGrounded = 2,
             OnPlatform = 4,
-            OnLadder = 8
+            OnLadder = 8,
+            Ducking = 16
         }
 
         [Flags]
@@ -897,10 +1016,21 @@ namespace vnc
         #region Debug
         protected virtual void OnDrawGizmos()
         {
+            Vector3 start, end;
+
             if (Profile)
             {
-                Vector3 start = transform.position + Profile.Center + (Vector3.up * (Profile.Height / 2f));
-                Vector3 end = transform.position + Profile.Center + (Vector3.down * (Profile.Height / 2f));
+                if (Application.isPlaying)
+                {
+                    start = transform.position + _capsuleCollider.center + (Vector3.up * (_capsuleCollider.height / 2f));
+                    end = transform.position + _capsuleCollider.center + (Vector3.down * (_capsuleCollider.height / 2f));
+                }
+                else
+                {
+                    start = transform.position + Profile.Center + (Vector3.up * (Profile.Height / 2f));
+                    end = transform.position + Profile.Center + (Vector3.down * (Profile.Height / 2f));
+                }
+
 
                 DebugExtension.DrawCapsule(start, end, Color.yellow, Profile.Radius);
                 DebugExtension.DrawCircle(transform.position + Vector3.up * Profile.SwimmingOffset, Color.blue, 1f);
