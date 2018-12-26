@@ -50,10 +50,10 @@ namespace vnc.Samples
                 // Here the sample gets input from the player
                 fwd = (Input.GetKey(KeyCode.W) ? 1 : 0) - (Input.GetKey(KeyCode.S) ? 1 : 0);
                 strafe = (Input.GetKey(KeyCode.D) ? 1 : 0) - (Input.GetKey(KeyCode.A) ? 1 : 0);
-                swim = (Input.GetKey(KeyCode.Space) ? 1 : 0) - (Input.GetKey(KeyCode.LeftControl) ? 1 : 0);
+                swim = (Input.GetKey(KeyCode.Space) ? 1 : 0) - (Input.GetKey(KeyCode.C) ? 1 : 0);
                 jump = Input.GetKeyDown(KeyCode.Space);
                 sprint = Input.GetKey(KeyCode.LeftShift);
-                duck = Input.GetKey(KeyCode.LeftControl);
+                duck = Input.GetKey(KeyCode.C);
             }
 
             // these inputs are fed into the controller

@@ -576,7 +576,7 @@ namespace vnc
             SetWaterLevel();
 
             // handles collision
-            OnCCHit(nTotal.normalized);
+            //OnCCHit(nTotal.normalized);
         }
 
         /// <summary>
@@ -675,6 +675,7 @@ namespace vnc
                             nTemp += normal;
                         }
 
+                        OnCCHit(normal);
                     }
                 }
 
@@ -866,9 +867,11 @@ namespace vnc
             {
                 var copyVelocity = velocity;
                 copyVelocity.y = 0;
-                var newDir = Vector3.ProjectOnPlane(copyVelocity.normalized, normal);
-                velocity.x = (newDir * copyVelocity.magnitude).x;
-                velocity.z = (newDir * copyVelocity.magnitude).z;
+                var d = Vector3.Dot(copyVelocity, normal);
+                copyVelocity -= d * normal;
+                velocity.x = copyVelocity.x;
+                velocity.z = copyVelocity.z;
+
             }
 
             WaterEdgePush(normal);
