@@ -25,7 +25,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace vnc.Utilities
+namespace vnc.Utils
 {
     public static class PhysicsExtensions
     {

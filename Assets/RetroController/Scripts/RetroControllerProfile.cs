@@ -203,7 +203,12 @@ namespace vnc
         /// Advanced settings. Do not change this, except
         /// when experiencing collision imprecision.
         /// </summary>
-        public float Depenetration = 0.001f;
+        [HideInInspector] public float Depenetration = 0.001f;
+
+        public void DepenetrationReset()
+        {
+            Depenetration = 0.001f;
+        }
 
         // TAGS
         /// <summary>

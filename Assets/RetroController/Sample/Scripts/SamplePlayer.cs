@@ -7,28 +7,24 @@ namespace vnc.Samples
     {
         public RetroController retroController;
         public UnityMouseLook mouseLook;
-        public Camera playerCamera;
+        public Transform playerView;
         public Animator gunAnimator;
 
         public bool autoInput = false;
-        [ConditionalHide("autoInput")]
+        [ConditionalHide("autoInput"), Range(-1, 1)]
         public float autoFoward = 0f;
-        [ConditionalHide("autoInput")]
+        [ConditionalHide("autoInput"), Range(-1, 1)]
         public float autoStrafe = 0f;
-        [ConditionalHide("autoInput")]
+        [ConditionalHide("autoInput"), Range(-1, 1)]
         public float autoSwim = 0f;
-        [ConditionalHide("autoInput")]
-        public bool autoJump = false;
-        [ConditionalHide("autoInput")]
-        public bool autoSprint = false;
-        [ConditionalHide("autoInput")]
-        public bool autoDuck = false;
-        [ConditionalHide("autoInput")]
-        public bool ignoreMouse = false;
+        [ConditionalHide("autoInput")] public bool autoJump = false;
+        [ConditionalHide("autoInput")] public bool autoSprint = false;
+        [ConditionalHide("autoInput")] public bool autoDuck = false;
+        [ConditionalHide("autoInput")] public bool ignoreMouse = false;
 
         private void Awake()
         {
-            mouseLook.Init(transform, playerCamera.transform);
+            mouseLook.Init(transform, playerView);
         }
 
         void Update()
@@ -67,7 +63,7 @@ namespace vnc.Samples
             if (!(autoInput && ignoreMouse))
             {
                 // controls mouse look
-                mouseLook.LookRotation(transform, playerCamera.transform);
+                mouseLook.LookRotation(transform, playerView);
                 mouseLook.UpdateCursorLock();
             }
 

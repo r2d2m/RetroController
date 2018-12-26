@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using System.Reflection;
+using UnityEditor;
 using UnityEngine;
 using vnc.Editor.Utils;
 
@@ -8,6 +9,7 @@ namespace vnc.Editor
     public class RetroControllerProfileEditor : UnityEditor.Editor
     {
         SerializedProperty waterTag, ladderTag, platformTag;
+        SerializedProperty depenetration;
         GUIStyle labelStyle = null;
 
         private void OnEnable()
@@ -15,6 +17,7 @@ namespace vnc.Editor
             waterTag = serializedObject.FindProperty("WaterTag");
             ladderTag = serializedObject.FindProperty("LadderTag");
             platformTag = serializedObject.FindProperty("PlatformTag");
+            depenetration = serializedObject.FindProperty("Depenetration");
 
             if (labelStyle == null)
             {
@@ -37,7 +40,14 @@ namespace vnc.Editor
             waterTag.stringValue = EditorGUILayout.TagField("Water Tag", waterTag.stringValue);
             ladderTag.stringValue = EditorGUILayout.TagField("Ladder Tag", ladderTag.stringValue);
             platformTag.stringValue = EditorGUILayout.TagField("Platform Tag", platformTag.stringValue);
+            EditorGUILayout.Space();
 
+            depenetration.floatValue = EditorGUILayout.FloatField("Depenetration", depenetration.floatValue);
+            if(GUILayout.Button("Reset"))
+            {
+                MethodInfo method = typeof(RetroControllerProfile).GetMethod("DepenetrationReset");
+                method.Invoke(serializedObject.targetObject, null);
+            }
 
             serializedObject.ApplyModifiedProperties();
         }

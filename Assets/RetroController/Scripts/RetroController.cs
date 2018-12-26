@@ -20,7 +20,7 @@ namespace vnc
 
         public bool showDebugStats = false;
 
-        private const float STOP_EPSILON = 0.01f;
+        public const float STOP_EPSILON = 0.01f;
 
         private Collider[] overlapingColliders = new Collider[8];
         [HideInInspector] public CC_Collision Collisions { get; private set; }
@@ -60,6 +60,7 @@ namespace vnc
         public bool OnPlatform { get { return (State & CC_State.OnPlatform) != 0; } }
         public bool OnLadder { get { return (State & CC_State.OnLadder) != 0; } }
         public bool IsDucking { get { return (State & CC_State.Ducking) != 0; } }
+        public bool WalkedOnStep { get { return HasCollisionFlag(CC_Collision.CollisionStep); } }
         public SurfaceNormals surfaceNormals = new SurfaceNormals();
 
         // Water
@@ -78,11 +79,13 @@ namespace vnc
         protected bool detachLadder = false;  // detach from previous ladder
 
         // Helps camera smoothing on step.
-        public float StepDelta { get; private set; }
+        public float StepDelta { get; private set; }    // how much the controller went up
+        public bool wasOnStep;
 
-        [Header("Events")]
-        public UnityEvent OnJump;
-        public UnityEvent OnLanding;
+        [Header("Callback Events")]
+        public UnityEvent OnJumpCallback;
+        public UnityEvent OnLandingCallback;
+        public UnityEvent OnFixedUpdateEndCallback;
 
         [Header("Debug GUI Style")]
         public GUIStyle guiStyle;
@@ -97,7 +100,11 @@ namespace vnc
             if (controllerView)
                 viewPosition = controllerView.localPosition;
 
-            _capsuleCollider = gameObject.AddComponent<CapsuleCollider>();
+            _capsuleCollider = GetComponent<CapsuleCollider>();
+            if (_capsuleCollider == null)
+            {
+                _capsuleCollider = gameObject.AddComponent<CapsuleCollider>();
+            }
             _capsuleCollider.hideFlags = HideFlags.NotEditable;
         }
 
@@ -127,6 +134,9 @@ namespace vnc
             }
 
             OnDuckState();
+
+            OnFixedUpdateEndCallback.Invoke();
+            wasOnStep = WalkedOnStep;
         }
 
         /// <summary>
@@ -188,11 +198,10 @@ namespace vnc
             else
                 RemoveState(CC_State.IsGrounded);
 
-
+            // check platform
             if (!IsGrounded)
                 RemoveState(CC_State.OnPlatform);
-            //State &= ~CC_State.OnPlatform;
-
+            
             jumpGraceTimer = Mathf.Clamp(jumpGraceTimer - 1, 0, Profile.JumpGraceTime);
 
             var walk = inputDir.y * transform.TransformDirection(Vector3.forward);
@@ -222,7 +231,7 @@ namespace vnc
                     triedJumping = 0;
                     jumpGraceTimer = 0;
                     sprintJump = Sprint;
-                    OnJump.Invoke();
+                    OnJumpCallback.Invoke();
                 }
             }
 
@@ -270,7 +279,7 @@ namespace vnc
 
                 jumpGraceTimer = 0;
                 sprintJump = false;
-                OnLanding.Invoke(); // notify when player reaches the gorund
+                OnLandingCallback.Invoke(); // notify when player reaches the gorund
             }
 
             wasGrounded = IsGrounded;
@@ -803,10 +812,12 @@ namespace vnc
                             transform.position += Vector3.up * upDist; //raise the player on the step size
 
                             if (upDist > StepDelta)
+                            {
                                 StepDelta = upDist;
+                                Collisions |= CC_Collision.CollisionStep;
+                            }
 
                             Collisions |= CC_Collision.CollisionBelow;
-                            Collisions |= CC_Collision.WalkedStep;
                         }
                     }
 
@@ -1009,7 +1020,7 @@ namespace vnc
             CollisionAbove = 2,
             CollisionBelow = 4,
             CollisionSides = 8,
-            WalkedStep = 16
+            CollisionStep = 16
         }
 
         public enum CC_Water
