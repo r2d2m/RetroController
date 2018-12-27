@@ -538,7 +538,7 @@ namespace vnc
         {
             SetDuckHull();
 
-            movement = VelocityFixer(movement);
+            movement = VectorFixer(movement);
 
             Vector3 nTotal = Vector3.zero;
 
@@ -557,7 +557,7 @@ namespace vnc
             //}
 
             // Calculates stairs
-            StepDelta = Mathf.Clamp(StepDelta - Time.fixedDeltaTime * 1.5f, 0, Mathf.Infinity);
+            StepDelta = Mathf.Clamp(StepDelta - Time.fixedDeltaTime, 0, Mathf.Infinity);
             if (IsGrounded && !Profile.FlyingController)
                 MoveOnSteps(movNormalized);
 
@@ -624,10 +624,14 @@ namespace vnc
                         if (float.IsNaN(normal.x) || float.IsNaN(normal.y) || float.IsNaN(normal.y))
                             continue;
 
+                        // adjust floating point imprecision
+                        dist = (float) Math.Round(dist, 3, MidpointRounding.ToEven);
+                        normal = VectorFixer(normal);
+
                         dist += Profile.Depenetration;
 
                         dot = Vector3.Dot(normal, Vector3.up);
-
+                        
                         // COLLISIONS BELOW
 
                         float slopeDot = (Profile.SlopeAngleLimit / 90f);
@@ -897,7 +901,7 @@ namespace vnc
         /// </summary>
         /// <param name="vel">Current velocity</param>
         /// <returns>Fixed velocity</returns>
-        public Vector3 VelocityFixer(Vector3 vel)
+        public Vector3 VectorFixer(Vector3 vel)
         {
             for (int i = 0; i < 3; i++)
             {
@@ -1071,6 +1075,7 @@ namespace vnc
                     + "\nVelocity Vector: " + Velocity
                     + "\nVelocity Magnitude: " + Velocity.magnitude
                     + "\nCollisions: " + Collisions
+                    + "\nStep Delta: " + StepDelta
                     + "\nStates: " + State;
 
                 if (guiStyle != null)

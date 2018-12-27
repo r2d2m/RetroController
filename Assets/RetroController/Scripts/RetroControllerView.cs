@@ -96,10 +96,8 @@ namespace vnc
         {
             if (stepInterpolation.enabled)
             {
-
                 if (_controller.WalkedOnStep && !_controller.wasOnStep)
                 {
-                    Debug.Log("Added " + _controller.StepDelta + " to step delta.");
                     stepInterpolation.delta += _controller.StepDelta;
                 }
 
