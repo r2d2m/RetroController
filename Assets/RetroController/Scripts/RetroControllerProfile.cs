@@ -6,14 +6,6 @@ namespace vnc
     [CreateAssetMenu(fileName = "My Controller Profile", menuName = "Retro Controller/New Controller Profile")]
     public class RetroControllerProfile : ScriptableObject
     {
-        // TODO: add a Scale property to level each group (acceleration, gravity, friction, etc)
-
-        [FancyHeader("Command Input")]
-        public float fowardSpeed = 400f;
-        public float sideSpeed = 350;
-        public float upSpeed = 200f;
-        public float maxSpeed = 320f;
-
         #region Gravity
         /// <summary>
         /// Default base gravity value

@@ -21,7 +21,7 @@ namespace vnc
         public bool showDebugStats = false;
 
         public const float STOP_EPSILON = 0.001f;
-        public const float OVERCLIP = 1.001f;
+        public const float OVERBOUNCE = 1.1f;
 
         private Collider[] overlapingColliders = new Collider[8];
         [HideInInspector] public CC_Collision Collisions { get; private set; }
@@ -202,14 +202,14 @@ namespace vnc
             // check platform
             if (!IsGrounded)
                 RemoveState(CC_State.OnPlatform);
-            
+
             jumpGraceTimer = Mathf.Clamp(jumpGraceTimer - 1, 0, Profile.JumpGraceTime);
 
             var walk = inputDir.y * transform.TransformDirection(Vector3.forward);
             var strafe = inputDir.x * transform.TransformDirection(Vector3.right);
             wishDir = (walk + strafe);
             wishSpeed = wishDir.magnitude;
-            
+
             if (wasGrounded)
             {
                 wishDir.Normalize();
@@ -223,21 +223,25 @@ namespace vnc
                 MoveAir();
             }
 
+            CheckLanding();
+
             // bunnyhopping
             if (triedJumping > 0)
             {
                 // normal jump, it's on the ground
                 if (IsGrounded || jumpGraceTimer > 0)
                 {
-                    velocity.y = Profile.JumpSpeed;
+                    velocity.y += Profile.JumpSpeed;
                     triedJumping = 0;
                     jumpGraceTimer = 0;
                     sprintJump = Sprint;
+                    RemoveState(CC_State.IsGrounded);
                     OnJumpCallback.Invoke();
                 }
             }
 
-            CalculateGravity();
+            if (!IsGrounded)
+                CalculateGravity();
 
             // stick on platform
             if (OnPlatform)
@@ -271,19 +275,7 @@ namespace vnc
             }
 
             triedJumping = Mathf.Clamp(triedJumping - 1, 0, 100);
-
-            // Apply friction when player hits the ground
-            if (!wasGrounded && IsGrounded)
-            {
-                Vector3 friction = Friction(velocity, 20);
-                velocity.x = friction.x;
-                velocity.z = friction.z;
-
-                jumpGraceTimer = 0;
-                sprintJump = false;
-                OnLandingCallback.Invoke(); // notify when player reaches the gorund
-            }
-
+                        
             wasGrounded = IsGrounded;
             wasOnPlatform = OnPlatform;
         }
@@ -316,7 +308,7 @@ namespace vnc
             var strafe = inputDir.x * transform.TransformDirection(Vector3.right);
             wishDir = (walk + strafe) + (Vector3.up * Swim);
             wishDir.Normalize();
-            
+
             // fall when dead
             velocity = MoveFly(wishDir, velocity);
 
@@ -395,6 +387,22 @@ namespace vnc
             // limit the Y velocity so the player doesn't speed
             // too much when falling or being propelled
             velocity.y = Mathf.Clamp(velocity.y, -Profile.MaxVerticalSpeedScale, Profile.MaxVerticalSpeedScale);
+        }
+
+        protected virtual void CheckLanding()
+        {
+            // Apply friction when player hits the ground
+            if (!wasGrounded && IsGrounded)
+            {
+                Vector3 vel = Friction(velocity, Profile.GroundFriction);
+                velocity.x = vel.x;
+                velocity.z = vel.z;
+                //velocity.y = 0.001f * Math.Abs(velocity.y);
+
+                jumpGraceTimer = 0;
+                sprintJump = false;
+                OnLandingCallback.Invoke(); // notify when player reaches the gorund
+            }
         }
         #endregion
 
@@ -497,7 +505,7 @@ namespace vnc
                 case AirControl.Full:
                 default:
                     var projVel = Vector3.Dot(velocity, wishDir);
-                   
+
                     float accelVel = accelerate * Profile.AccelerationScale * Time.fixedDeltaTime;
 
                     if (projVel + accelVel > maxSpeed)
@@ -589,6 +597,7 @@ namespace vnc
                     transform.position = FixOverlaps(end, movNormalized * curMagnitude, out nResult);
                     nTotal += nResult;
                 }
+
             }
             else
             {
@@ -598,6 +607,10 @@ namespace vnc
             }
 
             SetWaterLevel();
+
+            // extra check to detect ground
+            if(!HasCollisionFlag(CC_Collision.CollisionBelow))
+                DetectGround();
 
             // handles collision
             //OnCCHit(nTotal.normalized);
@@ -640,13 +653,13 @@ namespace vnc
                             continue;
 
                         // adjust floating point imprecision
-                        dist = (float) Math.Round(dist, 3, MidpointRounding.ToEven);
+                        dist = (float)Math.Round(dist, 3, MidpointRounding.ToEven);
                         normal = VectorFixer(normal);
 
                         dist += Profile.Depenetration;
 
                         dot = Vector3.Dot(normal, Vector3.up);
-                        
+
                         // COLLISIONS BELOW
 
                         float slopeDot = (Profile.SlopeAngleLimit / 90f);
@@ -867,7 +880,12 @@ namespace vnc
             }
         }
 
-        bool CanStand()
+        /// <summary>
+        /// Detect if there is a solid surface blocking the controller 
+        /// from standing up
+        /// </summary>
+        /// <returns>If the collider in standing mode is free.</returns>
+        protected virtual bool CanStand()
         {
             // calculate if the standing capsule won't collider with anything
             Vector3 point0, point1, duckingCenter;
@@ -879,6 +897,62 @@ namespace vnc
             bool isBlocking = Physics.CheckCapsule(point0, point1, radius, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
             return !isBlocking;
         }
+
+        /// <summary>
+        /// Clip the velocity against the planes
+        /// </summary>
+        /// <param name="vel">The velocity being clipped</param>
+        /// <param name="normal">The plane normal</param>
+        /// <param name="overbounce">Bounce back a little</param>
+        /// <returns>The resulting velocity</returns>
+        protected virtual Vector3 ClipVelocity(Vector3 vel, Vector3 normal, bool overbounce)
+        {
+            var d = Vector3.Dot(vel, normal);
+
+            if (overbounce)
+            {
+                // q3 overbounce
+                if (d < 0)
+                {
+                    d *= OVERBOUNCE;
+                }
+                else
+                {
+                    d /= OVERBOUNCE;
+                }
+            }
+
+            vel -= d * normal;
+            //vel = VectorFixer(vel);
+            return vel;
+        }
+
+        public void DetectGround()
+        {
+            Vector3 normal;
+            float distance;
+
+            var offset = (Vector3.down * Profile.Gravity) * Time.fixedDeltaTime;
+            int nColls = OverlapCapsuleNonAlloc(offset, overlapingColliders, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
+            for (int i = 0; i < nColls; i++)
+            {
+                Collider c = overlapingColliders[i];
+                var position = transform.position + offset;
+                if (Physics.ComputePenetration(_capsuleCollider, position, transform.rotation,
+                        c, c.transform.position, c.transform.rotation, out normal, out distance))
+                {
+                    float dot = Vector3.Dot(normal, Vector3.up);
+                    float slopeDot = (Profile.SlopeAngleLimit / 90f);
+                    if (dot > slopeDot && dot <= 1)
+                    {
+                        Collisions = Collisions | CC_Collision.CollisionBelow;
+                        surfaceNormals.floor = normal;
+                        OnCCHit(normal);
+                    }
+                }
+            }
+        }
+
 
         /// <summary>
         /// Called when hitting surfaces.
@@ -895,10 +969,12 @@ namespace vnc
             // adjust velocity on side surfaces
             if (HasCollisionFlag(CC_Collision.CollisionSides))
             {
-                var copyVelocity = velocity;
-
                 // method 1
-                ClipVelocity(normal);
+                var copyVelocity = velocity;
+                copyVelocity.y = 0;
+                copyVelocity = ClipVelocity(velocity, normal, true);
+                velocity.x = copyVelocity.x;
+                velocity.z = copyVelocity.z;
 
                 // method 2 with bounce
                 //float backoff = Vector3.Dot(copyVelocity, normal);
@@ -912,35 +988,13 @@ namespace vnc
 
             if (HasCollisionFlag(CC_Collision.CollisionBelow))
             {
-                ClipVelocity(normal);
-                velocity.y = 0;
+                velocity = ClipVelocity(velocity, normal, overbounce: true);
             }
 
             WaterEdgePush(normal);
         }
 
-        public void ClipVelocity(Vector3 normal)
-        {
-            var copyVelocity = velocity;
-            copyVelocity.y = 0;
-            var d = Vector3.Dot(copyVelocity, normal);
 
-            // q3 overbounce
-            if (d < 0)
-            {
-                d *= OVERCLIP;
-            }
-            else
-            {
-                d /= OVERCLIP;
-            }
-
-            copyVelocity -= d * normal;
-            // copy Y ?
-            velocity = copyVelocity;
-            //velocity.x = copyVelocity.x;
-            //velocity.z = copyVelocity.z;
-        }
 
         #endregion
 
@@ -1111,7 +1165,7 @@ namespace vnc
 
                 DebugExtension.DrawCapsule(start, end, Color.yellow, Profile.Radius);
                 DebugExtension.DrawCircle(transform.position + Vector3.up * Profile.SwimmingOffset, Color.blue, 1f);
-                
+
                 DebugExtension.DrawArrow(transform.position, wishDir, Color.black);
                 DebugExtension.DrawArrow(transform.position, velocity.normalized, Color.red);
 
