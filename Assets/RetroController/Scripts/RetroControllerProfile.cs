@@ -6,8 +6,6 @@ namespace vnc
     [CreateAssetMenu(fileName = "My Controller Profile", menuName = "Retro Controller/New Controller Profile")]
     public class RetroControllerProfile : ScriptableObject
     {
-        // TODO: add a Scale property to level each group (acceleration, gravity, friction, etc)
-
         #region Gravity
         /// <summary>
         /// Default base gravity value
@@ -109,7 +107,7 @@ namespace vnc
         /// When the controller speed reaches a really small value,
         /// it stops completely.
         /// </summary>
-        public float StopSpeed;
+        public float MinimumSpeed;
         /// <summary>
         /// Max absolute speed on the Y axis (limits postive and negative values)
         /// </summary>
@@ -118,6 +116,13 @@ namespace vnc
         /// Speed when on a ladder.
         /// </summary>
         public float LadderSpeed;
+        /// <summary>
+        /// Speed on the opposite direction of the velocity.
+        /// Adding a little value allows for some airborne control.
+        /// Setting to 0 makes it stop completely.
+        /// Don't set this value to lower than 0;
+        /// </summary>
+        public float AirStopSpeed = 0;
         #endregion
 
         #region Acceleration
@@ -146,7 +151,7 @@ namespace vnc
         /// Define wheather the character can
         /// be controlled on mid-air (change the velocity)
         /// </summary>
-        public bool AirboneControl = false;
+        public AirControl AirControl = AirControl.Full;
         #endregion
 
         #region Friction
@@ -223,8 +228,8 @@ namespace vnc
         /// Hidden property, used in <code>RetroControllerProfileEditor</code>
         /// </summary>
         [HideInInspector] public string LadderTag;
-
     }
 
     public enum ControllerDirection { X, Y, Z };
+    public enum AirControl { Full, AirStrafing }
 }

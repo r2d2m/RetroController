@@ -20,7 +20,8 @@ namespace vnc
 
         public bool showDebugStats = false;
 
-        public const float STOP_EPSILON = 0.01f;
+        public const float STOP_EPSILON = 0.001f;
+        public const float OVERBOUNCE = 1.1f;
 
         private Collider[] overlapingColliders = new Collider[8];
         [HideInInspector] public CC_Collision Collisions { get; private set; }
@@ -36,10 +37,9 @@ namespace vnc
         public bool DuckInput { get; set; }
 
         // Velocity
-        private Vector3 velocity;
-        public Vector3 Velocity { get { return velocity; } private set { velocity = value; } }
-        protected Vector3 wishdir;    // the direction from the input
-        protected float wishspeed;
+        public Vector3 Velocity;
+        protected Vector3 wishDir;    // the direction from the input
+        protected float wishSpeed;
 
         // Jumping
         protected int triedJumping = 0;       // jumping timer for bunnyhopping
@@ -201,25 +201,28 @@ namespace vnc
             // check platform
             if (!IsGrounded)
                 RemoveState(CC_State.OnPlatform);
-            
+
             jumpGraceTimer = Mathf.Clamp(jumpGraceTimer - 1, 0, Profile.JumpGraceTime);
 
             var walk = inputDir.y * transform.TransformDirection(Vector3.forward);
             var strafe = inputDir.x * transform.TransformDirection(Vector3.right);
-            wishdir = (walk + strafe);
-            wishdir.Normalize();
+            wishDir = (walk + strafe);
+            wishSpeed = wishDir.magnitude;
 
             if (wasGrounded)
             {
+                wishDir.Normalize();
                 if (IsDucking)
-                    velocity = MoveGroundDucking(wishdir, velocity);
+                    Velocity = MoveGroundDucking(wishDir, Velocity);
                 else
-                    velocity = MoveGround(wishdir, velocity);
+                    Velocity = MoveGround(wishDir, Velocity);
             }
             else
             {
-                velocity = MoveAir(wishdir, velocity);
+                MoveAir();
             }
+
+            CheckLanding();
 
             // bunnyhopping
             if (triedJumping > 0)
@@ -227,15 +230,17 @@ namespace vnc
                 // normal jump, it's on the ground
                 if (IsGrounded || jumpGraceTimer > 0)
                 {
-                    velocity.y = Profile.JumpSpeed;
+                    Velocity.y += Profile.JumpSpeed;
                     triedJumping = 0;
                     jumpGraceTimer = 0;
                     sprintJump = Sprint;
+                    RemoveState(CC_State.IsGrounded);
                     OnJumpCallback.Invoke();
                 }
             }
 
-            CalculateGravity();
+            if (!IsGrounded)
+                CalculateGravity();
 
             // stick on platform
             if (OnPlatform)
@@ -244,7 +249,7 @@ namespace vnc
                     currentPlatform = platformCollider.GetComponent<Platform>();
 
                 if (currentPlatform)
-                    CharacterMove(velocity + currentPlatform.Velocity);
+                    CharacterMove(Velocity + currentPlatform.Velocity);
             }
             else
             {
@@ -256,32 +261,20 @@ namespace vnc
                     currentPlatform = null;
                 }
 
-                //LastCollision = p_Controller.Move(velocity);
-                CharacterMove(velocity);
+                //LastCollision = p_Controller.Move(Velocity);
+                CharacterMove(Velocity);
             }
 
             // player just got off ground
             if (wasGrounded && !IsGrounded)
             {
                 // falling
-                if (velocity.normalized.y < 0)
+                if (Velocity.normalized.y < 0)
                     jumpGraceTimer = Profile.JumpGraceTime;
             }
 
             triedJumping = Mathf.Clamp(triedJumping - 1, 0, 100);
-
-            // Apply friction when player hits the ground
-            if (!wasGrounded && IsGrounded)
-            {
-                Vector3 friction = Friction(velocity, 20);
-                velocity.x = friction.x;
-                velocity.z = friction.z;
-
-                jumpGraceTimer = 0;
-                sprintJump = false;
-                OnLandingCallback.Invoke(); // notify when player reaches the gorund
-            }
-
+                        
             wasGrounded = IsGrounded;
             wasOnPlatform = OnPlatform;
         }
@@ -294,15 +287,15 @@ namespace vnc
             // player moved the character
             var walk = inputDir.y * controllerView.forward;
             var strafe = inputDir.x * transform.TransformDirection(Vector3.right);
-            wishdir = (walk + strafe) + (Vector3.up * Swim);
-            wishdir.Normalize();
+            wishDir = (walk + strafe) + (Vector3.up * Swim);
+            wishDir.Normalize();
 
             //wishspeed = wishdir.magnitude;
 
-            velocity = MoveWater(wishdir, velocity);
+            Velocity = MoveWater(wishDir, Velocity);
             CalculateGravity(Profile.WaterGravityScale);
 
-            CharacterMove(velocity);
+            CharacterMove(Velocity);
         }
 
         protected virtual void FlyMovementUpdate()
@@ -312,15 +305,13 @@ namespace vnc
             // player moved the character
             var walk = inputDir.y * controllerView.transform.forward;
             var strafe = inputDir.x * transform.TransformDirection(Vector3.right);
-            wishdir = (walk + strafe) + (Vector3.up * Swim);
-            wishdir.Normalize();
-
-            wishspeed = wishdir.magnitude;
+            wishDir = (walk + strafe) + (Vector3.up * Swim);
+            wishDir.Normalize();
 
             // fall when dead
-            velocity = MoveFly(wishdir, velocity);
+            Velocity = MoveFly(wishDir, Velocity);
 
-            CharacterMove(velocity);
+            CharacterMove(Velocity);
         }
 
         /// <summary>
@@ -334,18 +325,18 @@ namespace vnc
             else
                 RemoveState(CC_State.IsGrounded);
 
-            wishdir = AlignOnLadder();
-            velocity = MoveLadder(wishdir, velocity);
+            wishDir = AlignOnLadder();
+            Velocity = MoveLadder(wishDir, Velocity);
 
             if (triedJumping > 0)
             {
                 // detach and jump away from ladder
-                velocity = surfaceNormals.ladder * Profile.LadderDetachJumpSpeed;
+                Velocity = surfaceNormals.ladder * Profile.LadderDetachJumpSpeed;
                 triedJumping = 0;
                 detachLadder = true;
             }
 
-            CharacterMove(velocity);
+            CharacterMove(Velocity);
 
             wasGrounded = IsGrounded;
         }
@@ -390,11 +381,27 @@ namespace vnc
         protected virtual void CalculateGravity(float gravityMultiplier = 1f)
         {
             // calculate gravity but on water
-            velocity += (Vector3.down * Profile.Gravity * gravityMultiplier) * Time.fixedDeltaTime;
+            Velocity += (Vector3.down * Profile.Gravity * gravityMultiplier) * Time.fixedDeltaTime;
 
-            // limit the Y velocity so the player doesn't speed
+            // limit the Y Velocity so the player doesn't speed
             // too much when falling or being propelled
-            velocity.y = Mathf.Clamp(velocity.y, -Profile.MaxVerticalSpeedScale, Profile.MaxVerticalSpeedScale);
+            Velocity.y = Mathf.Clamp(Velocity.y, -Profile.MaxVerticalSpeedScale, Profile.MaxVerticalSpeedScale);
+        }
+
+        protected virtual void CheckLanding()
+        {
+            // Apply friction when player hits the ground
+            if (!wasGrounded && IsGrounded)
+            {
+                Vector3 vel = Friction(Velocity, Profile.GroundFriction);
+                Velocity.x = vel.x;
+                Velocity.z = vel.z;
+                //Velocity.y = 0.001f * Math.Abs(Velocity.y);
+
+                jumpGraceTimer = 0;
+                sprintJump = false;
+                OnLandingCallback.Invoke(); // notify when player reaches the gorund
+            }
         }
         #endregion
 
@@ -416,7 +423,7 @@ namespace vnc
         protected virtual Vector3 MoveGroundDucking(Vector3 wishDir, Vector3 prevVelocity)
         {
             prevVelocity = Friction(prevVelocity, Profile.GroundFriction); // ground friction
-            prevVelocity = Accelerate(wishdir, prevVelocity, Profile.DuckingAcceleration, Profile.MaxDuckingSpeed);
+            prevVelocity = Accelerate(this.wishDir, prevVelocity, Profile.DuckingAcceleration, Profile.MaxDuckingSpeed);
             return prevVelocity;
         }
 
@@ -429,11 +436,10 @@ namespace vnc
         /// <summary>
         /// Movement on the air.
         /// </summary>
-        protected virtual Vector3 MoveAir(Vector3 accelDir, Vector3 prevVelocity)
+        protected virtual void MoveAir()
         {
-            float maxVelocity = sprintJump ? Profile.MaxAirSprintSpeed : Profile.MaxAirSpeed;
-            prevVelocity = AccelerateAir(accelDir, prevVelocity, Profile.AirAcceleration, maxVelocity);
-            return prevVelocity;
+            float maxSpeed = sprintJump ? Profile.MaxAirSprintSpeed : Profile.MaxAirSpeed;
+            AccelerateAir(wishDir, wishSpeed, Profile.AirAcceleration, maxSpeed);
         }
 
         // move with water friction
@@ -449,7 +455,8 @@ namespace vnc
         protected virtual Vector3 MoveFly(Vector3 accelDir, Vector3 prevVelocity)
         {
             prevVelocity = Friction(prevVelocity, Profile.FlyFriction);
-            prevVelocity = AccelerateAir(accelDir, prevVelocity, Profile.AirAcceleration, Profile.MaxAirSpeed);
+            // TODO: flying 
+            //prevVelocity = AccelerateAir(accelDir, Profile.AirAcceleration, Profile.MaxAirSpeed);
             return prevVelocity;
         }
         #endregion Acceleration
@@ -467,36 +474,51 @@ namespace vnc
             return newVel;
         }
 
-        protected virtual Vector3 AccelerateAir(Vector3 accelDir, Vector3 prevVelocity, float accelerate, float max_velocity)
+        protected virtual void AccelerateAir(Vector3 wishDir, float wishSpeed, float accelerate, float maxSpeed)
         {
-            var projVel = Vector3.Dot(prevVelocity, accelDir);
-            if (Profile.AirboneControl)
+            switch (Profile.AirControl)
             {
-                float accelVel = accelerate * Profile.AccelerationScale;
+                case AirControl.AirStrafing:
+                    if (wishSpeed > maxSpeed)
+                    {
+                        float scale = maxSpeed / wishSpeed;
+                        wishDir *= scale;
+                        wishSpeed = maxSpeed;
+                    }
 
-                if (projVel + accelVel > max_velocity)
-                    accelVel = max_velocity - projVel;
+                    float wishspd = wishDir.magnitude;
+                    if (wishspd > Profile.AirStopSpeed)
+                        wishspd = Profile.AirStopSpeed;
 
-                Vector3 newVel = prevVelocity + accelDir * accelVel;
-                return newVel;
+                    var currentSpeed = Vector3.Dot(Velocity, wishDir);
+                    var addspeed = wishspd - currentSpeed;
+                    if (addspeed <= 0)
+                        return;
+
+                    var accelSpeed = Profile.AirAcceleration * wishSpeed * Time.deltaTime;
+                    if (accelSpeed > addspeed)
+                        accelSpeed = addspeed;
+
+                    Velocity += accelSpeed * wishDir;
+                    break;
+                case AirControl.Full:
+                default:
+                    var projVel = Vector3.Dot(Velocity, wishDir);
+
+                    float accelVel = accelerate * Profile.AccelerationScale * Time.fixedDeltaTime;
+
+                    if (projVel + accelVel > maxSpeed)
+                        accelVel = maxSpeed - projVel;
+
+                    Velocity = Velocity + wishDir * accelVel;
+                    break;
             }
-            else if (projVel < 0)
-            {
-                float accelVel = accelerate;
-
-                if (projVel + accelVel > max_velocity)
-                    accelVel = max_velocity - projVel;
-
-                Vector3 newVel = prevVelocity + accelDir * accelVel;
-                return newVel;
-            }
-            return prevVelocity;
         }
         #endregion
 
         #region Friction
         /// <summary>
-        /// Generic friction, decrease the velocity of the controller.
+        /// Generic friction, decrease the Velocity of the controller.
         /// </summary>
         protected virtual Vector3 Friction(Vector3 prevVelocity, float friction)
         {
@@ -506,10 +528,10 @@ namespace vnc
 
             if (speed != 0) // To avoid divide by zero errors
             {
-                float control = speed < Profile.StopSpeed ? Profile.StopSpeed : speed;
+                float control = speed < Profile.MinimumSpeed ? Profile.MinimumSpeed : speed;
                 float drop = control * friction * Profile.FrictionScale * Time.fixedDeltaTime;
 
-                wishspeed *= Mathf.Max(speed - drop, 0) / speed; // Scale the velocity based on friction.
+                wishspeed *= Mathf.Max(speed - drop, 0) / speed; // Scale the Velocity based on friction.
             }
             return wishspeed;
         }
@@ -523,7 +545,7 @@ namespace vnc
             if (speed != 0) // To avoid divide by zero errors
             {
                 float drop = speed * Profile.WaterFriction * Profile.FrictionScale * Time.fixedDeltaTime;
-                wishspeed *= Mathf.Max(speed - drop, 0) / speed; // Scale the velocity based on friction.
+                wishspeed *= Mathf.Max(speed - drop, 0) / speed; // Scale the Velocity based on friction.
             }
             return wishspeed;
         }
@@ -574,6 +596,7 @@ namespace vnc
                     transform.position = FixOverlaps(end, movNormalized * curMagnitude, out nResult);
                     nTotal += nResult;
                 }
+
             }
             else
             {
@@ -583,6 +606,10 @@ namespace vnc
             }
 
             SetWaterLevel();
+
+            // extra check to detect ground
+            if(!HasCollisionFlag(CC_Collision.CollisionBelow))
+                DetectGround();
 
             // handles collision
             //OnCCHit(nTotal.normalized);
@@ -625,13 +652,13 @@ namespace vnc
                             continue;
 
                         // adjust floating point imprecision
-                        dist = (float) Math.Round(dist, 3, MidpointRounding.ToEven);
+                        dist = (float)Math.Round(dist, 3, MidpointRounding.ToEven);
                         normal = VectorFixer(normal);
 
                         dist += Profile.Depenetration;
 
                         dot = Vector3.Dot(normal, Vector3.up);
-                        
+
                         // COLLISIONS BELOW
 
                         float slopeDot = (Profile.SlopeAngleLimit / 90f);
@@ -742,7 +769,7 @@ namespace vnc
 
         protected virtual void WaterEdgePush(Vector3 normal)
         {
-            Vector3 horizontalVel = wishdir;
+            Vector3 horizontalVel = wishDir;
             horizontalVel.y = 0;
 
             // Check if the player is in the border of the water, give it a little push
@@ -753,7 +780,7 @@ namespace vnc
             {
                 if (!Physics.Raycast(controllerView.position, horizontalVel, 1.5f, Profile.SurfaceLayers))
                 {
-                    velocity.y = Profile.WaterEdgeJumpSpeed;
+                    Velocity.y = Profile.WaterEdgeJumpSpeed;
                 }
             }
         }
@@ -852,7 +879,12 @@ namespace vnc
             }
         }
 
-        bool CanStand()
+        /// <summary>
+        /// Detect if there is a solid surface blocking the controller 
+        /// from standing up
+        /// </summary>
+        /// <returns>If the collider in standing mode is free.</returns>
+        protected virtual bool CanStand()
         {
             // calculate if the standing capsule won't collider with anything
             Vector3 point0, point1, duckingCenter;
@@ -866,42 +898,113 @@ namespace vnc
         }
 
         /// <summary>
+        /// Clip the Velocity against the planes
+        /// </summary>
+        /// <param name="vel">The Velocity being clipped</param>
+        /// <param name="normal">The plane normal</param>
+        /// <param name="overbounce">Bounce back a little</param>
+        /// <returns>The resulting Velocity</returns>
+        protected virtual Vector3 ClipVelocity(Vector3 vel, Vector3 normal, bool overbounce)
+        {
+            var d = Vector3.Dot(vel, normal);
+
+            if (overbounce)
+            {
+                // q3 overbounce
+                if (d < 0)
+                {
+                    d *= OVERBOUNCE;
+                }
+                else
+                {
+                    d /= OVERBOUNCE;
+                }
+            }
+
+            vel -= d * normal;
+            //vel = VectorFixer(vel);
+            return vel;
+        }
+
+        public void DetectGround()
+        {
+            Vector3 normal;
+            float distance;
+
+            var offset = (Vector3.down * Profile.Gravity) * Time.fixedDeltaTime;
+            int nColls = OverlapCapsuleNonAlloc(offset, overlapingColliders, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
+            for (int i = 0; i < nColls; i++)
+            {
+                Collider c = overlapingColliders[i];
+                var position = transform.position + offset;
+                if (Physics.ComputePenetration(_capsuleCollider, position, transform.rotation,
+                        c, c.transform.position, c.transform.rotation, out normal, out distance))
+                {
+                    float dot = Vector3.Dot(normal, Vector3.up);
+                    float slopeDot = (Profile.SlopeAngleLimit / 90f);
+                    if (dot > slopeDot && dot <= 1)
+                    {
+                        Collisions = Collisions | CC_Collision.CollisionBelow;
+                        surfaceNormals.floor = normal;
+                        OnCCHit(normal);
+                    }
+                }
+            }
+        }
+
+
+        /// <summary>
         /// Called when hitting surfaces.
         /// </summary>
         /// <param name="normal">Surface normal.</param>
         protected virtual void OnCCHit(Vector3 normal)
         {
             // reset Y speed 
-            if (HasCollisionFlag(CC_Collision.CollisionAbove) && velocity.y > 0)
+            if (HasCollisionFlag(CC_Collision.CollisionAbove) && Velocity.y > 0)
             {
-                velocity.y = 0;
+                Velocity.y = 0;
             }
 
-            // adjust velocity on side surfaces
+            // adjust Velocity on side surfaces
             if (HasCollisionFlag(CC_Collision.CollisionSides))
             {
-                var copyVelocity = velocity;
-                copyVelocity.y = 0;
-                var d = Vector3.Dot(copyVelocity, normal);
-                copyVelocity -= d * normal;
-                velocity.x = copyVelocity.x;
-                velocity.z = copyVelocity.z;
+                // method 1
+                var copyVelocity = Velocity;
+                //copyVelocity.y = 0;
+                copyVelocity = ClipVelocity(Velocity, normal, true);
+                Velocity.x = copyVelocity.x;
+                Velocity.z = copyVelocity.z;
+                Velocity.y = copyVelocity.y;
+                // method 2 with bounce
+                //float backoff = Vector3.Dot(copyVelocity, normal);
+                //if (!HasCollisionFlag(CC_Collision.CollisionBelow))
+                //    backoff = 0;
 
+                //var change = normal * backoff;
+                //copyVelocity = VectorFixer(copyVelocity - change);
+                //Velocity = copyVelocity;
+            }
+
+            if (HasCollisionFlag(CC_Collision.CollisionBelow))
+            {
+                Velocity = ClipVelocity(Velocity, normal, overbounce: true);
             }
 
             WaterEdgePush(normal);
         }
 
+
+
         #endregion
 
         #region Utility
         /// <summary>
-        /// Prevent velocity values from losing too
+        /// Prevent Velocity values from losing too
         /// much precision
         /// </summary>
-        /// <param name="vel">Current velocity</param>
-        /// <returns>Fixed velocity</returns>
-        public Vector3 VectorFixer(Vector3 vel)
+        /// <param name="vel">Current Velocity</param>
+        /// <returns>Fixed Velocity</returns>
+        private Vector3 VectorFixer(Vector3 vel)
         {
             for (int i = 0; i < 3; i++)
             {
@@ -977,6 +1080,11 @@ namespace vnc
         public bool HasCollisionFlag(CC_Collision flag)
         {
             return (Collisions & flag) != 0;
+        }
+
+        private float DotProduct(Vector3 velocity, Vector3 direction)
+        {
+            return (velocity.x * direction.x) + (velocity.y * direction.y);
         }
 
         #region State
@@ -1056,9 +1164,9 @@ namespace vnc
 
                 DebugExtension.DrawCapsule(start, end, Color.yellow, Profile.Radius);
                 DebugExtension.DrawCircle(transform.position + Vector3.up * Profile.SwimmingOffset, Color.blue, 1f);
-                DebugExtension.DrawArrow(transform.position, surfaceNormals.ladder, Color.green);
-                DebugExtension.DrawArrow(transform.position, wishdir, Color.red);
-                DebugExtension.DrawArrow(transform.position, velocity.normalized, Color.yellow);
+
+                DebugExtension.DrawArrow(transform.position, wishDir, Color.black);
+                DebugExtension.DrawArrow(transform.position, Velocity.normalized, Color.red);
 
             }
         }
@@ -1067,16 +1175,18 @@ namespace vnc
         {
             if (showDebugStats && Application.isEditor)
             {
-                Rect rect = new Rect(0, 0, 300, 200);
-                string debugText = "Press 'Esc' to unlock cursor:\n"
-                    + "\nSprinting: " + Sprint
-                    + "\nWishdir: " + wishdir
-                    + "\nWall Normals" + surfaceNormals.wall
-                    + "\nVelocity Vector: " + Velocity
-                    + "\nVelocity Magnitude: " + Velocity.magnitude
-                    + "\nCollisions: " + Collisions
-                    + "\nStep Delta: " + StepDelta
-                    + "\nStates: " + State;
+                Rect rect = new Rect(0, 0, 250, 100);
+                Vector3 planeVel = Velocity; planeVel.y = 0;
+                string debugText = "Press 'Esc' to unlock cursor.\n"
+                    + "\n Collisions: " + Collisions
+                    + "\n Velocity: " + Velocity
+                    + "\n Velocity Magnitude: " + Velocity.magnitude
+                    + "\n Wishdir: " + wishDir
+                    + "\n wishspeed: " + wishDir.magnitude
+                    + "\n projVel: " + DotProduct(Velocity, wishDir)
+                    + "\n projVel + accelVel: " + DotProduct(Velocity, wishDir) + Profile.AirAcceleration * Profile.AccelerationScale * Time.fixedDeltaTime
+                    + "\n accelVel: " + Profile.AirAcceleration * Profile.AccelerationScale * Time.fixedDeltaTime;
+
 
                 if (guiStyle != null)
                     GUI.Label(rect, debugText, guiStyle);

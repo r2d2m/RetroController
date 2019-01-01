@@ -9,6 +9,7 @@ namespace vnc.Samples
         public UnityMouseLook mouseLook;
         public Transform playerView;
         public Animator gunAnimator;
+        public Rigidbody body;
 
         public bool autoInput = false;
         [ConditionalHide("autoInput"), Range(-1, 1)]
@@ -17,6 +18,8 @@ namespace vnc.Samples
         public float autoStrafe = 0f;
         [ConditionalHide("autoInput"), Range(-1, 1)]
         public float autoSwim = 0f;
+        [ConditionalHide("autoInput"), Range(-1, 1)]
+        public float YRotate = 0f;
         [ConditionalHide("autoInput")] public bool autoJump = false;
         [ConditionalHide("autoInput")] public bool autoSprint = false;
         [ConditionalHide("autoInput")] public bool autoDuck = false;
@@ -40,6 +43,7 @@ namespace vnc.Samples
                 jump = autoJump;
                 sprint = autoSprint;
                 duck = autoDuck;
+                transform.rotation *= Quaternion.Euler(0, YRotate, 0);
             }
             else
             {
@@ -72,6 +76,18 @@ namespace vnc.Samples
 
             if (Input.GetKeyDown(KeyCode.Escape))
                 mouseLook.SetCursorLock(false);
+
+        }
+
+        private void OnGUI()
+        {
+            float width = 250;
+            float height = 100;
+            Rect rect = new Rect(Screen.width - width, 0, width, height);
+            string label = "Mouse Sensitivity: " + mouseLook.mouseSensitivity + "\n(unlock cursor and left-click to slide";
+            GUI.Label(rect, label, retroController.guiStyle);
+            rect.y += 35;
+            mouseLook.mouseSensitivity = GUI.HorizontalSlider(rect, mouseLook.mouseSensitivity, 0, 10);
         }
     }
 }
