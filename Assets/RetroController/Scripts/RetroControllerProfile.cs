@@ -204,6 +204,12 @@ namespace vnc
         /// This include solid surfaces, platforms and water.
         /// </summary>
         public LayerMask SurfaceLayers;
+
+        /// <summary>
+        /// Distance in the Y axis to check if there is a ground
+        /// </summary>
+        public float GroundCheck = 0.21f;
+
         /// <summary>
         /// Advanced settings. Do not change this, except
         /// when experiencing collision imprecision.
