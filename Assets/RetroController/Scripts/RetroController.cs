@@ -39,7 +39,7 @@ namespace vnc
         public bool DuckInput { get; set; }
 
         // Velocity
-        public Vector3 Velocity;
+        [HideInInspector] public Vector3 Velocity;
         protected Vector3 wishDir;    // the direction from the input
         protected float wishSpeed;
 
@@ -48,10 +48,7 @@ namespace vnc
         protected bool wasGrounded = false;   // if player was on ground on previous update
         protected float jumpGraceTimer;       // time window for jumping just before reaching the ground
         protected bool sprintJump;            // jump while sprinting
-
-        //protected Vector3 floorNormal;        // normal of the last ground
-        //protected Vector3 ladderNormal;       // normal of the current ladder
-
+        
         // Ducking
         protected float duckingTimer;
         protected bool wasDucking;
@@ -82,7 +79,7 @@ namespace vnc
 
         // Helps camera smoothing on step.
         public float StepDelta { get; private set; }    // how much the controller went up
-        public bool wasOnStep;
+        [HideInInspector] public bool wasOnStep;
         public float SlopeDot { get { return (Profile.SlopeAngleLimit / 90f); } }
 
         [Header("Callback Events")]
@@ -1108,13 +1105,9 @@ namespace vnc
         {
             if (showDebugStats && Application.isEditor)
             {
-                Rect rect = new Rect(0, 0, 250, 250);
+                Rect rect = new Rect(0, 0, 250, 30);
                 Vector3 planeVel = Velocity; planeVel.y = 0;
-                string debugText = "Press 'Esc' to unlock cursor.\n"
-                    + "\n Collisions: " + Collisions
-                    + "\n State: " + State
-                    + "\n StepDelta" + StepDelta;
-
+                string debugText = "Press 'Esc' to unlock cursor.\n";                
 
                 if (guiStyle != null)
                     GUI.Label(rect, debugText, guiStyle);

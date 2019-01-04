@@ -9,7 +9,6 @@ namespace vnc.Samples
         public UnityMouseLook mouseLook;
         public Transform playerView;
         public Animator gunAnimator;
-        public Rigidbody body;
 
         public bool autoInput = false;
         [ConditionalHide("autoInput"), Range(-1, 1)]
@@ -172,7 +171,7 @@ namespace vnc.Samples
         private void OnGUI()
         {
             float width = 250;
-            float height = 100;
+            float height = 70;
             Rect rect = new Rect(Screen.width - width, 0, width, height);
             string label = "Mouse Sensitivity: " + mouseLook.mouseSensitivity + "\n(unlock cursor and left-click to slide";
             GUI.Label(rect, label, retroController.guiStyle);
