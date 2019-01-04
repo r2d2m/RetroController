@@ -683,7 +683,7 @@ namespace vnc
                             {
                                 State &= ~CC_State.OnPlatform;
                             }
-
+                            OnCCHit(normal);
                         }
 
                         // COLLISIONS ON SIDES
@@ -704,6 +704,7 @@ namespace vnc
                             {
                                 position += normal * dist;
                                 surfaceNormals.wall = normal;
+                                OnCCHit(normal);
                             }
                         }
 
@@ -712,9 +713,9 @@ namespace vnc
                         {
                             Collisions = Collisions | CC_Collision.CollisionAbove;
                             position += normal * dist;
+                            OnCCHit(normal);
                         }
 
-                        OnCCHit(normal);
                     }
                 }
 
