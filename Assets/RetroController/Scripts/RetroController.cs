@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.Events;
 using vnc.Utils;
@@ -571,7 +572,7 @@ namespace vnc
             IsSwimming = false;
 
             Vector3 movNormalized = movement.normalized;
-            float distance = movement.magnitude;
+            float distance = FloatFixer(movement.magnitude);
 
             // TODO: add option for noclip cheating
             //if (Game.Settings.Cheat_Noclip)
@@ -624,6 +625,7 @@ namespace vnc
         /// <returns>Final position</returns>
         protected virtual Vector3 FixOverlaps(Vector3 position, Vector3 movement, out Vector3 nResult)
         {
+            movement = VectorFixer(movement);
             Vector3 normal;
             nResult = Vector3.zero; // this is unecessary
 
@@ -803,7 +805,7 @@ namespace vnc
             center = position + movement + (Vector3.up * Profile.StepOffset);
             extends = Profile.Size / 2;
 
-            // hack hack increase hull size
+            // increase hull size
             extends += Vector3.one * EPSILON;
 
             // check if collides while raising the controller
@@ -952,23 +954,13 @@ namespace vnc
         /// <param name="normal">Surface normal.</param>
         protected virtual void OnCCHit(Vector3 normal)
         {
-            // reset Y speed 
-            if (HasCollisionFlag(CC_Collision.CollisionAbove) && Velocity.y > 0)
-            {
-                Velocity.y = 0;
-            }
-
-            // adjust Velocity on side surfaces
-            if (HasCollisionFlag(CC_Collision.CollisionSides))
+            if (HasCollisionFlag(CC_Collision.CollisionAbove)
+                || HasCollisionFlag(CC_Collision.CollisionSides)
+                || HasCollisionFlag(CC_Collision.CollisionBelow))
             {
                 Velocity = ClipVelocity(Velocity, normal, overbounce: true);
             }
-
-            if (HasCollisionFlag(CC_Collision.CollisionBelow))
-            {
-                Velocity = ClipVelocity(Velocity, normal, overbounce: true);
-            }
-
+            
             WaterEdgePush(normal);
         }
 
@@ -987,11 +979,16 @@ namespace vnc
         {
             for (int i = 0; i < 3; i++)
             {
-                vel[i] = (float)Math.Round(vel[i], 3, MidpointRounding.ToEven);
+                vel[i] = FloatFixer(vel[i]);
                 if (vel[i] > -EPSILON && vel[i] < EPSILON)
                     vel[i] = 0f;
             }
             return vel;
+        }
+
+        private float FloatFixer(float value)
+        {
+            return (float)Math.Round(value, 3, MidpointRounding.ToEven);
         }
 
         public int OverlapBoxNonAlloc(Vector3 offset, Collider[] results, int layerMask = Physics.DefaultRaycastLayers, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
@@ -1000,7 +997,7 @@ namespace vnc
             Quaternion orientation;
             _boxCollider.ToWorldSpaceBox(out center, out halfExtents, out orientation);
             center += offset;
-            return Physics.OverlapBoxNonAlloc(center, halfExtents, results, orientation, layerMask, queryTriggerInteraction);
+            return Physics.OverlapBoxNonAlloc(center, halfExtents, results, Quaternion.identity, layerMask, queryTriggerInteraction);
         }
 
         public Vector3 AbsVec3(Vector3 v)
@@ -1023,7 +1020,7 @@ namespace vnc
             return (velocity.x * direction.x) + (velocity.y * direction.y);
         }
 
-        #region State
+#region State
         public bool HasState(CC_State state)
         {
             return (State & state) != 0;
@@ -1038,7 +1035,7 @@ namespace vnc
         {
             State &= ~state;
         }
-        #endregion
+#endregion
 
         // do not modify
         private void _boxUpdate()
@@ -1047,9 +1044,9 @@ namespace vnc
             _boxCollider.center = Profile.Center;
         }
 
-        #endregion
+#endregion
 
-        #region Enums
+#region Enums
         [Flags]
         public enum CC_State
         {
@@ -1076,9 +1073,9 @@ namespace vnc
             Partial,    // body on water, face outside
             Underwater  // submerged
         }
-        #endregion
+#endregion
 
-        #region Debug
+#region Debug
         protected virtual void OnDrawGizmos()
         {
             if (Profile)
@@ -1124,7 +1121,7 @@ namespace vnc
                     GUI.Label(rect, debugText);
             }
         }
-        #endregion
+#endregion
     }
 }
 

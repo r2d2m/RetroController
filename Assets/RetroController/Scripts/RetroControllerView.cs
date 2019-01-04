@@ -79,8 +79,8 @@ namespace vnc
         /// </summary>
         public void Rolling()
         {
-            float rolltarget = -(_controller.Strafe * roll.angle);
-            float step = (rolltarget - roll.currentAngle) * Time.deltaTime;
+            float rolltarget = -(_controller.Strafe * roll.angle); 
+            float step = (rolltarget - roll.currentAngle) * roll.speed * Time.deltaTime;
 
             roll.currentAngle = Mathf.Clamp(roll.currentAngle + step, -roll.angle, roll.angle);
 

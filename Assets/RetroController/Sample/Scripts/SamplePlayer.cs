@@ -44,6 +44,12 @@ namespace vnc.Samples
 
         void Update()
         {
+            if(Input.GetKeyDown(KeyCode.R) && !isPlaying)
+            {
+                if (isRecording) StopRecording();
+                else StartRecording();
+            }
+
             if (isPlaying)
             {
                 if (playIndex < logCount)
@@ -152,6 +158,7 @@ namespace vnc.Samples
             isPlaying = true;
             playIndex = 0;
             transform.position = recordOrigin;
+            retroController.Velocity = Vector3.zero;
         }
 
         public void StopPlaying()
