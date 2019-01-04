@@ -56,7 +56,7 @@ namespace vnc
             if (bob.whenMovingOnly)
             {
 
-                if (Mathf.Clamp01(horizontalVelocityMagnitude) > RetroController.STOP_EPSILON)
+                if (Mathf.Clamp01(horizontalVelocityMagnitude) > RetroController.EPSILON)
                 {
                     bob.cycle += (Time.deltaTime * bob.speed);
                     if (bob.cycle >= 360) bob.cycle = 0;

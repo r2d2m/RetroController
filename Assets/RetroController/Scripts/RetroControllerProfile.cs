@@ -61,9 +61,9 @@ namespace vnc
         /// </summary>
         public Vector3 DuckingCenter = new Vector3(0f, -.5f, 0f);
         /// <summary>
-        /// Controller height when ducking
+        /// Controller size when ducking
         /// </summary>
-        public float DuckingHeight = 1f;
+        public Vector3 DuckingSize = Vector3.one;
         /// <summary>
         /// View offset based on initial view position on
         /// the controller axis orientation
@@ -74,6 +74,7 @@ namespace vnc
         /// size from standing to ducking
         /// </summary>
         public float DuckingLerpSpeed = 6;
+
         #endregion
 
         #region Max Speed
@@ -193,8 +194,7 @@ namespace vnc
         public float SwimmingOffset = 0.0f;
         public float StepOffset = 5f;               // maximum step height
         public Vector3 Center;
-        public float Radius = 1;
-        public float Height = 2;
+        public Vector3 Size = Vector3.one;
         public ControllerDirection AxisOrientation = ControllerDirection.Y;
         #endregion
 
