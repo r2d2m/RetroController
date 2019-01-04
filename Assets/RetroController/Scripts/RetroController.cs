@@ -21,7 +21,7 @@ namespace vnc
         public bool showDebugStats = false;
 
         public const float STOP_EPSILON = 0.001f;
-        public const float OVERBOUNCE = 1.1f;
+        public const float OVERBOUNCE = 1.01f;
 
         private Collider[] overlapingColliders = new Collider[8];
         [HideInInspector] public CC_Collision Collisions { get; private set; }
@@ -792,23 +792,26 @@ namespace vnc
 
         protected virtual Vector3 MoveOnSteps(Vector3 position, Vector3 movement)
         {
+            // after finding a collision, try to check if it's a step
+            // the controller can be on
+
             // ignore step checking if on air
             if (!IsGrounded)
                 return position;
-
-            Ray stepRay;
+            
             RaycastHit stepHit;
             Vector3 p0, p1; // capsule point 0 and 1
             float radius;   // capsule radius
-
+            movement.y = 0;
 
             //var center = IsDucking ? transform.TransformPoint(Profile.DuckingCenter) : transform.TransformPoint(Profile.Center);
-            var center = position + (IsDucking ? Profile.DuckingCenter : Profile.Center);
+            //var center = position + (IsDucking ? Profile.DuckingCenter : Profile.Center);
+            var center = position + Profile.Center;
             ToWorldSpaceControllerCapsule(center, out p0, out p1, out radius);
             p0 += movement + (Vector3.up * Profile.StepOffset);
             p1 += movement + (Vector3.up * Profile.StepOffset);
 
-            // check if collides in the next step
+            // check if collides while raising the controller
             if (Physics.CheckCapsule(p0, p1, radius, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore))
             {
                 // collided with a solid object, probably a wall
@@ -816,17 +819,24 @@ namespace vnc
             }
             else
             {
-                stepRay = new Ray(p0 + movement.normalized * radius, Vector3.down);
+                //controller is free
                 var bottom = Profile.Center + position + (Vector3.down * Profile.Height / 2);
-                if (Physics.Raycast(stepRay, out stepHit, Mathf.Infinity, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore))
+
+                //test with capsule cast
+                //if (Physics.CapsuleCast(p0, p1, radius, Vector3.down, out stepHit, Mathf.Infinity, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore))
+
+                // test with box cast
+                if(Physics.BoxCast(center, new Vector3(radius, _capsuleCollider.height, radius), Vector3.down, 
+                    out stepHit, transform.rotation, Mathf.Infinity, Profile.SurfaceLayers))
                 {
                     var dot = Vector3.Dot(stepHit.normal, Vector3.up);
                     if (dot > SlopeDot && dot <= 1)
                     {
-                        if(stepHit.point.y > bottom.y)
+                        if (stepHit.point.y > bottom.y)
                         {
                             float upDist = Mathf.Abs(stepHit.point.y - bottom.y);
-                            position += Vector3.up * upDist; //raise the player on the step size
+                            //position += Vector3.up * upDist; //raise the player on the step size
+                            position.y = stepHit.point.y + (Profile.Height / 2f) + Profile.Depenetration;
 
                             if (upDist > StepDelta)
                             {
@@ -838,6 +848,32 @@ namespace vnc
                         }
                     }
                 }
+
+                // cast a ray to verify if it's a true step or just a ramp
+
+                //stepRay = new Ray(p0 + movement.normalized * radius, Vector3.down);
+                //var bottom = Profile.Center + position + (Vector3.down * Profile.Height / 2);
+                //if (Physics.Raycast(stepRay, out stepHit, Mathf.Infinity, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore))
+                //{
+                //    var dot = Vector3.Dot(stepHit.normal, Vector3.up);
+                //    if (dot > SlopeDot && dot <= 1)
+                //    {
+                //        if(stepHit.point.y > bottom.y)
+                //        {
+                //            float upDist = Mathf.Abs(stepHit.point.y - bottom.y);
+                //            //position += Vector3.up * upDist; //raise the player on the step size
+                //            position.y = stepHit.point.y + (_capsuleCollider.height / 2f);
+
+                //            if (upDist > StepDelta)
+                //            {
+                //                StepDelta = upDist;
+                //                Collisions |= CC_Collision.CollisionStep;
+                //            }
+
+                //            Collisions |= CC_Collision.CollisionBelow;
+                //        }
+                //    }
+                //}
 
                 return position;
             }
