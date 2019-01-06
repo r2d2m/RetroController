@@ -9,7 +9,6 @@ namespace vnc.Editor
     public class RetroControllerProfileEditor : UnityEditor.Editor
     {
         SerializedProperty waterTag, ladderTag, platformTag;
-        SerializedProperty depenetration;
         GUIStyle labelStyle = null;
 
         private void OnEnable()
@@ -17,7 +16,6 @@ namespace vnc.Editor
             waterTag = serializedObject.FindProperty("WaterTag");
             ladderTag = serializedObject.FindProperty("LadderTag");
             platformTag = serializedObject.FindProperty("PlatformTag");
-            depenetration = serializedObject.FindProperty("Depenetration");
 
             if (labelStyle == null)
             {
@@ -42,10 +40,8 @@ namespace vnc.Editor
             platformTag.stringValue = EditorGUILayout.TagField("Platform Tag", platformTag.stringValue);
             EditorGUILayout.Space();
 
-            depenetration.floatValue = EditorGUILayout.FloatField("Depenetration", depenetration.floatValue);
-
             GUILayout.Space(10);
-            EditorGUILayout.LabelField("Options", FancyHeaderDecoratorDrawer.GetStyle());
+            EditorGUILayout.LabelField("Actions", FancyHeaderDecoratorDrawer.GetStyle());
             GUILayout.Space(5);
             if (GUILayout.Button("Duplicate"))
             {
@@ -62,16 +58,6 @@ namespace vnc.Editor
                     {
                         EditorUtility.DisplayDialog("Retro Controller", "Error duplicating profile.", "Ok");
                     }
-                }
-            }
-            if (GUILayout.Button("Reset"))
-            {
-                string message = "ATTENTION!\n\nThis will reset all your current configurations and they can be " +
-                    "potentially lost.\n\nAre you sure?";
-                if (EditorUtility.DisplayDialog("Retro Controller", message, "Yes", "No"))
-                {
-                    MethodInfo method = typeof(RetroControllerProfile).GetMethod("DepenetrationReset");
-                    method.Invoke(serializedObject.targetObject, null);
                 }
             }
 

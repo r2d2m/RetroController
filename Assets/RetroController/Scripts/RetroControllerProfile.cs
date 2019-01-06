@@ -191,7 +191,7 @@ namespace vnc
         public Vector3 Size = Vector3.one;
         #endregion
 
-        [FancyHeader("Collision and Tags")]
+        [FancyHeader("Collision Properties")]
         /// <summary>
         /// Define which layers will the controller collide with.
         /// This include solid surfaces, platforms and water.
@@ -208,12 +208,7 @@ namespace vnc
         /// when experiencing collision imprecision.
         /// </summary>
         [HideInInspector] public float Depenetration = 0.001f;
-
-        public void DepenetrationReset()
-        {
-            Depenetration = 0.001f;
-        }
-
+        
         // TAGS
         /// <summary>
         /// Hidden property, used in <code>RetroControllerProfileEditor</code>
