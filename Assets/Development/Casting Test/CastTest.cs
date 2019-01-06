@@ -1,56 +1,68 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using vnc.Utils;
 
 public class CastTest : MonoBehaviour
 {
-
     public BoxCollider box;
-    public CapsuleCollider capsule;
     public LayerMask contactLayer;
+    public float stepOffset = 0.7f;
+    public float movement = 2f;
 
-    RaycastHit boxhit, capsulehit;
-    bool boxHitting, capsuleHitting;
-    Vector3 origin;
+    RaycastHit boxhit;
+    bool boxHitting = false;
+
+    Vector3 upPos, forwardPos, downPos, finalPos;
 
     private void Awake()
     {
-        origin = transform.position;
     }
 
-    void Update()
+    void FixedUpdate()
     {
-        boxHitting = PhysicsExtensions.BoxCast(box, Vector3.down, out boxhit, layerMask: contactLayer);
-        capsuleHitting = PhysicsExtensions.CapsuleCast(capsule, Vector3.down, out capsulehit, layerMask: contactLayer);
-            
-        transform.position += Vector3.forward * Time.deltaTime;
+        upPos = transform.position + (Vector3.up * stepOffset);
+        forwardPos = upPos + (Vector3.forward * movement);
+        downPos = forwardPos + (Vector3.down * stepOffset);
 
-        if (transform.position.z > 9)
-            transform.position = origin;
+        boxHitting = Physics.BoxCast(forwardPos, box.size / 2, Vector3.down, out boxhit, transform.rotation,
+            stepOffset, layerMask: contactLayer);
+
+        if (boxHitting)
+        {
+            finalPos = forwardPos + (Vector3.down * boxhit.distance);
+            transform.position = finalPos;
+        }
+        else
+        {
+            transform.position += Vector3.forward * movement;
+        }
     }
 
     private void OnDrawGizmos()
     {
+        Vector3 e = Vector3.one * 0.01f;
         if (box)
         {
-            DebugExtension.DrawBounds(box.bounds, Color.cyan);
+            // current position
+            Gizmos.color = Color.white;
+            Gizmos.DrawCube(transform.position, box.size);
+
+            // up
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireCube(upPos, box.size + e);
+
+            // forward
+            Gizmos.color = Color.blue;
+            Gizmos.DrawWireCube(forwardPos, box.size + e);
+
+            if (boxHitting)
+            {
+                // final pos
+                Gizmos.color = Color.red;
+                Gizmos.DrawWireCube(finalPos, box.size + e);
+            }
+
+            //DebugExtension.DrawArrow(boxhit.point, boxhit.normal, Color.red);
         }
 
-        if (capsule)
-        {
-            Vector3 start, end;
-            start = capsule.transform.position + capsule.center + (Vector3.up * (capsule.height / 2f));
-            end = capsule.transform.position + capsule.center + (Vector3.down * (capsule.height / 2f));
-            float radius;
-            PhysicsExtensions.ToWorldSpaceCapsule(capsule, out start, out end, out radius);
-            DebugExtension.DrawCapsule(start, end, Color.yellow, radius);
-        }
-
-        if(boxHitting)
-            DebugExtension.DrawPoint(boxhit.point, Color.cyan);
-
-        if(capsuleHitting)
-            DebugExtension.DrawPoint(capsulehit.point, Color.yellow);
     }
 }
