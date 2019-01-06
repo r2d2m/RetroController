@@ -70,9 +70,15 @@ namespace vnc
         /// </summary>
         public float DuckingViewOffset = 0.8f;
         /// <summary>
+        /// Enable lerping of the collider values
+        /// when ducking
+        /// </summary>
+        public bool DuckingLerp = true;
+        /// <summary>
         /// Transition speed of the controller collider
         /// size from standing to ducking
         /// </summary>
+        [ConditionalHide("DuckingLerp")]
         public float DuckingLerpSpeed = 6;
 
         #endregion

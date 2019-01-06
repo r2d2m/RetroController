@@ -858,7 +858,12 @@ namespace vnc
         {
             if (IsDucking)
             {
-                float t = Profile.DuckingLerpSpeed * Time.fixedDeltaTime;
+                float t = 1;
+                if (Profile.DuckingLerp)
+                {
+                    t = Profile.DuckingLerpSpeed * Time.fixedDeltaTime;
+                }
+
                 _boxCollider.size = Vector3.Lerp(_boxCollider.size, Profile.DuckingSize, t);
                 _boxCollider.center = Vector3.Lerp(_boxCollider.center, Profile.DuckingCenter, t);
 
