@@ -48,7 +48,7 @@ namespace vnc
         protected bool wasGrounded = false;   // if player was on ground on previous update
         protected float jumpGraceTimer;       // time window for jumping just before reaching the ground
         protected bool sprintJump;            // jump while sprinting
-        
+
         // Ducking
         protected float duckingTimer;
         protected bool wasDucking;
@@ -529,7 +529,7 @@ namespace vnc
             if (speed != 0) // To avoid divide by zero errors
             {
                 //float control = speed < Profile.MinimumSpeed ? Profile.MinimumSpeed : speed;
-                float drop = speed * friction *  Time.fixedDeltaTime;
+                float drop = speed * friction * Time.fixedDeltaTime;
 
                 wishspeed *= Mathf.Max(speed - drop, 0) / speed; // Scale the Velocity based on friction.
             }
@@ -562,8 +562,6 @@ namespace vnc
 
             movement = VectorFixer(movement);
 
-            Vector3 nTotal = Vector3.zero;
-
             // reset all collision flags
             Collisions = CC_Collision.None;
             IsSwimming = false;
@@ -593,16 +591,14 @@ namespace vnc
                     float curMagnitude = Math.Min(stepDistance, distance - curDist);
                     Vector3 start = transform.position;
                     Vector3 end = start + movNormalized * curMagnitude;
-                    transform.position = FixOverlaps(end, movNormalized * curMagnitude, out nResult);
-                    nTotal += nResult;
+                    transform.position = FixOverlaps(end, movNormalized * curMagnitude);
                 }
 
             }
             else
             {
                 // when controller doesn't move
-                transform.position = FixOverlaps(transform.position, Vector3.zero, out nResult);
-                nTotal += nResult;
+                transform.position = FixOverlaps(transform.position, Vector3.zero);
             }
 
             SetWaterLevel();
@@ -620,11 +616,10 @@ namespace vnc
         /// </summary>
         /// <param name="position">start position. Bottom of the collider</param>
         /// <returns>Final position</returns>
-        protected virtual Vector3 FixOverlaps(Vector3 position, Vector3 movement, out Vector3 nResult)
+        protected virtual Vector3 FixOverlaps(Vector3 position, Vector3 movement)
         {
             movement = VectorFixer(movement);
             Vector3 normal;
-            nResult = Vector3.zero; // this is unecessary
 
             float dist, dot;
             dist = dot = 0f;
@@ -680,6 +675,7 @@ namespace vnc
                             {
                                 State &= ~CC_State.OnPlatform;
                             }
+
                             OnCCHit(normal);
                         }
 
@@ -702,6 +698,7 @@ namespace vnc
                                 position += normal * dist;
                                 surfaceNormals.wall = normal;
                                 OnCCHit(normal);
+                                WaterEdgePush(normal);
                             }
                         }
 
@@ -712,7 +709,6 @@ namespace vnc
                             position += normal * dist;
                             OnCCHit(normal);
                         }
-
                     }
                 }
 
@@ -799,7 +795,7 @@ namespace vnc
             RaycastHit stepHit;
             Vector3 center, extends;
             movement.y = 0;
-            
+
             center = position + movement + (Vector3.up * Profile.StepOffset);
             extends = Profile.Size / 2;
 
@@ -807,7 +803,7 @@ namespace vnc
             extends += Vector3.one * EPSILON;
 
             // check if collides while raising the controller
-            if (Physics.CheckBox(center, Profile.Size/2, Quaternion.identity, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore))
+            if (Physics.CheckBox(center, Profile.Size / 2, Quaternion.identity, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore))
             {
                 // collided with a solid object, probably a wall
                 return position; // doesn't do anything
@@ -817,10 +813,10 @@ namespace vnc
                 //controller is free
                 var bottom = Profile.Center + position + new Vector3(0, -extends.y, 0);
 
-                if(Physics.Raycast(bottom, movement.normalized, out stepHit, Mathf.Infinity, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore))
+                if (Physics.Raycast(bottom, movement.normalized, out stepHit, Mathf.Infinity, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore))
                 {
                     var dot = Vector3.Dot(stepHit.normal, Vector3.up);
-                    if(dot > SlopeDot && dot <= 1)
+                    if (dot > SlopeDot && dot <= 1)
                     {
                         // detected a ramp
                         return position;
@@ -957,14 +953,7 @@ namespace vnc
         /// <param name="normal">Surface normal.</param>
         protected virtual void OnCCHit(Vector3 normal)
         {
-            if (HasCollisionFlag(CC_Collision.CollisionAbove)
-                || HasCollisionFlag(CC_Collision.CollisionSides)
-                || HasCollisionFlag(CC_Collision.CollisionBelow))
-            {
-                Velocity = ClipVelocity(Velocity, normal, overbounce: true);
-            }
-            
-            WaterEdgePush(normal);
+            Velocity = ClipVelocity(Velocity, normal, overbounce: true);
         }
 
 
@@ -1023,7 +1012,7 @@ namespace vnc
             return (velocity.x * direction.x) + (velocity.y * direction.y);
         }
 
-#region State
+        #region State
         public bool HasState(CC_State state)
         {
             return (State & state) != 0;
@@ -1038,7 +1027,7 @@ namespace vnc
         {
             State &= ~state;
         }
-#endregion
+        #endregion
 
         // do not modify
         private void _boxUpdate()
@@ -1047,9 +1036,9 @@ namespace vnc
             _boxCollider.center = Profile.Center;
         }
 
-#endregion
+        #endregion
 
-#region Enums
+        #region Enums
         [Flags]
         public enum CC_State
         {
@@ -1076,9 +1065,9 @@ namespace vnc
             Partial,    // body on water, face outside
             Underwater  // submerged
         }
-#endregion
+        #endregion
 
-#region Debug
+        #region Debug
         protected virtual void OnDrawGizmos()
         {
             if (Profile)
@@ -1112,7 +1101,7 @@ namespace vnc
             {
                 Rect rect = new Rect(0, 0, 250, 30);
                 Vector3 planeVel = Velocity; planeVel.y = 0;
-                string debugText = "Press 'Esc' to unlock cursor.\n";                
+                string debugText = "Press 'Esc' to unlock cursor.\n";
 
                 if (guiStyle != null)
                     GUI.Label(rect, debugText, guiStyle);
@@ -1120,7 +1109,7 @@ namespace vnc
                     GUI.Label(rect, debugText);
             }
         }
-#endregion
+        #endregion
     }
 }
 
