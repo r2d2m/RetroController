@@ -465,7 +465,7 @@ namespace vnc
         protected virtual Vector3 Accelerate(Vector3 wishdir, Vector3 prevVelocity, float accelerate, float max_velocity)
         {
             var projVel = Vector3.Dot(prevVelocity, wishdir);
-            float accelSpeed = accelerate * Profile.AccelerationScale;
+            float accelSpeed = accelerate;
 
             if (projVel + accelSpeed > max_velocity)
                 accelSpeed = max_velocity - projVel;
@@ -495,7 +495,7 @@ namespace vnc
                     if (addspeed <= 0)
                         return;
 
-                    var accelSpeed = Profile.AirAcceleration * wishSpeed * Time.deltaTime;
+                    var accelSpeed = accelerate * wishSpeed * Time.deltaTime;
                     if (accelSpeed > addspeed)
                         accelSpeed = addspeed;
 
@@ -505,7 +505,7 @@ namespace vnc
                 default:
                     var projVel = Vector3.Dot(Velocity, wishDir);
 
-                    float accelVel = accelerate * Profile.AccelerationScale * Time.fixedDeltaTime;
+                    float accelVel = accelerate * Time.fixedDeltaTime;
 
                     if (projVel + accelVel > maxSpeed)
                         accelVel = maxSpeed - projVel;
@@ -529,7 +529,7 @@ namespace vnc
             if (speed != 0) // To avoid divide by zero errors
             {
                 //float control = speed < Profile.MinimumSpeed ? Profile.MinimumSpeed : speed;
-                float drop = speed * friction * Profile.FrictionScale * Time.fixedDeltaTime;
+                float drop = speed * friction *  Time.fixedDeltaTime;
 
                 wishspeed *= Mathf.Max(speed - drop, 0) / speed; // Scale the Velocity based on friction.
             }
@@ -544,7 +544,7 @@ namespace vnc
 
             if (speed != 0) // To avoid divide by zero errors
             {
-                float drop = speed * Profile.WaterFriction * Profile.FrictionScale * Time.fixedDeltaTime;
+                float drop = speed * Profile.WaterFriction * Time.fixedDeltaTime;
                 wishspeed *= Mathf.Max(speed - drop, 0) / speed; // Scale the Velocity based on friction.
             }
             return wishspeed;

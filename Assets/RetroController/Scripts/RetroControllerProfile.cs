@@ -124,15 +124,12 @@ namespace vnc
         /// Setting to 0 makes it stop completely.
         /// Don't set this value to lower than 0;
         /// </summary>
-        public float MaxAirControl = 0;
+        [RangeNoSlider(0f, Mathf.Infinity)]
+        public float MaxAirControl = 0.02f;
         #endregion
 
         #region Acceleration
         [FancyHeader("Acceleration")]
-        /// <summary>
-        /// Scales all the acceleration properties in the profile.
-        /// </summary>
-        public float AccelerationScale = 1f;
         /// <summary>
         /// Normal Acceleration on ground.
         /// </summary>
@@ -158,10 +155,6 @@ namespace vnc
 
         #region Friction
         [FancyHeader("Friction")]
-        /// <summary>
-        /// Scales all the friction properties in the profile.
-        /// </summary>
-        public float FrictionScale = 1f;
         /// <summary>
         /// Ground friction, decrease speed on surfaces.
         /// </summary>
@@ -196,7 +189,6 @@ namespace vnc
         public float StepOffset = 5f;               // maximum step height
         public Vector3 Center;
         public Vector3 Size = Vector3.one;
-        public ControllerDirection AxisOrientation = ControllerDirection.Y;
         #endregion
 
         [FancyHeader("Collision and Tags")]
