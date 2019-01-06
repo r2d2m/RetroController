@@ -487,8 +487,8 @@ namespace vnc
                     }
 
                     float wishspd = wishDir.magnitude;
-                    if (wishspd > Profile.AirStopSpeed)
-                        wishspd = Profile.AirStopSpeed;
+                    if (wishspd > Profile.MaxAirControl)
+                        wishspd = Profile.MaxAirControl;
 
                     var currentSpeed = Vector3.Dot(Velocity, wishDir);
                     var addspeed = wishspd - currentSpeed;
@@ -528,8 +528,8 @@ namespace vnc
 
             if (speed != 0) // To avoid divide by zero errors
             {
-                float control = speed < Profile.MinimumSpeed ? Profile.MinimumSpeed : speed;
-                float drop = control * friction * Profile.FrictionScale * Time.fixedDeltaTime;
+                //float control = speed < Profile.MinimumSpeed ? Profile.MinimumSpeed : speed;
+                float drop = speed * friction * Profile.FrictionScale * Time.fixedDeltaTime;
 
                 wishspeed *= Mathf.Max(speed - drop, 0) / speed; // Scale the Velocity based on friction.
             }

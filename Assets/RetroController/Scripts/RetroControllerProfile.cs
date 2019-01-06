@@ -84,7 +84,7 @@ namespace vnc
         #endregion
 
         #region Max Speed
-        [FancyHeader("Max Speed")]
+        [FancyHeader("Speed")]
         /// <summary>
         /// Max speed on ground
         /// </summary>
@@ -111,11 +111,6 @@ namespace vnc
         /// </summary>
         public float MaxDuckingSpeed;
         /// <summary>
-        /// When the controller speed reaches a really small value,
-        /// it stops completely.
-        /// </summary>
-        public float MinimumSpeed;
-        /// <summary>
         /// Max absolute speed on the Y axis (limits postive and negative values)
         /// </summary>
         public float MaxVerticalSpeedScale;
@@ -129,7 +124,7 @@ namespace vnc
         /// Setting to 0 makes it stop completely.
         /// Don't set this value to lower than 0;
         /// </summary>
-        public float AirStopSpeed = 0;
+        public float MaxAirControl = 0;
         #endregion
 
         #region Acceleration
