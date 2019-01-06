@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.Events;
+using vnc.Utils;
 
 namespace vnc
 {
@@ -25,7 +27,7 @@ namespace vnc
 
         private Collider[] overlapingColliders = new Collider[8];
         [HideInInspector] public CC_Collision Collisions { get; private set; }
-        private CapsuleCollider _capsuleCollider;
+        private BoxCollider _boxCollider;
 
         // Input
         [HideInInspector] public Vector2 inputDir;
@@ -37,7 +39,7 @@ namespace vnc
         public bool DuckInput { get; set; }
 
         // Velocity
-        public Vector3 Velocity;
+        [HideInInspector] public Vector3 Velocity;
         protected Vector3 wishDir;    // the direction from the input
         protected float wishSpeed;
 
@@ -46,10 +48,7 @@ namespace vnc
         protected bool wasGrounded = false;   // if player was on ground on previous update
         protected float jumpGraceTimer;       // time window for jumping just before reaching the ground
         protected bool sprintJump;            // jump while sprinting
-
-        //protected Vector3 floorNormal;        // normal of the last ground
-        //protected Vector3 ladderNormal;       // normal of the current ladder
-
+        
         // Ducking
         protected float duckingTimer;
         protected bool wasDucking;
@@ -80,7 +79,7 @@ namespace vnc
 
         // Helps camera smoothing on step.
         public float StepDelta { get; private set; }    // how much the controller went up
-        public bool wasOnStep;
+        [HideInInspector] public bool wasOnStep;
         public float SlopeDot { get { return (Profile.SlopeAngleLimit / 90f); } }
 
         [Header("Callback Events")]
@@ -101,12 +100,12 @@ namespace vnc
             if (controllerView)
                 viewPosition = controllerView.localPosition;
 
-            _capsuleCollider = GetComponent<CapsuleCollider>();
-            if (_capsuleCollider == null)
+            _boxCollider = GetComponent<BoxCollider>();
+            if (_boxCollider == null)
             {
-                _capsuleCollider = gameObject.AddComponent<CapsuleCollider>();
+                _boxCollider = gameObject.AddComponent<BoxCollider>();
             }
-            _capsuleCollider.hideFlags = HideFlags.NotEditable;
+            _boxCollider.hideFlags = HideFlags.DontSave | HideFlags.NotEditable;
         }
 
         protected virtual void FixedUpdate()
@@ -570,7 +569,7 @@ namespace vnc
             IsSwimming = false;
 
             Vector3 movNormalized = movement.normalized;
-            float distance = movement.magnitude;
+            float distance = FloatFixer(movement.magnitude);
 
             // TODO: add option for noclip cheating
             //if (Game.Settings.Cheat_Noclip)
@@ -581,6 +580,8 @@ namespace vnc
 
             // old Calculates stairs
             StepDelta = Mathf.Clamp(StepDelta - Time.fixedDeltaTime, 0, Mathf.Infinity);
+            //if (IsGrounded && !Profile.FlyingController)
+            //    MoveOnSteps(movNormalized);
 
             float stepDistance = 0.05f;
 
@@ -621,6 +622,7 @@ namespace vnc
         /// <returns>Final position</returns>
         protected virtual Vector3 FixOverlaps(Vector3 position, Vector3 movement, out Vector3 nResult)
         {
+            movement = VectorFixer(movement);
             Vector3 normal;
             nResult = Vector3.zero; // this is unecessary
 
@@ -630,7 +632,7 @@ namespace vnc
             // TODO: what about alive? disabling? entities?
 
             foundLadder = false;
-            int nColls = OverlapCapsuleNonAlloc(movement, overlapingColliders, Profile.SurfaceLayers, QueryTriggerInteraction.Collide);
+            int nColls = OverlapBoxNonAlloc(movement, overlapingColliders, Profile.SurfaceLayers, QueryTriggerInteraction.Collide);
 
             for (int i = 0; i < nColls; i++)
             {
@@ -643,7 +645,9 @@ namespace vnc
                 }
                 else
                 {
-                    if (Physics.ComputePenetration(_capsuleCollider, position, transform.rotation,
+                    position = MoveOnSteps(position, movement);
+
+                    if (Physics.ComputePenetration(_boxCollider, position, Quaternion.identity,
                         c, c.transform.position, c.transform.rotation, out normal, out dist))
                     {
                         // if this occur, it's a bug in the PhysX engine
@@ -659,8 +663,6 @@ namespace vnc
                         dot = Vector3.Dot(normal, Vector3.up);
 
                         // COLLISIONS BELOW
-
-                        //float slopeDot = (Profile.SlopeAngleLimit / 90f);
                         if (dot > SlopeDot && dot <= 1)
                         {
                             Collisions = Collisions | CC_Collision.CollisionBelow;
@@ -682,37 +684,28 @@ namespace vnc
                         }
 
                         // COLLISIONS ON SIDES
-
                         if (dot >= 0 && dot < SlopeDot)
                         {
-                            if (HasStep(position, movement))
+                            Collisions = Collisions | CC_Collision.CollisionSides;
+
+                            if (c.CompareTag(Profile.LadderTag))
                             {
-                                position = MoveOnSteps(position, movement);
+                                foundLadder = true;
+
+                                // pick the first normal on contact
+                                if (!OnLadder)
+                                    surfaceNormals.ladder = normal;
+
                             }
                             else
                             {
-                                Collisions = Collisions | CC_Collision.CollisionSides;
-
-                                if (c.CompareTag(Profile.LadderTag))
-                                {
-                                    foundLadder = true;
-
-                                    // pick the first normal on contact
-                                    if (!OnLadder)
-                                        surfaceNormals.ladder = normal;
-
-                                }
-                                else
-                                {
-                                    position += normal * dist;
-                                    surfaceNormals.wall = normal;
-                                }
+                                position += normal * dist;
+                                surfaceNormals.wall = normal;
                                 OnCCHit(normal);
                             }
                         }
 
                         // COLLISIONS ABOVE
-
                         if (dot < -0.001)
                         {
                             Collisions = Collisions | CC_Collision.CollisionAbove;
@@ -789,19 +782,10 @@ namespace vnc
         }
         #endregion
 
-        protected virtual bool HasStep(Vector3 position, Vector3 movement)
-        {
-            if (!IsGrounded)
-                return false;
-
-            // detect collision one step above
-            var center = position + Profile.Center + movement + (Vector3.up * Profile.StepOffset);
-            Vector3 bounds = new Vector3(_capsuleCollider.radius / 2f + EPSILON, _capsuleCollider.height / 2f, _capsuleCollider.radius / 2f + EPSILON);
-            if (Physics.CheckBox(center, bounds, transform.rotation, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore))
-                return false;
-
-            return true;
-        }
+        /// <summary>
+        /// Check for steps on the way and adjust the controller.
+        /// </summary>
+        /// <param name="movNormalized">Normalized vector.</param>
 
         protected virtual Vector3 MoveOnSteps(Vector3 position, Vector3 movement)
         {
@@ -809,59 +793,61 @@ namespace vnc
             // the controller can be on
 
             // ignore step checking if on air
+            if (!IsGrounded)
+                return position;
+
             RaycastHit stepHit;
-            //Vector3 p0, p1; // capsule point 0 and 1
-            //float radius;   // capsule radius
+            Vector3 center, extends;
             movement.y = 0;
+            
+            center = position + movement + (Vector3.up * Profile.StepOffset);
+            extends = Profile.Size / 2;
 
-            //var center = IsDucking ? transform.TransformPoint(Profile.DuckingCenter) : transform.TransformPoint(Profile.Center);
-            //var center = position + (IsDucking ? Profile.DuckingCenter : Profile.Center);
-            var center = position + Profile.Center + movement + (Vector3.up * Profile.StepOffset);
-            //ToWorldSpaceControllerCapsule(center, out p0, out p1, out radius);
-            //p0 += movement + (Vector3.up * Profile.StepOffset);
-            //p1 += movement + (Vector3.up * Profile.StepOffset);
+            // increase hull size
+            extends += Vector3.one * EPSILON;
 
-            Vector3 bounds = new Vector3(_capsuleCollider.radius / 2f + EPSILON, _capsuleCollider.height / 2f, _capsuleCollider.radius / 2f + EPSILON);
-
-            //controller is free
-            var bottom = Profile.Center + position + (Vector3.down * Profile.Height / 2);
-
-            if (Physics.Raycast(bottom, movement.normalized, out stepHit, Mathf.Infinity, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore))
+            // check if collides while raising the controller
+            if (Physics.CheckBox(center, Profile.Size/2, Quaternion.identity, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore))
             {
-                var dot = Vector3.Dot(stepHit.normal, Vector3.up);
-                if (dot > SlopeDot && dot <= 1)
-                {
-                    // detected a ramp
-                    return position;
-                }
+                // collided with a solid object, probably a wall
+                return position; // doesn't do anything
             }
-
-            // test with box cast
-            if (Physics.BoxCast(center, bounds, Vector3.down,
-                out stepHit, transform.rotation, Mathf.Infinity, Profile.SurfaceLayers))
+            else
             {
-                var dot = Vector3.Dot(stepHit.normal, Vector3.up);
-                if (dot > SlopeDot && dot <= 1)
+                //controller is free
+                var bottom = Profile.Center + position + new Vector3(0, -extends.y, 0);
+
+                if(Physics.Raycast(bottom, movement.normalized, out stepHit, Mathf.Infinity, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore))
                 {
-                    if (stepHit.point.y > bottom.y)
+                    var dot = Vector3.Dot(stepHit.normal, Vector3.up);
+                    if(dot > SlopeDot && dot <= 1)
                     {
-                        float upDist = stepHit.point.y - bottom.y;
-                        Vector3 nextPosition = position;
-                        nextPosition.y = stepHit.point.y + (Profile.Height / 2f) + Profile.Depenetration;
-                        nextPosition += (movement.normalized * EPSILON);
-
-                        if (upDist > StepDelta)
-                        {
-                            StepDelta = upDist;
-                            Collisions |= CC_Collision.CollisionStep;
-                        }
-
-                        return nextPosition;
+                        // detected a ramp
+                        return position;
                     }
                 }
-            }
 
-            return position;
+                if (Physics.BoxCast(center, extends, Vector3.down,
+                    out stepHit, Quaternion.identity, Mathf.Infinity, Profile.SurfaceLayers))
+                {
+                    var dot = Vector3.Dot(stepHit.normal, Vector3.up);
+                    if (dot > SlopeDot && dot <= 1)
+                    {
+                        if (stepHit.point.y > bottom.y)
+                        {
+                            float upDist = stepHit.point.y - bottom.y;
+                            position.y = stepHit.point.y + (extends.y) + Profile.Depenetration;
+
+                            if (upDist > StepDelta)
+                            {
+                                StepDelta = upDist;
+                                Collisions |= CC_Collision.CollisionStep;
+                            }
+                        }
+                    }
+                }
+                return position;
+            }
         }
 
         /// <summary>
@@ -872,9 +858,14 @@ namespace vnc
         {
             if (IsDucking)
             {
-                float t = Profile.DuckingLerpSpeed * Time.fixedDeltaTime;
-                _capsuleCollider.height = Mathf.Lerp(_capsuleCollider.height, Profile.DuckingHeight, t);
-                _capsuleCollider.center = Vector3.Lerp(_capsuleCollider.center, Profile.DuckingCenter, t);
+                float t = 1;
+                if (Profile.DuckingLerp)
+                {
+                    t = Profile.DuckingLerpSpeed * Time.fixedDeltaTime;
+                }
+
+                _boxCollider.size = Vector3.Lerp(_boxCollider.size, Profile.DuckingSize, t);
+                _boxCollider.center = Vector3.Lerp(_boxCollider.center, Profile.DuckingCenter, t);
 
                 Vector3 diff = Profile.DuckingCenter - Profile.Center;
                 controllerView.localPosition = Vector3.Lerp(controllerView.localPosition,
@@ -882,7 +873,7 @@ namespace vnc
             }
             else
             {
-                _capsuleUpdate();
+                _boxUpdate();
                 controllerView.localPosition = viewPosition;
             }
         }
@@ -895,13 +886,12 @@ namespace vnc
         protected virtual bool CanStand()
         {
             // calculate if the standing capsule won't collider with anything
-            Vector3 point0, point1, duckingCenter;
-            float radius;
+            Vector3 halfExtends, duckingCenter;
+            Quaternion rotation;
             var center = transform.TransformPoint(Profile.Center);
-            ToWorldSpaceControllerCapsule(center, out point0, out point1, out radius);
-            radius -= 0.01f;
+            _boxCollider.ToWorldSpaceBox(out center, out halfExtends, out rotation);
             duckingCenter = transform.TransformPoint(Profile.DuckingCenter);
-            bool isBlocking = Physics.CheckCapsule(point0, point1, radius, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
+            bool isBlocking = Physics.CheckBox(center, halfExtends, Quaternion.identity, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
             return !isBlocking;
         }
 
@@ -930,30 +920,22 @@ namespace vnc
             }
 
             vel -= d * normal;
-            //vel = VectorFixer(vel);
             return vel;
         }
 
         public void DetectGround()
         {
-            Vector3 normal, center, halfExtents;
-            float distance, height;
+            Vector3 normal;
+            float distance;
 
             var offset = (Vector3.down * Profile.GroundCheck);
-            //var offset = (Vector3.down * Profile.Gravity) * Time.fixedDeltaTime;
-            center = transform.position + offset;
-            height = IsDucking ? Profile.DuckingHeight : Profile.Height;
-            halfExtents = new Vector3(Profile.Radius, height, Profile.Radius) / 2f;
 
-            int nColls = Physics.OverlapBoxNonAlloc(center, halfExtents, overlapingColliders,
-                transform.rotation, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
-
-            //int nColls = OverlapCapsuleNonAlloc(offset, overlapingColliders, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
+            int nColls = OverlapBoxNonAlloc(offset, overlapingColliders, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
             for (int i = 0; i < nColls; i++)
             {
                 Collider c = overlapingColliders[i];
                 var position = transform.position + offset;
-                if (Physics.ComputePenetration(_capsuleCollider, position, transform.rotation,
+                if (Physics.ComputePenetration(_boxCollider, position, transform.rotation,
                         c, c.transform.position, c.transform.rotation, out normal, out distance))
                 {
                     float dot = Vector3.Dot(normal, Vector3.up);
@@ -975,37 +957,13 @@ namespace vnc
         /// <param name="normal">Surface normal.</param>
         protected virtual void OnCCHit(Vector3 normal)
         {
-            // reset Y speed 
-            if (HasCollisionFlag(CC_Collision.CollisionAbove) && Velocity.y > 0)
-            {
-                Velocity.y = 0;
-            }
-
-            // adjust Velocity on side surfaces
-            if (HasCollisionFlag(CC_Collision.CollisionSides))
-            {
-                // method 1
-                var copyVelocity = Velocity;
-                //copyVelocity.y = 0;
-                copyVelocity = ClipVelocity(Velocity, normal, true);
-                Velocity.x = copyVelocity.x;
-                Velocity.z = copyVelocity.z;
-                Velocity.y = copyVelocity.y;
-                // method 2 with bounce
-                //float backoff = Vector3.Dot(copyVelocity, normal);
-                //if (!HasCollisionFlag(CC_Collision.CollisionBelow))
-                //    backoff = 0;
-
-                //var change = normal * backoff;
-                //copyVelocity = VectorFixer(copyVelocity - change);
-                //Velocity = copyVelocity;
-            }
-
-            if (HasCollisionFlag(CC_Collision.CollisionBelow))
+            if (HasCollisionFlag(CC_Collision.CollisionAbove)
+                || HasCollisionFlag(CC_Collision.CollisionSides)
+                || HasCollisionFlag(CC_Collision.CollisionBelow))
             {
                 Velocity = ClipVelocity(Velocity, normal, overbounce: true);
             }
-
+            
             WaterEdgePush(normal);
         }
 
@@ -1024,64 +982,25 @@ namespace vnc
         {
             for (int i = 0; i < 3; i++)
             {
-                vel[i] = (float)Math.Round(vel[i], 3, MidpointRounding.ToEven);
+                vel[i] = FloatFixer(vel[i]);
                 if (vel[i] > -EPSILON && vel[i] < EPSILON)
                     vel[i] = 0f;
             }
             return vel;
         }
 
-        /// <summary>
-        /// Convert the capsule's local space positions to world space positions
-        /// </summary>
-        /// <param name="center">Center of the capsule, can change if controller is ducking</param>
-        /// <param name="point0">Point on top</param>
-        /// <param name="point1">Point on bottom</param>
-        /// <param name="radius">Capsule radius.</param>
-        public void ToWorldSpaceControllerCapsule(Vector3 center, out Vector3 point0, out Vector3 point1, out float radius)
+        private float FloatFixer(float value)
         {
-            radius = 0f;
-            float height = 0f;
-            Vector3 lossyScale = AbsVec3(transform.lossyScale);
-            Vector3 dir = Vector3.zero;
-
-            switch (Profile.AxisOrientation)
-            {
-                case ControllerDirection.X:
-                    radius = Mathf.Max(lossyScale.y, lossyScale.z) * Profile.Radius;
-                    height = lossyScale.x * Profile.Height;
-                    dir = transform.TransformDirection(Vector3.right);
-                    break;
-                case ControllerDirection.Y:
-                    radius = Mathf.Max(lossyScale.x, lossyScale.z) * Profile.Radius;
-                    height = lossyScale.y * Profile.Height;
-                    dir = transform.TransformDirection(Vector3.up);
-                    break;
-                case ControllerDirection.Z:
-                    radius = Mathf.Max(lossyScale.x, lossyScale.y) * Profile.Radius;
-                    height = lossyScale.z * Profile.Height;
-                    dir = transform.TransformDirection(Vector3.forward);
-                    break;
-            }
-
-            if (height < radius * 2f)
-            {
-                dir = Vector3.zero;
-            }
-
-            point0 = center + dir * (height * 0.5f - radius);
-            point1 = center - dir * (height * 0.5f - radius);
+            return (float)Math.Round(value, 3, MidpointRounding.ToEven);
         }
 
-        public int OverlapCapsuleNonAlloc(Vector3 offset, Collider[] results, int layerMask = Physics.DefaultRaycastLayers, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
+        public int OverlapBoxNonAlloc(Vector3 offset, Collider[] results, int layerMask = Physics.DefaultRaycastLayers, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
         {
-            Vector3 point0, point1;
-            float radius;
-            var center = IsDucking ? transform.TransformPoint(Profile.DuckingCenter) : transform.TransformPoint(Profile.Center);
-            ToWorldSpaceControllerCapsule(center, out point0, out point1, out radius);
-            point0 += offset;
-            point1 += offset;
-            return Physics.OverlapCapsuleNonAlloc(point0, point1, radius, results, layerMask, queryTriggerInteraction);
+            Vector3 center, halfExtents;
+            Quaternion orientation;
+            _boxCollider.ToWorldSpaceBox(out center, out halfExtents, out orientation);
+            center += offset;
+            return Physics.OverlapBoxNonAlloc(center, halfExtents, results, Quaternion.identity, layerMask, queryTriggerInteraction);
         }
 
         public Vector3 AbsVec3(Vector3 v)
@@ -1104,7 +1023,7 @@ namespace vnc
             return (velocity.x * direction.x) + (velocity.y * direction.y);
         }
 
-        #region State
+#region State
         public bool HasState(CC_State state)
         {
             return (State & state) != 0;
@@ -1119,19 +1038,18 @@ namespace vnc
         {
             State &= ~state;
         }
-        #endregion
+#endregion
 
         // do not modify
-        private void _capsuleUpdate()
+        private void _boxUpdate()
         {
-            _capsuleCollider.height = Profile.Height;
-            _capsuleCollider.radius = Profile.Radius;
-            _capsuleCollider.center = Profile.Center;
+            _boxCollider.size = Profile.Size;
+            _boxCollider.center = Profile.Center;
         }
 
-        #endregion
+#endregion
 
-        #region Enums
+#region Enums
         [Flags]
         public enum CC_State
         {
@@ -1158,28 +1076,28 @@ namespace vnc
             Partial,    // body on water, face outside
             Underwater  // submerged
         }
-        #endregion
+#endregion
 
-        #region Debug
+#region Debug
         protected virtual void OnDrawGizmos()
         {
-            Vector3 start, end;
-
             if (Profile)
             {
                 if (Application.isPlaying)
                 {
-                    start = transform.position + _capsuleCollider.center + (Vector3.up * (_capsuleCollider.height / 2f));
-                    end = transform.position + _capsuleCollider.center + (Vector3.down * (_capsuleCollider.height / 2f));
+                    Gizmos.color = Color.green;
+                    Gizmos.DrawCube(_boxCollider.center, _boxCollider.size);
+
+                    Gizmos.color = Color.yellow;
+                    Vector3 center = Velocity + (Vector3.up * Profile.StepOffset);
+                    Gizmos.DrawCube(center, _boxCollider.size);
                 }
                 else
                 {
-                    start = transform.position + Profile.Center + (Vector3.up * (Profile.Height / 2f));
-                    end = transform.position + Profile.Center + (Vector3.down * (Profile.Height / 2f));
+                    Gizmos.color = Color.green;
+                    Gizmos.DrawCube(Profile.Center, Profile.Size);
                 }
 
-
-                DebugExtension.DrawCapsule(start, end, Color.yellow, Profile.Radius);
                 DebugExtension.DrawCircle(transform.position + Vector3.up * Profile.SwimmingOffset, Color.blue, 1f);
 
                 DebugExtension.DrawArrow(transform.position, wishDir, Color.black);
@@ -1192,12 +1110,9 @@ namespace vnc
         {
             if (showDebugStats && Application.isEditor)
             {
-                Rect rect = new Rect(0, 0, 250, 250);
+                Rect rect = new Rect(0, 0, 250, 30);
                 Vector3 planeVel = Velocity; planeVel.y = 0;
-                string debugText = "Press 'Esc' to unlock cursor.\n"
-                    + "\n Collisions: " + Collisions
-                    + "\n State: " + State;
-
+                string debugText = "Press 'Esc' to unlock cursor.\n";                
 
                 if (guiStyle != null)
                     GUI.Label(rect, debugText, guiStyle);
@@ -1205,7 +1120,7 @@ namespace vnc
                     GUI.Label(rect, debugText);
             }
         }
-        #endregion
+#endregion
     }
 }
 

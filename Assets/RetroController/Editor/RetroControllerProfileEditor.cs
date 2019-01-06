@@ -43,10 +43,36 @@ namespace vnc.Editor
             EditorGUILayout.Space();
 
             depenetration.floatValue = EditorGUILayout.FloatField("Depenetration", depenetration.floatValue);
-            if(GUILayout.Button("Reset"))
+
+            GUILayout.Space(10);
+            EditorGUILayout.LabelField("Options", FancyHeaderDecoratorDrawer.GetStyle());
+            GUILayout.Space(5);
+            if (GUILayout.Button("Duplicate"))
             {
-                MethodInfo method = typeof(RetroControllerProfile).GetMethod("DepenetrationReset");
-                method.Invoke(serializedObject.targetObject, null);
+                string title = string.Format("Duplicate of \"{0}\"", target.name);
+                string path = EditorUtility.SaveFilePanel(title, Application.dataPath, "Copy of " + target.name, "asset");
+                if (path.Length > 0)
+                {
+                    string targetPath = AssetDatabase.GetAssetPath(target);
+                    if (AssetDatabase.CopyAsset(targetPath, path))
+                    {
+                        EditorUtility.DisplayDialog("Retro Controller", "Profile duplicated!", "Ok");
+                    }
+                    else
+                    {
+                        EditorUtility.DisplayDialog("Retro Controller", "Error duplicating profile.", "Ok");
+                    }
+                }
+            }
+            if (GUILayout.Button("Reset"))
+            {
+                string message = "ATTENTION!\n\nThis will reset all your current configurations and they can be " +
+                    "potentially lost.\n\nAre you sure?";
+                if (EditorUtility.DisplayDialog("Retro Controller", message, "Yes", "No"))
+                {
+                    MethodInfo method = typeof(RetroControllerProfile).GetMethod("DepenetrationReset");
+                    method.Invoke(serializedObject.targetObject, null);
+                }
             }
 
             serializedObject.ApplyModifiedProperties();
