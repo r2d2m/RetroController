@@ -898,6 +898,7 @@ namespace vnc
         /// <param name="normal">The plane normal</param>
         /// <param name="overbounce">Bounce back a little</param>
         /// <returns>The resulting Velocity</returns>
+        [System.Obsolete]
         protected virtual Vector3 ClipVelocity(Vector3 vel, Vector3 normal, bool overbounce)
         {
             var d = Vector3.Dot(vel, normal);
