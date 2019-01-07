@@ -566,7 +566,7 @@ namespace vnc
             Collisions = CC_Collision.None;
             IsSwimming = false;
 
-            Vector3 movNormalized = movement.normalized;
+            Vector3 direction = movement.normalized;
             float distance = FloatFixer(movement.magnitude);
 
             // TODO: add option for noclip cheating
@@ -586,14 +586,16 @@ namespace vnc
             Vector3 nResult;
             if (distance > 0)
             {
-                for (float curDist = 0; curDist < distance; curDist += stepDistance)
-                {
-                    float curMagnitude = Math.Min(stepDistance, distance - curDist);
-                    Vector3 start = transform.position;
-                    Vector3 end = start + movNormalized * curMagnitude;
-                    transform.position = FixOverlaps(end, movNormalized * curMagnitude);
-                }
+                //transform.position = CalculateCollisions(transform.position, direction, distance);
 
+                //for (float curDist = 0; curDist < distance; curDist += stepDistance)
+                //{
+                //    float curMagnitude = Math.Min(stepDistance, distance - curDist);
+                //    Vector3 start = transform.position;
+                //    Vector3 end = start + movNormalized * curMagnitude;
+                //    transform.position = FixOverlaps(end, movNormalized * curMagnitude);
+                //}
+                transform.position = FixOverlaps(transform.position + movement, movement);
             }
             else
             {
@@ -609,6 +611,56 @@ namespace vnc
 
             // handles collision
             //OnCCHit(nTotal.normalized);
+        }
+
+        protected virtual Vector3 CalculateCollisions(Vector3 position, Vector3 direction, float distance)
+        {
+            Vector3 center, half;
+            Quaternion rot;
+            RaycastHit boxHit;
+            _boxCollider.ToWorldSpaceBox(out center, out half, out rot);
+
+            if (Physics.BoxCast(center, half, direction, out boxHit, rot, distance, 
+                Profile.SurfaceLayers, QueryTriggerInteraction.Ignore))
+            {
+                position += direction * (FloatFixer(boxHit.distance) - 0.01f);
+                QualifyCollisions(VectorFixer(boxHit.normal));
+            }
+            else
+            {
+                var movement = direction * distance;
+                position = FixOverlaps(position + movement, movement);
+                //position += direction * distance;
+            }
+
+
+            return position;
+        }
+
+        protected virtual void QualifyCollisions(Vector3 normal)
+        {
+            float dot = Vector3.Dot(normal, Vector3.up);
+
+            // COLLISIONS BELOW
+            if (dot > SlopeDot && dot <= 1)
+            {
+                Collisions = Collisions | CC_Collision.CollisionBelow;
+                surfaceNormals.floor = normal;
+                OnCCHit(normal);
+            }
+
+            // COLLISIONS ON SIDES
+            if (dot >= 0 && dot < SlopeDot)
+            {
+                Collisions = Collisions | CC_Collision.CollisionSides;
+            }
+
+            // COLLISIONS ABOVE
+            if (dot < -0.001)
+            {
+                Collisions = Collisions | CC_Collision.CollisionAbove;
+                OnCCHit(normal);
+            }
         }
 
         /// <summary>
@@ -885,8 +937,8 @@ namespace vnc
             Vector3 halfExtends, duckingCenter;
             Quaternion rotation;
             var center = transform.TransformPoint(Profile.Center);
-            _boxCollider.ToWorldSpaceBox(out center, out halfExtends, out rotation);
             duckingCenter = transform.TransformPoint(Profile.DuckingCenter);
+            _boxCollider.ToWorldSpaceBox(out duckingCenter, out halfExtends, out rotation);
             bool isBlocking = Physics.CheckBox(center, halfExtends, Quaternion.identity, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
             return !isBlocking;
         }
