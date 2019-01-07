@@ -576,7 +576,7 @@ namespace vnc
             //    return;
             //}
 
-            StepDelta = Mathf.Clamp(StepDelta - Time.fixedDeltaTime, 0, Mathf.Infinity);            
+            StepDelta = Mathf.Clamp(StepDelta - Time.fixedDeltaTime, 0, Mathf.Infinity);
 
             float stepDistance = 0.05f;
 
@@ -603,7 +603,7 @@ namespace vnc
             if (!(HasCollisionFlag(CC_Collision.CollisionBelow)))
                 DetectGround();
         }
-        
+
         /// <summary>
         /// Move the transform trying to stop being overlaping other colliders
         /// </summary>
@@ -688,9 +688,9 @@ namespace vnc
                             }
                             else
                             {
-                                bool foundStep =false;
+                                bool foundStep = false;
                                 position = MoveOnSteps(position, out foundStep);
-                                if(!foundStep)
+                                if (!foundStep)
                                 {
                                     position += normal * dist;
                                     surfaceNormals.wall = normal;
@@ -780,7 +780,7 @@ namespace vnc
         /// Check for steps on the way and adjust the controller.
         /// </summary>
         /// <param name="movNormalized">Normalized vector.</param>
-
+        Collider[] overlapOnSteps = new Collider[4];
         protected virtual Vector3 MoveOnSteps(Vector3 position, out bool foundStep)
         {
             // after finding a collision, try to check if it's a step
@@ -807,7 +807,7 @@ namespace vnc
             foundUp = Physics.BoxCast(center, halfExtends, Vector3.up, out stepHit, Quaternion.identity, Profile.StepOffset,
                 Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
 
-            if(foundUp && stepHit.distance > 0)
+            if (foundUp && stepHit.distance > 0)
             {
                 upCenter = center + (Vector3.up * stepHit.distance);
             }
@@ -816,14 +816,25 @@ namespace vnc
                 upCenter = center + (Vector3.up * Profile.StepOffset);
             }
 
+            // check if it's free
+            halfExtends -= Vector3.one * 0.01f;
+            int nColls = Physics.OverlapBoxNonAlloc(upCenter, halfExtends, overlapOnSteps, Quaternion.identity,
+                Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
+            if (nColls > 0)
+            {
+                Collider c = overlapOnSteps[nColls];
+                // still overlapping something, cancel stepping
+                return position;
+            }
+
             // cast down
             bool foundDown;
             foundDown = Physics.BoxCast(upCenter, halfExtends, Vector3.down, out stepHit, Quaternion.identity, Profile.StepOffset,
                 Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
-            if(foundDown && stepHit.distance > 0)
+            if (foundDown && stepHit.distance > 0)
             {
                 downCenter = upCenter + (Vector3.down * stepHit.distance);
-                if(downCenter.y > center.y)
+                if (downCenter.y > center.y)
                 {
                     foundStep = true;
                     float upDist = Mathf.Abs(downCenter.y - center.y);
