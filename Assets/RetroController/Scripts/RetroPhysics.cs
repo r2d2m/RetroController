@@ -20,7 +20,7 @@ namespace vnc
         /// <returns>The resulting Velocity</returns>
         public static Vector3 ClipVelocity(Vector3 velocity, Vector3 normal, bool overbounce)
         {
-            var d = Vector3.Dot(vel, normal);
+            var d = Vector3.Dot(velocity, normal);
 
             if (overbounce)
             {
@@ -35,8 +35,8 @@ namespace vnc
                 }
             }
 
-            vel -= d * normal;
-            return vel;
+            velocity -= d * normal;
+            return velocity;
         }
     }
 

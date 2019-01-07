@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using vnc.Utils;
 
-public class CastTest : MonoBehaviour
+public class StairCastTest : MonoBehaviour
 {
     public BoxCollider box;
     public LayerMask contactLayer;
