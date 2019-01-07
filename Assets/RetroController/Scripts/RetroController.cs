@@ -822,13 +822,13 @@ namespace vnc
                 Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
             if (nColls > 0)
             {
-                Collider c = overlapOnSteps[nColls];
                 // still overlapping something, cancel stepping
                 return position;
             }
 
             // cast down
             bool foundDown;
+            halfExtends += Vector3.one * 0.01f;
             foundDown = Physics.BoxCast(upCenter, halfExtends, Vector3.down, out stepHit, Quaternion.identity, Profile.StepOffset,
                 Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
             if (foundDown && stepHit.distance > 0)
