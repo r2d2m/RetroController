@@ -576,18 +576,12 @@ namespace vnc
             //    return;
             //}
 
-            // old Calculates stairs
-            StepDelta = Mathf.Clamp(StepDelta - Time.fixedDeltaTime, 0, Mathf.Infinity);
-            //if (IsGrounded && !Profile.FlyingController)
-            //    MoveOnSteps(movNormalized);
+            StepDelta = Mathf.Clamp(StepDelta - Time.fixedDeltaTime, 0, Mathf.Infinity);            
 
             float stepDistance = 0.05f;
 
-            Vector3 nResult;
             if (distance > 0)
             {
-                //transform.position = CalculateCollisions(transform.position, direction, distance);
-
                 //for (float curDist = 0; curDist < distance; curDist += stepDistance)
                 //{
                 //    float curMagnitude = Math.Min(stepDistance, distance - curDist);
@@ -608,61 +602,8 @@ namespace vnc
             // extra check to detect ground
             if (!(HasCollisionFlag(CC_Collision.CollisionBelow)))
                 DetectGround();
-
-            // handles collision
-            //OnCCHit(nTotal.normalized);
         }
-
-        protected virtual Vector3 CalculateCollisions(Vector3 position, Vector3 direction, float distance)
-        {
-            Vector3 center, half;
-            Quaternion rot;
-            RaycastHit boxHit;
-            _boxCollider.ToWorldSpaceBox(out center, out half, out rot);
-
-            if (Physics.BoxCast(center, half, direction, out boxHit, rot, distance, 
-                Profile.SurfaceLayers, QueryTriggerInteraction.Ignore))
-            {
-                position += direction * (FloatFixer(boxHit.distance) - 0.01f);
-                QualifyCollisions(VectorFixer(boxHit.normal));
-            }
-            else
-            {
-                var movement = direction * distance;
-                position = FixOverlaps(position + movement, movement);
-                //position += direction * distance;
-            }
-
-
-            return position;
-        }
-
-        protected virtual void QualifyCollisions(Vector3 normal)
-        {
-            float dot = Vector3.Dot(normal, Vector3.up);
-
-            // COLLISIONS BELOW
-            if (dot > SlopeDot && dot <= 1)
-            {
-                Collisions = Collisions | CC_Collision.CollisionBelow;
-                surfaceNormals.floor = normal;
-                OnCCHit(normal);
-            }
-
-            // COLLISIONS ON SIDES
-            if (dot >= 0 && dot < SlopeDot)
-            {
-                Collisions = Collisions | CC_Collision.CollisionSides;
-            }
-
-            // COLLISIONS ABOVE
-            if (dot < -0.001)
-            {
-                Collisions = Collisions | CC_Collision.CollisionAbove;
-                OnCCHit(normal);
-            }
-        }
-
+        
         /// <summary>
         /// Move the transform trying to stop being overlaping other colliders
         /// </summary>
@@ -692,7 +633,7 @@ namespace vnc
                 }
                 else
                 {
-                    position = MoveOnSteps(position, movement);
+                    //position = MoveOnSteps(position, movement);
 
                     if (Physics.ComputePenetration(_boxCollider, position, Quaternion.identity,
                         c, c.transform.position, c.transform.rotation, out normal, out dist))
@@ -747,10 +688,15 @@ namespace vnc
                             }
                             else
                             {
-                                position += normal * dist;
-                                surfaceNormals.wall = normal;
-                                OnCCHit(normal);
-                                WaterEdgePush(normal);
+                                bool foundStep =false;
+                                position = MoveOnSteps(position, out foundStep);
+                                if(!foundStep)
+                                {
+                                    position += normal * dist;
+                                    surfaceNormals.wall = normal;
+                                    OnCCHit(normal);
+                                    WaterEdgePush(normal);
+                                }
                             }
                         }
 
@@ -835,67 +781,110 @@ namespace vnc
         /// </summary>
         /// <param name="movNormalized">Normalized vector.</param>
 
-        protected virtual Vector3 MoveOnSteps(Vector3 position, Vector3 movement)
+        protected virtual Vector3 MoveOnSteps(Vector3 position, out bool foundStep)
         {
             // after finding a collision, try to check if it's a step
             // the controller can be on
 
-            // ignore step checking if on air
+            foundStep = false;
             if (!IsGrounded)
+            {
                 return position;
+            }
 
             RaycastHit stepHit;
-            Vector3 center, extends;
-            movement.y = 0;
-
-            center = position + movement + (Vector3.up * Profile.StepOffset);
-            extends = Profile.Size / 2;
-
+            Vector3 upCenter, downCenter;
+            Vector3 center, halfExtends;
+            Quaternion rot;
+            _boxCollider.ToWorldSpaceBox(out center, out halfExtends, out rot);
+            // override center with desired position
+            center = _boxCollider.center + position;
             // increase hull size
-            extends += Vector3.one * EPSILON;
+            halfExtends += Vector3.one * 0.01f;
 
-            // check if collides while raising the controller
-            if (Physics.CheckBox(center, Profile.Size / 2, Quaternion.identity, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore))
+            // cast up
+            bool foundUp;
+            foundUp = Physics.BoxCast(center, halfExtends, Vector3.up, out stepHit, Quaternion.identity, Profile.StepOffset,
+                Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
+
+            if(foundUp && stepHit.distance > 0)
             {
-                // collided with a solid object, probably a wall
-                return position; // doesn't do anything
+                upCenter = center + (Vector3.up * stepHit.distance);
             }
             else
             {
-                //controller is free
-                var bottom = Profile.Center + position + new Vector3(0, -extends.y, 0);
-
-                if (Physics.Raycast(bottom, movement.normalized, out stepHit, Mathf.Infinity, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore))
-                {
-                    var dot = Vector3.Dot(stepHit.normal, Vector3.up);
-                    if (dot > SlopeDot && dot <= 1)
-                    {
-                        // detected a ramp
-                        return position;
-                    }
-                }
-
-                if (Physics.BoxCast(center, extends, Vector3.down,
-                    out stepHit, Quaternion.identity, Mathf.Infinity, Profile.SurfaceLayers))
-                {
-                    var dot = Vector3.Dot(stepHit.normal, Vector3.up);
-                    if (dot > SlopeDot && dot <= 1)
-                    {
-                        if (stepHit.point.y > bottom.y)
-                        {
-                            float upDist = stepHit.point.y - bottom.y;
-                            position.y = stepHit.point.y + (extends.y) + Profile.Depenetration;
-
-                            if (upDist > StepDelta)
-                            {
-                                StepDelta = upDist;
-                                Collisions |= CC_Collision.CollisionStep;
-                            }
-                        }
-                    }
-                }
-                return position;
+                upCenter = center + (Vector3.up * Profile.StepOffset);
             }
+
+            // cast down
+            bool foundDown;
+            foundDown = Physics.BoxCast(upCenter, halfExtends, Vector3.down, out stepHit, Quaternion.identity, Profile.StepOffset,
+                Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
+            if(foundDown && stepHit.distance > 0)
+            {
+                downCenter = upCenter + (Vector3.down * stepHit.distance);
+                if(downCenter.y > center.y)
+                {
+                    foundStep = true;
+                    float upDist = Mathf.Abs(downCenter.y - center.y);
+                    StepDelta = upDist;
+                    position.y += upDist;
+                    Collisions |= CC_Collision.CollisionStep;
+                }
+            }
+
+            return position;
+
+            //movement.y = 0;
+
+            //center = position + movement + (Vector3.up * Profile.StepOffset);
+            //halfExtends = Profile.Size / 2;
+
+            //// increase hull size
+            //halfExtends += Vector3.one * EPSILON;
+
+            //// check if collides while raising the controller
+            //if (Physics.CheckBox(center, Profile.Size / 2, Quaternion.identity, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore))
+            //{
+            //    // collided with a solid object, probably a wall
+            //    return position; // doesn't do anything
+            //}
+            //else
+            //{
+            //    //controller is free
+            //    var bottom = Profile.Center + position + new Vector3(0, -halfExtends.y, 0);
+
+            //    if (Physics.Raycast(bottom, movement.normalized, out stepHit, Mathf.Infinity, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore))
+            //    {
+            //        var dot = Vector3.Dot(stepHit.normal, Vector3.up);
+            //        if (dot > SlopeDot && dot <= 1)
+            //        {
+            //            // detected a ramp
+            //            return position;
+            //        }
+            //    }
+
+            //    if (Physics.BoxCast(center, halfExtends, Vector3.down,
+            //        out stepHit, Quaternion.identity, Mathf.Infinity, Profile.SurfaceLayers))
+            //    {
+            //        var dot = Vector3.Dot(stepHit.normal, Vector3.up);
+            //        if (dot > SlopeDot && dot <= 1)
+            //        {
+            //            if (stepHit.point.y > bottom.y)
+            //            {
+            //                float upDist = stepHit.point.y - bottom.y;
+            //                position.y = stepHit.point.y + (halfExtends.y) + Profile.Depenetration;
+
+            //                if (upDist > StepDelta)
+            //                {
+            //                    StepDelta = upDist;
+            //                    Collisions |= CC_Collision.CollisionStep;
+            //                }
+            //            }
+            //        }
+            //    }
+            //    return position;
+            //}
         }
 
         /// <summary>
