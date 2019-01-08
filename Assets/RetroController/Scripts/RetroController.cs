@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.Events;
 using vnc.Utils;
@@ -26,6 +25,7 @@ namespace vnc
         public const float OVERBOUNCE = 1.01f;
 
         private Collider[] overlapingColliders = new Collider[8];
+        private Collider[] overlapOnSteps = new Collider[4];
         [HideInInspector] public CC_Collision Collisions { get; private set; }
         private BoxCollider _boxCollider;
 
@@ -60,6 +60,15 @@ namespace vnc
         public bool OnLadder { get { return (State & CC_State.OnLadder) != 0; } }
         public bool IsDucking { get { return (State & CC_State.Ducking) != 0; } }
         public bool WalkedOnStep { get { return HasCollisionFlag(CC_Collision.CollisionStep); } }
+        public bool NoClipping
+        {
+            get { return HasState(CC_State.NoClip);}
+            set
+            {
+                if (value) AddState(CC_State.NoClip);
+                else RemoveState(CC_State.NoClip);
+            }
+        }
         public SurfaceNormals surfaceNormals = new SurfaceNormals();
 
         // Water
@@ -69,7 +78,6 @@ namespace vnc
         private float WaterThreshold { get { return transform.position.y + Profile.SwimmingOffset; } }
 
         // Platforms
-        protected Platform currentPlatform;
         protected Collider platformCollider;
         protected bool wasOnPlatform;
 
@@ -245,20 +253,16 @@ namespace vnc
             // stick on platform
             if (OnPlatform)
             {
-                if (currentPlatform == null)
-                    currentPlatform = platformCollider.GetComponent<Platform>();
-
-                if (currentPlatform)
-                    CharacterMove(Velocity + currentPlatform.Velocity);
+                OnPlatformMove();
             }
             else
             {
-                // normal movement
+                // movement on static surface
 
                 // was on platform?
                 if (wasOnPlatform && !OnPlatform)
                 {
-                    currentPlatform = null;
+                    platformCollider = null;
                 }
 
                 //LastCollision = p_Controller.Move(Velocity);
@@ -280,6 +284,15 @@ namespace vnc
         }
 
         /// <summary>
+        /// Movement method when the controller is on a platform.
+        /// Override it to add custom platform code.
+        /// </summary>
+        protected virtual void OnPlatformMove()
+        {
+            CharacterMove(Velocity);
+        }
+
+        /// <summary>
         /// Update loop for when the controller is underwater
         /// </summary>
         protected virtual void WaterMovementUpdate()
@@ -290,7 +303,7 @@ namespace vnc
             wishDir = (walk + strafe) + (Vector3.up * Swim);
             wishDir.Normalize();
 
-            //wishspeed = wishdir.magnitude;
+            triedJumping = 0;   // ignores jumping on water
 
             Velocity = MoveWater(wishDir, Velocity);
             CalculateGravity(Profile.WaterGravityScale);
@@ -569,26 +582,16 @@ namespace vnc
             Vector3 direction = movement.normalized;
             float distance = FloatFixer(movement.magnitude);
 
-            // TODO: add option for noclip cheating
-            //if (Game.Settings.Cheat_Noclip)
-            //{
-            //    transform.position += movement;
-            //    return;
-            //}
+            if(NoClipping)
+            {
+                transform.position += movement;
+                return;
+            }
 
             StepDelta = Mathf.Clamp(StepDelta - Time.fixedDeltaTime, 0, Mathf.Infinity);
 
-            float stepDistance = 0.05f;
-
             if (distance > 0)
             {
-                //for (float curDist = 0; curDist < distance; curDist += stepDistance)
-                //{
-                //    float curMagnitude = Math.Min(stepDistance, distance - curDist);
-                //    Vector3 start = transform.position;
-                //    Vector3 end = start + movNormalized * curMagnitude;
-                //    transform.position = FixOverlaps(end, movNormalized * curMagnitude);
-                //}
                 transform.position = FixOverlaps(transform.position + movement, movement);
             }
             else
@@ -726,7 +729,7 @@ namespace vnc
         /// <summary>
         /// Detect water surface.
         /// </summary>
-        public virtual void CheckWater(Collider waterCollider)
+        protected virtual void CheckWater(Collider waterCollider)
         {
             IsSwimming = true;
 
@@ -742,7 +745,7 @@ namespace vnc
         /// <summary>
         /// Calculate the water level
         /// </summary>
-        public virtual void SetWaterLevel()
+        protected virtual void SetWaterLevel()
         {
             if (IsSwimming)
             {
@@ -779,8 +782,9 @@ namespace vnc
         /// <summary>
         /// Check for steps on the way and adjust the controller.
         /// </summary>
-        /// <param name="movNormalized">Normalized vector.</param>
-        Collider[] overlapOnSteps = new Collider[4];
+        /// <param name="position">Next position.</param>
+        /// <param name="foundStep">If a step was found.</param>
+        /// <returns>Adjusted position with the possible step.</returns>
         protected virtual Vector3 MoveOnSteps(Vector3 position, out bool foundStep)
         {
             // after finding a collision, try to check if it's a step
@@ -845,57 +849,6 @@ namespace vnc
             }
 
             return position;
-
-            //movement.y = 0;
-
-            //center = position + movement + (Vector3.up * Profile.StepOffset);
-            //halfExtends = Profile.Size / 2;
-
-            //// increase hull size
-            //halfExtends += Vector3.one * EPSILON;
-
-            //// check if collides while raising the controller
-            //if (Physics.CheckBox(center, Profile.Size / 2, Quaternion.identity, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore))
-            //{
-            //    // collided with a solid object, probably a wall
-            //    return position; // doesn't do anything
-            //}
-            //else
-            //{
-            //    //controller is free
-            //    var bottom = Profile.Center + position + new Vector3(0, -halfExtends.y, 0);
-
-            //    if (Physics.Raycast(bottom, movement.normalized, out stepHit, Mathf.Infinity, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore))
-            //    {
-            //        var dot = Vector3.Dot(stepHit.normal, Vector3.up);
-            //        if (dot > SlopeDot && dot <= 1)
-            //        {
-            //            // detected a ramp
-            //            return position;
-            //        }
-            //    }
-
-            //    if (Physics.BoxCast(center, halfExtends, Vector3.down,
-            //        out stepHit, Quaternion.identity, Mathf.Infinity, Profile.SurfaceLayers))
-            //    {
-            //        var dot = Vector3.Dot(stepHit.normal, Vector3.up);
-            //        if (dot > SlopeDot && dot <= 1)
-            //        {
-            //            if (stepHit.point.y > bottom.y)
-            //            {
-            //                float upDist = stepHit.point.y - bottom.y;
-            //                position.y = stepHit.point.y + (halfExtends.y) + Profile.Depenetration;
-
-            //                if (upDist > StepDelta)
-            //                {
-            //                    StepDelta = upDist;
-            //                    Collisions |= CC_Collision.CollisionStep;
-            //                }
-            //            }
-            //        }
-            //    }
-            //    return position;
-            //}
         }
 
         /// <summary>
@@ -980,8 +933,6 @@ namespace vnc
             Velocity = RetroPhysics.ClipVelocity(Velocity, normal, overbounce: true);
         }
 
-
-
         #endregion
 
         #region Utility
@@ -1002,6 +953,11 @@ namespace vnc
             return vel;
         }
 
+        /// <summary>
+        /// Increase value precision
+        /// </summary>
+        /// <param name="value">Current value</param>
+        /// <returns></returns>
         private float FloatFixer(float value)
         {
             return (float)Math.Round(value, 3, MidpointRounding.ToEven);
@@ -1015,12 +971,7 @@ namespace vnc
             center += offset;
             return Physics.OverlapBoxNonAlloc(center, halfExtents, results, Quaternion.identity, layerMask, queryTriggerInteraction);
         }
-
-        public Vector3 AbsVec3(Vector3 v)
-        {
-            return new Vector3(Mathf.Abs(v.x), Mathf.Abs(v.y), Mathf.Abs(v.z));
-        }
-
+        
         public bool CompareLayer(GameObject obj, LayerMask layerMask)
         {
             return ((1 << obj.layer) & layerMask) != 0;
@@ -1030,12 +981,7 @@ namespace vnc
         {
             return (Collisions & flag) != 0;
         }
-
-        private float DotProduct(Vector3 velocity, Vector3 direction)
-        {
-            return (velocity.x * direction.x) + (velocity.y * direction.y);
-        }
-
+        
         #region State
         public bool HasState(CC_State state)
         {
@@ -1070,7 +1016,8 @@ namespace vnc
             IsGrounded = 2,
             OnPlatform = 4,
             OnLadder = 8,
-            Ducking = 16
+            Ducking = 16,
+            NoClip = 32
         }
 
         [Flags]

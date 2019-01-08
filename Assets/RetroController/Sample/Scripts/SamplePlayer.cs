@@ -43,7 +43,7 @@ namespace vnc.Samples
 
         void Update()
         {
-            if(Input.GetKeyDown(KeyCode.R) && !isPlaying)
+            if (Input.GetKeyDown(KeyCode.R) && !isPlaying)
             {
                 if (isRecording) StopRecording();
                 else StartRecording();
@@ -128,7 +128,7 @@ namespace vnc.Samples
                     sprint = sprint,
                     duck = duck,
                     jump = jump,
-                    rotation= transform.rotation
+                    rotation = transform.rotation
                 };
                 index++;
             }

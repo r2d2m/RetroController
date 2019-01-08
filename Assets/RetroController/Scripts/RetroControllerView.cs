@@ -58,14 +58,13 @@ namespace vnc
 
                 if (Mathf.Clamp01(horizontalVelocityMagnitude) > RetroController.EPSILON)
                 {
-                    bob.cycle += (Time.deltaTime * bob.speed);
+                    bob.cycle += (Time.fixedDeltaTime * bob.speed);
                     if (bob.cycle >= 360) bob.cycle = 0;
-                    //bobOscillate *= velocityMag;
                 }
             }
             else
             {
-                bob.cycle += (Time.deltaTime * bob.speed);
+                bob.cycle += (Time.fixedDeltaTime * bob.speed);
                 if (bob.cycle >= 360) bob.cycle = 0;
 
             }
