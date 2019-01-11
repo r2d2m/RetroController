@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class UnityMouseLook : MonoBehaviour
+public class MouseLook : MonoBehaviour
 {
     public float mouseSensitivity = 2f;
     public bool clampVerticalRotation = true;
@@ -9,7 +9,7 @@ public class UnityMouseLook : MonoBehaviour
     public float MaximumX = 90F;
     public bool smooth;
     public float smoothTime = 5f;
-    private bool lockCursor = true;
+    public bool lockCursor { get; private set; }
 
     [Space]
     public bool cameraKick = true;

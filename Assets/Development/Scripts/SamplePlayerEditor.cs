@@ -1,17 +1,19 @@
-﻿using UnityEditor;
+﻿#if UNITY_EDITOR
+using UnityEditor;
 using UnityEngine;
+using vnc.Development;
 using vnc.Samples;
 
-namespace vnc.Editor
+namespace vnc.Development
 {
-    [CustomEditor(typeof(SamplePlayer))]
+    [CustomEditor(typeof(SamplePlayerDebug))]
     public class SamplePlayerEditor : UnityEditor.Editor
     {
-        SamplePlayer samplePlayer;
+        SamplePlayerDebug samplePlayer;
 
         public override void OnInspectorGUI()
         {
-            samplePlayer = ((SamplePlayer)target);
+            samplePlayer = ((SamplePlayerDebug)target);
 
             if (samplePlayer.isPlaying)
             {
@@ -58,3 +60,4 @@ namespace vnc.Editor
     }
 
 }
+#endif
