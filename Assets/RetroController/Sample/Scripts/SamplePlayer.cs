@@ -16,6 +16,9 @@ namespace vnc.Samples
         public Transform playerView;            // the controller view
         public Animator gunAnimator;            // sample animator for the gun
 
+        [Space, Tooltip("Switch to ducking and standing by pressing once instead of holding")]
+        public bool toggleDucking;
+
         private void Awake()
         {
             mouseLook.Init(transform, playerView);
@@ -34,7 +37,19 @@ namespace vnc.Samples
             swim = (Input.GetKey(KeyCode.Space) ? 1 : 0) - (Input.GetKey(KeyCode.C) ? 1 : 0);
             jump = Input.GetKeyDown(KeyCode.Space);
             sprint = Input.GetKey(KeyCode.LeftShift);
-            duck = Input.GetKey(KeyCode.C);
+
+            // you can choose how your controller is gonna duck
+            if(toggleDucking)
+            {
+                // switch between modes by hitting the button once
+                if (Input.GetKeyDown(KeyCode.C))
+                    duck = !duck;
+            }
+            else
+            {
+                // requires the player to hold the button
+                duck = Input.GetKey(KeyCode.C);
+            }
 
             // these inputs are fed into the controller
             // this is the main entry point for the controller

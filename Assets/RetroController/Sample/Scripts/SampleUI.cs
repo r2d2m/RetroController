@@ -1,10 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class SampleUI : MonoBehaviour {
-
+public class SampleUI : MonoBehaviour
+{
     bool showInterface = true;
     public CanvasGroup instructions;
     public CanvasGroup mouseSettings;
@@ -12,17 +10,19 @@ public class SampleUI : MonoBehaviour {
     public Text mouseSensitivityText;
     MouseLook playerMouseLook;
 
-    void Start () {
+    void Start()
+    {
         playerMouseLook = FindObjectOfType<MouseLook>();
-        if (playerMouseLook != null) 
+        if (playerMouseLook != null)
         {
             mouseSensitivitySlider.onValueChanged.AddListener(onValueChange);
             mouseSensitivitySlider.value = playerMouseLook.mouseSensitivity;
             mouseSensitivityText.text = playerMouseLook.mouseSensitivity.ToString();
         }
-	}
-	
-	void Update () {
+    }
+
+    void Update()
+    {
         if (Input.GetKeyDown(KeyCode.H))
         {
             showInterface = !showInterface;

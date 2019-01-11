@@ -187,6 +187,7 @@ namespace vnc
             if (!DuckInput && CanStand())
             {
                 RemoveState(CC_State.Ducking);
+                duckingTimer = 0;
             }
 
             wasDucking = DuckInput;
@@ -1070,9 +1071,11 @@ namespace vnc
         {
             if (showDebugStats && Application.isEditor)
             {
-                Rect rect = new Rect(0, 0, 250, 30);
+                Rect rect = new Rect(0, 0, 250, 100);
                 Vector3 planeVel = Velocity; planeVel.y = 0;
-                string debugText = "Press 'Esc' to unlock cursor.\n";
+                string debugText = "\nStates: " +
+                    "\nDucking Input: " + DuckInput
+                    + "\nWas ducking? " + wasDucking;
 
                 if (guiStyle != null)
                     GUI.Label(rect, debugText, guiStyle);
