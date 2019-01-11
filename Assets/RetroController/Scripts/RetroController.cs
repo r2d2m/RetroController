@@ -591,12 +591,12 @@ namespace vnc
 
             if (distance > 0)
             {
-                transform.position = FixOverlaps(transform.position + movement, movement);
+                transform.position = FixOverlaps(transform.position + movement, direction, distance);
             }
             else
             {
                 // when controller doesn't move
-                transform.position = FixOverlaps(transform.position, Vector3.zero);
+                transform.position = FixOverlaps(transform.position, Vector3.zero, 0f);
             }
 
             SetWaterLevel();
@@ -611,9 +611,9 @@ namespace vnc
         /// </summary>
         /// <param name="position">start position. Bottom of the collider</param>
         /// <returns>Final position</returns>
-        protected virtual Vector3 FixOverlaps(Vector3 position, Vector3 movement)
+        protected virtual Vector3 FixOverlaps(Vector3 position, Vector3 direction, float distance)
         {
-            movement = VectorFixer(movement);
+            Vector3 movement = VectorFixer(direction * distance);
             Vector3 normal;
 
             float dist, dot;
@@ -691,7 +691,7 @@ namespace vnc
                             else
                             {
                                 bool foundStep = false;
-                                position = MoveOnSteps(position, out foundStep);
+                                position = MoveOnSteps(position, direction, out foundStep);
                                 if (!foundStep)
                                 {
                                     position += normal * dist;
@@ -784,7 +784,7 @@ namespace vnc
         /// <param name="position">Next position.</param>
         /// <param name="foundStep">If a step was found.</param>
         /// <returns>Adjusted position with the possible step.</returns>
-        protected virtual Vector3 MoveOnSteps(Vector3 position, out bool foundStep)
+        protected virtual Vector3 MoveOnSteps(Vector3 position, Vector3 direction, out bool foundStep)
         {
             // after finding a collision, try to check if it's a step
             // the controller can be on
@@ -801,7 +801,7 @@ namespace vnc
             Quaternion rot;
             _boxCollider.ToWorldSpaceBox(out center, out halfExtends, out rot);
             // override center with desired position
-            center = _boxCollider.center + position;
+            center = _boxCollider.center + position + (direction * 0.01f);
             // increase hull size
             halfExtends += Vector3.one * 0.01f;
 
