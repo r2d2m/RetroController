@@ -28,6 +28,10 @@ namespace vnc.Development
         [HideInInspector] public bool isPlaying = false;
         int playIndex = 0;
 
+
+        [Header("Debug GUI Style")]
+        public GUIStyle guiStyle;
+
         public override void Update()
         {
             if (Input.GetKeyDown(KeyCode.R) && !isPlaying)
@@ -97,6 +101,22 @@ namespace vnc.Development
 
             if (isRecording)
                 Record();
+        }
+
+        protected virtual void OnGUI()
+        {
+            if (Application.isEditor)
+            {
+                Rect rect = new Rect(0, 0, 250, 100);
+                Vector3 planeVel = retroController.Velocity; planeVel.y = 0;
+                string debugText = "\nStates: " +
+                    "\nDucking Input: " + retroController.DuckInput;
+
+                if (guiStyle != null)
+                    GUI.Label(rect, debugText, guiStyle);
+                else
+                    GUI.Label(rect, debugText);
+            }
         }
 
         #region Input Recording

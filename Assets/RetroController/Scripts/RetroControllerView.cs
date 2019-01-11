@@ -4,7 +4,8 @@ using vnc.Utils;
 namespace vnc
 {
     /// <summary>
-    /// The controller 
+    /// The controller view.
+    /// Optional but requires the main component.
     /// </summary>
     [RequireComponent(typeof(RetroController))]
     public class RetroControllerView : MonoBehaviour
@@ -27,14 +28,14 @@ namespace vnc
             }
         }
 
-        private void Awake()
+        protected virtual void Awake()
         {
             _controller = GetComponent<RetroController>();
             roll.currentAngle = controllerCamera.localEulerAngles.z;
             _controller.OnFixedUpdateEndCallback.AddListener(ViewUpdate);
         }
 
-        void ViewUpdate()
+        protected virtual void ViewUpdate()
         {
             if (bob.enabled)
                 Bobbing();
@@ -49,7 +50,7 @@ namespace vnc
         /// <summary>
         /// Head bobbing effect
         /// </summary>
-        public void Bobbing()
+        public virtual void Bobbing()
         {
             float bobOscillate = Mathf.Sin(bob.cycle * Mathf.Deg2Rad) / 2;
 
@@ -76,7 +77,7 @@ namespace vnc
         /// <summary>
         /// Roll the camera in the Z axis
         /// </summary>
-        public void Rolling()
+        public virtual void Rolling()
         {
             float rolltarget = -(_controller.Strafe * roll.angle); 
             float step = (rolltarget - roll.currentAngle) * roll.speed * Time.deltaTime;
@@ -91,7 +92,7 @@ namespace vnc
         /// <summary>
         /// Interpolate the stepping and makes it feel smoother
         /// </summary>
-        public void StepInteporlate()
+        public virtual void StepInteporlate()
         {
             if (stepInterpolation.enabled)
             {

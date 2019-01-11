@@ -5,6 +5,12 @@ using vnc.Utils;
 
 namespace vnc
 {
+    /// <summary>
+    /// The main component, here goes all the controller functionality.
+    /// It's best that you inherit the class if you wanna add
+    /// any features. Future updates may break your changes if you
+    /// modify this class directly.
+    /// </summary>
     public class RetroController : MonoBehaviour
     {
         [Header("Settings")]
@@ -13,14 +19,9 @@ namespace vnc
         /// </summary>
         public RetroControllerProfile Profile;
 
-        /// <summary>
-        /// Controller view, tipically the first person camera
-        /// </summary>
-        public Transform controllerView;
-        public Vector3 viewPosition;
-
-        public bool showDebugStats = false;
-
+        public Transform controllerView; // Controller view, tipically the first person camera
+        public Vector3 viewPosition;     // original position for view
+        
         public const float EPSILON = 0.001f;
         public const float OVERBOUNCE = 1.01f;
 
@@ -95,9 +96,6 @@ namespace vnc
         public UnityEvent OnLandingCallback;
         public UnityEvent OnFixedUpdateEndCallback;
 
-        [Header("Debug GUI Style")]
-        public GUIStyle guiStyle;
-
         protected virtual void Awake()
         {
             State = CC_State.None;
@@ -153,14 +151,14 @@ namespace vnc
         /// inputs or AI commands.
         /// Note that the float values should range from -1 to +1. 
         /// </summary>
-        /// <param name="fwd">Foward input.</param>
+        /// <param name="forward">Foward input.</param>
         /// <param name="strafe">Strafe input.</param>
         /// <param name="swim">Swim input.</param>
         /// <param name="jump">Jump command.</param>
         /// <param name="sprint">Sprint command.</param>
-        public virtual void SetInput(float fwd, float strafe, float swim, bool jump, bool sprint, bool duck)
+        public virtual void SetInput(float forward, float strafe, float swim, bool jump, bool sprint, bool duck)
         {
-            WalkForward = fwd;
+            WalkForward = forward;
             Strafe = strafe;
             Swim = swim;
             JumpInput = jump;
@@ -170,7 +168,7 @@ namespace vnc
             if (JumpInput && triedJumping == 0)
                 triedJumping = Profile.JumpInputTimer;
 
-            inputDir = new Vector2(strafe, fwd);
+            inputDir = new Vector2(strafe, forward);
         }
 
         /// <summary>
@@ -869,7 +867,6 @@ namespace vnc
                 _boxCollider.size = Vector3.Lerp(_boxCollider.size, Profile.DuckingSize, t);
                 _boxCollider.center = Vector3.Lerp(_boxCollider.center, Profile.DuckingCenter, t);
 
-                Vector3 diff = Profile.DuckingCenter - Profile.Center;
                 controllerView.localPosition = Vector3.Lerp(controllerView.localPosition,
                     viewPosition + (Vector3.down * Profile.DuckingViewOffset), t);
             }
@@ -897,7 +894,7 @@ namespace vnc
             return !isBlocking;
         }
 
-        public void DetectGround()
+        public virtual void DetectGround()
         {
             Vector3 normal;
             float distance;
@@ -924,7 +921,11 @@ namespace vnc
             }
         }
 
-
+        public bool HasCollisionFlag(CC_Collision flag)
+        {
+            return (Collisions & flag) != 0;
+        }
+        
         /// <summary>
         /// Called when hitting surfaces.
         /// </summary>
@@ -972,17 +973,6 @@ namespace vnc
             center += offset;
             return Physics.OverlapBoxNonAlloc(center, halfExtents, results, Quaternion.identity, layerMask, queryTriggerInteraction);
         }
-        
-        public bool CompareLayer(GameObject obj, LayerMask layerMask)
-        {
-            return ((1 << obj.layer) & layerMask) != 0;
-        }
-
-        public bool HasCollisionFlag(CC_Collision flag)
-        {
-            return (Collisions & flag) != 0;
-        }
-        
         #region State
         public bool HasState(CC_State state)
         {
@@ -1001,7 +991,7 @@ namespace vnc
         #endregion
 
         // do not modify
-        private void _boxUpdate()
+        protected virtual void _boxUpdate()
         {
             _boxCollider.size = Profile.Size;
             _boxCollider.center = Profile.Center;
@@ -1067,22 +1057,6 @@ namespace vnc
             }
         }
 
-        protected virtual void OnGUI()
-        {
-            if (showDebugStats && Application.isEditor)
-            {
-                Rect rect = new Rect(0, 0, 250, 100);
-                Vector3 planeVel = Velocity; planeVel.y = 0;
-                string debugText = "\nStates: " +
-                    "\nDucking Input: " + DuckInput
-                    + "\nWas ducking? " + wasDucking;
-
-                if (guiStyle != null)
-                    GUI.Label(rect, debugText, guiStyle);
-                else
-                    GUI.Label(rect, debugText);
-            }
-        }
         #endregion
     }
 }

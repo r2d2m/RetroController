@@ -66,19 +66,6 @@ namespace vnc.Samples
             mouseLook.LookRotation(transform, playerView);
             mouseLook.UpdateCursorLock();
         }
-
-
-
-        private void OnGUI()
-        {
-            float width = 250;
-            float height = 70;
-            Rect rect = new Rect(Screen.width - width, 0, width, height);
-            string label = "Mouse Sensitivity: " + mouseLook.mouseSensitivity + "\n(unlock cursor and left-click to slide";
-            GUI.Label(rect, label, retroController.guiStyle);
-            rect.y += 35;
-            mouseLook.mouseSensitivity = GUI.HorizontalSlider(rect, mouseLook.mouseSensitivity, 0, 10);
-        }
     }
 
 
