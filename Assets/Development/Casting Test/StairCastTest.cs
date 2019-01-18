@@ -13,9 +13,6 @@ public class StairCastTest : MonoBehaviour
 
     Vector3 upPos, forwardPos, downPos, finalPos;
 
-    private void Awake()
-    {
-    }
 
     void FixedUpdate()
     {

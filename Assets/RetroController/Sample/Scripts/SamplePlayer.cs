@@ -14,7 +14,6 @@ namespace vnc.Samples
         public RetroController retroController; // the controller used
         public MouseLook mouseLook;             // mouse look
         public Transform playerView;            // the controller view
-        public Animator gunAnimator;            // sample animator for the gun
 
         [Space, Tooltip("Switch to ducking and standing by pressing once instead of holding")]
         public bool toggleDucking;
@@ -54,9 +53,7 @@ namespace vnc.Samples
             // these inputs are fed into the controller
             // this is the main entry point for the controller
             retroController.SetInput(fwd, strafe, swim, jump, sprint, duck);
-
-            bool isShooting = Input.GetMouseButton(0);
-            gunAnimator.SetBool("Shoot", isShooting);
+            
 
             if (Input.GetKeyDown(KeyCode.Escape))
             {
@@ -66,7 +63,16 @@ namespace vnc.Samples
             mouseLook.LookRotation(transform, playerView);
             mouseLook.UpdateCursorLock();
         }
-    }
 
+        private void OnDrawGizmos()
+        {
+            if (retroController.Profile != null)
+            {
+                Gizmos.color = Color.green;
+                Vector3 center = transform.position + retroController.Profile.Center;
+                Gizmos.DrawCube(center, retroController.Profile.Size);
+            }
+        }
+    }
 
 }

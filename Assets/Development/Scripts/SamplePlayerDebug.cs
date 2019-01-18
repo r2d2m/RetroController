@@ -82,9 +82,6 @@ namespace vnc.Development
                 // this is the main entry point for the controller
                 retroController.SetInput(fwd, strafe, swim, jump, sprint, duck);
 
-                // animation for the sample
-                bool isShooting = Input.GetMouseButton(0);
-                gunAnimator.SetBool("Shoot", isShooting);
 
                 if (!(autoInput && ignoreMouse))
                 {
@@ -116,6 +113,16 @@ namespace vnc.Development
                     GUI.Label(rect, debugText, guiStyle);
                 else
                     GUI.Label(rect, debugText);
+            }
+        }
+
+        private void OnDrawGizmos()
+        {
+            if (retroController.Profile != null)
+            {
+                Gizmos.color = Color.green;
+                Vector3 center = transform.position + retroController.Profile.Center;
+                Gizmos.DrawCube(center, retroController.Profile.Size);
             }
         }
 
