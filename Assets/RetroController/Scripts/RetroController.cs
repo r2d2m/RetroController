@@ -1034,20 +1034,9 @@ namespace vnc
         {
             if (Profile)
             {
-                if (Application.isPlaying)
-                {
-                    Gizmos.color = Color.green;
-                    Gizmos.DrawCube(_boxCollider.center, _boxCollider.size);
-
-                    Gizmos.color = Color.yellow;
-                    Vector3 center = Velocity + (Vector3.up * Profile.StepOffset);
-                    Gizmos.DrawCube(center, _boxCollider.size);
-                }
-                else
-                {
-                    Gizmos.color = Color.green;
-                    Gizmos.DrawCube(Profile.Center, Profile.Size);
-                }
+                Gizmos.color = new Color(1, 0.56f, 0.06f);
+                Vector3 center = transform.position + Profile.Center;
+                Gizmos.DrawCube(center, Profile.Size);
 
                 DebugExtension.DrawCircle(transform.position + Vector3.up * Profile.SwimmingOffset, Color.blue, 1f);
 
