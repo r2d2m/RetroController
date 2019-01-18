@@ -68,7 +68,7 @@ namespace vnc.Samples
         {
             if (retroController.Profile != null)
             {
-                Gizmos.color = Color.green;
+                Gizmos.color = new Color(1, 0.56f, 0.06f);
                 Vector3 center = transform.position + retroController.Profile.Center;
                 Gizmos.DrawCube(center, retroController.Profile.Size);
             }
