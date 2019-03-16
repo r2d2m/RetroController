@@ -40,7 +40,6 @@ public class BoxCastTest : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        Vector3 e = Vector3.one * 0.01f;
         if (box)
         {
             // current position

@@ -11,7 +11,7 @@ namespace vnc
     public class RetroControllerView : MonoBehaviour
     {
         RetroController _controller;
-        public Transform controllerCamera;
+        [SerializeField] Transform controllerCamera;
 
         [Header("Settings")]
         public Bob bob;
@@ -79,7 +79,7 @@ namespace vnc
         /// </summary>
         public virtual void Rolling()
         {
-            float rolltarget = -(_controller.Strafe * roll.angle); 
+            float rolltarget = -(_controller.Strafe * roll.angle);
             float step = (rolltarget - roll.currentAngle) * roll.speed * Time.deltaTime;
 
             roll.currentAngle = Mathf.Clamp(roll.currentAngle + step, -roll.angle, roll.angle);
@@ -128,6 +128,9 @@ namespace vnc
         public float speed;
         [EditDisabled] public Vector3 currentPosition;
         [EditDisabled] public float cycle;
+
+        public void Enabled() { enabled = true; }
+        public void Disabled() { enabled = false; }
     }
 
     [System.Serializable]
@@ -137,6 +140,9 @@ namespace vnc
         public float angle;
         public float speed;
         [EditDisabled] public float currentAngle;
+
+        public void Enabled() { enabled = true; }
+        public void Disabled() { enabled = false; }
     }
 
     [System.Serializable]
@@ -150,6 +156,9 @@ namespace vnc
         [EditDisabled] public float nextPosY;
         [EditDisabled] public float viewUpPosition;
         [EditDisabled] public bool walkedStep;
+
+        public void Enabled() { enabled = true; }
+        public void Disabled() { enabled = false; }
     }
 
 }
