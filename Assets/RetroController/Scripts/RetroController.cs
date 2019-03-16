@@ -91,10 +91,11 @@ namespace vnc
         [HideInInspector] public bool wasOnStep;
         public float SlopeDot { get { return (Profile.SlopeAngleLimit / 90f); } }
 
-        [Header("Callback Events")]
-        public UnityEvent OnJumpCallback;
-        public UnityEvent OnLandingCallback;
-        public UnityEvent OnFixedUpdateEndCallback;
+        // CALLBACK EVENTS
+        [HideInInspector]
+        public UnityEvent OnJumpCallback,
+            OnLandingCallback,
+            OnFixedUpdateEndCallback;
 
         protected virtual void Awake()
         {
@@ -281,16 +282,6 @@ namespace vnc
             wasGrounded = IsGrounded;
             wasOnPlatform = OnPlatform;
         }
-
-        /// <summary>
-        /// Movement method when the controller is on a platform.
-        /// Override it to add custom platform code.
-        /// </summary>
-        protected virtual void OnPlatformMove()
-        {
-            CharacterMove(Velocity);
-        }
-
         /// <summary>
         /// Update loop for when the controller is underwater
         /// </summary>
@@ -351,6 +342,15 @@ namespace vnc
             CharacterMove(Velocity);
 
             wasGrounded = IsGrounded;
+        }
+
+        /// <summary>
+        /// Movement method when the controller is on a platform.
+        /// Override it to add custom platform code.
+        /// </summary>
+        protected virtual void OnPlatformMove()
+        {
+            CharacterMove(Velocity);
         }
 
         /// <summary>
@@ -467,7 +467,6 @@ namespace vnc
         protected virtual Vector3 MoveFly(Vector3 accelDir, Vector3 prevVelocity)
         {
             prevVelocity = Friction(prevVelocity, Profile.FlyFriction);
-            // TODO: flying 
             //prevVelocity = AccelerateAir(accelDir, Profile.AirAcceleration, Profile.MaxAirSpeed);
             return prevVelocity;
         }
@@ -618,9 +617,7 @@ namespace vnc
 
             float dist, dot;
             dist = dot = 0f;
-
-            // TODO: what about alive? disabling? entities?
-
+            
             foundLadder = false;
             int nColls = OverlapBoxNonAlloc(movement, overlapingColliders, Profile.SurfaceLayers, QueryTriggerInteraction.Collide);
 

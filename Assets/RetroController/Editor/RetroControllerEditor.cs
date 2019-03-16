@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using vnc.Editor.Utils;
 
@@ -10,10 +11,19 @@ namespace vnc.Editor
         SerializedProperty profile;
         SerializedProperty view;
 
+        static Dictionary<int, RetroControllerEditorState> callbackEventsFold;
+        SerializedProperty jumpCallback, landingCallback, fixedUpdateEndCalback;
+        GUIStyle foldBold;
+
         private void OnEnable()
         {
             profile = serializedObject.FindProperty("Profile");
             view = serializedObject.FindProperty("controllerView");
+            foldBold = new GUIStyle(EditorStyles.foldout);
+            foldBold.fontStyle = FontStyle.Bold;
+
+            if (callbackEventsFold == null)
+                callbackEventsFold = new Dictionary<int, RetroControllerEditorState>();
         }
 
         public override void OnInspectorGUI()
@@ -37,6 +47,8 @@ namespace vnc.Editor
             EditorUtils.SetIcon(serializedObject.targetObject, "retro_controller");
 
             DrawDefaultInspectorWithoutScriptField();
+
+            DrawEvents();
         }
 
         public bool DrawDefaultInspectorWithoutScriptField()
@@ -58,6 +70,43 @@ namespace vnc.Editor
 
             return (EditorGUI.EndChangeCheck());
         }
+
+        public void DrawEvents()
+        {
+            // search for folding state
+            RetroControllerEditorState state = new RetroControllerEditorState();;
+            int id = serializedObject.targetObject.GetInstanceID();
+            callbackEventsFold.TryGetValue(id, out state);
+
+            EditorGUILayout.Space();
+            state.fold = EditorGUILayout.Foldout(state.fold, "Callback Events", foldBold);
+
+            jumpCallback = serializedObject.FindProperty("OnJumpCallback");
+            landingCallback = serializedObject.FindProperty("OnLandingCallback");
+            fixedUpdateEndCalback = serializedObject.FindProperty("OnFixedUpdateEndCallback");
+
+            if (state.fold)
+            {
+                EditorGUILayout.PropertyField(jumpCallback);
+                EditorGUILayout.PropertyField(landingCallback);
+                EditorGUILayout.PropertyField(fixedUpdateEndCalback);
+            }
+
+            // store folding state
+            if (callbackEventsFold.ContainsKey(id))
+            {
+                callbackEventsFold[id] = state;
+            }
+            else
+            {
+                callbackEventsFold.Add(id, state);
+            }
+        }
+    }
+
+    public struct RetroControllerEditorState
+    {
+        public bool fold;
     }
 
 }
