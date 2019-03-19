@@ -71,6 +71,10 @@ namespace vnc
             }
         }
         public SurfaceNormals surfaceNormals = new SurfaceNormals();
+        [Tooltip("Use this to stop the controller from automatically updating.")]
+        public bool updateController = true;
+        [Tooltip("Ignore layers during runtime")]
+        public LayerMask ignoredLayers;
 
         // Water
         [HideInInspector] public CC_Water WaterState { get; private set; }
@@ -118,6 +122,9 @@ namespace vnc
         protected virtual void FixedUpdate()
         {
             if (Profile == null || controllerView == null)
+                return;
+
+            if (!updateController)
                 return;
 
             if (Profile.FlyingController)
@@ -265,7 +272,6 @@ namespace vnc
                     platformCollider = null;
                 }
 
-                //LastCollision = p_Controller.Move(Velocity);
                 CharacterMove(Velocity);
             }
 
@@ -617,9 +623,11 @@ namespace vnc
 
             float dist, dot;
             dist = dot = 0f;
-            
+
+            LayerMask overlapMask = Profile.SurfaceLayers & ~ignoredLayers;
+
             foundLadder = false;
-            int nColls = OverlapBoxNonAlloc(movement, overlapingColliders, Profile.SurfaceLayers, QueryTriggerInteraction.Collide);
+            int nColls = OverlapBoxNonAlloc(movement, overlapingColliders, overlapMask, QueryTriggerInteraction.Collide);
 
             for (int i = 0; i < nColls; i++)
             {
@@ -632,8 +640,6 @@ namespace vnc
                 }
                 else
                 {
-                    //position = MoveOnSteps(position, movement);
-
                     if (Physics.ComputePenetration(_boxCollider, position, Quaternion.identity,
                         c, c.transform.position, c.transform.rotation, out normal, out dist))
                     {

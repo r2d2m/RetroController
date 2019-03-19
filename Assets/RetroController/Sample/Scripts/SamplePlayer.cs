@@ -58,6 +58,7 @@ namespace vnc.Samples
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 mouseLook.SetCursorLock(!mouseLook.lockCursor);
+                retroController.updateController = !retroController.updateController;
             }
 
             mouseLook.LookRotation(transform, playerView);

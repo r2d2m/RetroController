@@ -11,7 +11,7 @@ namespace vnc.Editor
         SerializedProperty profile;
         SerializedProperty view;
 
-        static Dictionary<int, RetroControllerEditorState> callbackEventsFold;
+        static Dictionary<int, RetroControllerEditorState> callbackEventsFold = new Dictionary<int, RetroControllerEditorState>();
         SerializedProperty jumpCallback, landingCallback, fixedUpdateEndCalback;
         GUIStyle foldBold;
 
@@ -19,15 +19,16 @@ namespace vnc.Editor
         {
             profile = serializedObject.FindProperty("Profile");
             view = serializedObject.FindProperty("controllerView");
-            foldBold = new GUIStyle(EditorStyles.foldout);
-            foldBold.fontStyle = FontStyle.Bold;
-
-            if (callbackEventsFold == null)
-                callbackEventsFold = new Dictionary<int, RetroControllerEditorState>();
         }
 
         public override void OnInspectorGUI()
         {
+            if(foldBold == null)
+            {
+                foldBold = new GUIStyle(EditorStyles.foldout);
+                foldBold.fontStyle = FontStyle.Bold;
+            }
+
             EditorGUILayout.Space();
 
             if (profile.objectReferenceValue == null)
