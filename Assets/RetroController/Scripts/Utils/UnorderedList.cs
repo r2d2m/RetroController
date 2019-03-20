@@ -288,11 +288,7 @@ namespace AshNet.Util.Collections {
 		}
 
 		public override string ToString() {
-#if NET_2_0 || NET_2_0_SUBSET
             var s = new StringBuilder();
-#elif NET_4_6
-            var s = CachedStringBuilder.Get();
-#endif
             s.Append("Size: " + Count + " | ");
 			for (int i = 0; i < Count; i++) {
 				s.Append(elements[i].ToString());
