@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AshNet.Util.Collections;
+using System;
 using UnityEngine;
 using UnityEngine.Events;
 using vnc.Utils;
@@ -54,7 +55,13 @@ namespace vnc
         protected float duckingTimer;
         protected bool wasDucking;
 
-        // States
+        #region States
+        [Header("States")]
+        [Tooltip("Use this to stop the controller from automatically updating.")]
+        public bool updateController = true;
+        [Tooltip("Ignore layers during runtime")]
+        public LayerMask ignoredLayers;
+        public UnorderedList<Collider> ignoredColliders;
         [HideInInspector] public CC_State State { get; private set; }
         public bool IsGrounded { get { return (State & CC_State.IsGrounded) != 0; } }
         public bool OnPlatform { get { return (State & CC_State.OnPlatform) != 0; } }
@@ -71,10 +78,7 @@ namespace vnc
             }
         }
         public SurfaceNormals surfaceNormals = new SurfaceNormals();
-        [Tooltip("Use this to stop the controller from automatically updating.")]
-        public bool updateController = true;
-        [Tooltip("Ignore layers during runtime")]
-        public LayerMask ignoredLayers;
+        #endregion
 
         // Water
         [HideInInspector] public CC_Water WaterState { get; private set; }
@@ -107,6 +111,7 @@ namespace vnc
             WaterState = CC_Water.None;
             Collisions = CC_Collision.None;
             jumpGraceTimer = Profile.JumpGraceTime;
+            ignoredColliders = new UnorderedList<Collider>();
 
             if (controllerView)
                 viewPosition = controllerView.localPosition;
@@ -624,14 +629,18 @@ namespace vnc
             float dist, dot;
             dist = dot = 0f;
 
-            LayerMask overlapMask = Profile.SurfaceLayers & ~ignoredLayers;
-
             foundLadder = false;
+
+            LayerMask overlapMask = Profile.SurfaceLayers & ~ignoredLayers;
             int nColls = OverlapBoxNonAlloc(movement, overlapingColliders, overlapMask, QueryTriggerInteraction.Collide);
 
             for (int i = 0; i < nColls; i++)
             {
                 Collider c = overlapingColliders[i];
+
+                // skip collider if it's in the ignored list
+                if (ignoredColliders.Contains(c))
+                    continue;
 
                 if (c.isTrigger)
                 {
@@ -897,6 +906,9 @@ namespace vnc
             return !isBlocking;
         }
 
+        /// <summary>
+        /// Test overlapping with a ground and set the collision state
+        /// </summary>
         public virtual void DetectGround()
         {
             Vector3 normal;
@@ -976,6 +988,48 @@ namespace vnc
             center += offset;
             return Physics.OverlapBoxNonAlloc(center, halfExtents, results, Quaternion.identity, layerMask, queryTriggerInteraction);
         }
+
+        /// <summary>
+        /// Set the ignored layers 
+        /// </summary>
+        /// <param name="layers"></param>
+        public void SetIgnoredLayers(string[] layers)
+        {
+            ignoredLayers = LayerMask.GetMask(layers);
+        }
+
+        /// <summary>
+        /// Clear the ignored layer
+        /// </summary>
+        public void ClearIgnoredLayers()
+        {
+            ignoredLayers = new LayerMask();
+        }
+
+        /// <summary>
+        /// Set collider as being ignored by the controller
+        /// </summary>
+        /// <param name="collider">Collider to be ignroed</param>
+        public void AddIgnoredCollider(Collider collider)
+        {
+            ignoredColliders.Add(collider);
+        }
+
+        /// <summary>
+        /// Return controller collision with this collider
+        /// </summary>
+        /// <param name="collider">Collider to be ignroed</param>
+        public void RemoveIgnoredCollider(Collider collider)
+        {
+            ignoredColliders.Remove(collider);
+        }
+
+        // do not modify
+        protected virtual void _boxUpdate()
+        {
+            _boxCollider.size = Profile.Size;
+            _boxCollider.center = Profile.Center;
+        }
         #region State
         public bool HasState(CC_State state)
         {
@@ -992,14 +1046,6 @@ namespace vnc
             State &= ~state;
         }
         #endregion
-
-        // do not modify
-        protected virtual void _boxUpdate()
-        {
-            _boxCollider.size = Profile.Size;
-            _boxCollider.center = Profile.Center;
-        }
-
         #endregion
 
         #region Enums
