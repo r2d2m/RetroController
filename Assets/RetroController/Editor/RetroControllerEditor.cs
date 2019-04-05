@@ -23,7 +23,7 @@ namespace vnc.Editor
 
         public override void OnInspectorGUI()
         {
-            if(foldBold == null)
+            if (foldBold == null)
             {
                 foldBold = new GUIStyle(EditorStyles.foldout);
                 foldBold.fontStyle = FontStyle.Bold;
@@ -75,7 +75,7 @@ namespace vnc.Editor
         public void DrawEvents()
         {
             // search for folding state
-            RetroControllerEditorState state = new RetroControllerEditorState();;
+            RetroControllerEditorState state = new RetroControllerEditorState(); ;
             int id = serializedObject.targetObject.GetInstanceID();
             callbackEventsFold.TryGetValue(id, out state);
 
@@ -102,12 +102,17 @@ namespace vnc.Editor
             {
                 callbackEventsFold.Add(id, state);
             }
+
+            if (GUI.changed)
+            {
+                serializedObject.ApplyModifiedProperties();
+            }
+        }
+
+        [System.Serializable]
+        public struct RetroControllerEditorState
+        {
+            public bool fold;
         }
     }
-
-    public struct RetroControllerEditorState
-    {
-        public bool fold;
-    }
-
 }
