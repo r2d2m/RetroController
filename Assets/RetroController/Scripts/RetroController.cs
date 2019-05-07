@@ -26,8 +26,11 @@ namespace vnc
         public const float EPSILON = 0.001f;
         public const float OVERBOUNCE = 1.01f;
 
+        // cache
         private Collider[] overlapingColliders = new Collider[8];
         private Collider[] overlapOnSteps = new Collider[4];
+        RaycastHit[] stairGroundHit = new RaycastHit[4];
+
         [HideInInspector] public CC_Collision Collisions { get; private set; }
         private BoxCollider _boxCollider;
 
@@ -590,7 +593,7 @@ namespace vnc
 
             Vector3 direction = movement.normalized;
             float distance = FloatFixer(movement.magnitude);
-
+            
             if(NoClipping)
             {
                 transform.position += movement;
@@ -802,7 +805,9 @@ namespace vnc
             // the controller can be on
 
             foundStep = false;
-            if (!IsGrounded)
+            bool onGround = OnStairGroundDetect();
+            //DetectGround();
+            if (!onGround)
             {
                 return position;
             }
@@ -815,7 +820,7 @@ namespace vnc
             // override center with desired position
             center = _boxCollider.center + position + (direction * 0.01f);
             // increase hull size
-            halfExtends += Vector3.one * 0.01f;
+            halfExtends += Vector3.one * Profile.HullExtends;
 
             // cast up
             bool foundUp;
@@ -832,7 +837,7 @@ namespace vnc
             }
 
             // check if it's free
-            halfExtends -= Vector3.one * 0.01f;
+            halfExtends -= Vector3.one * Profile.HullExtends;
             int nColls = Physics.OverlapBoxNonAlloc(upCenter, halfExtends, overlapOnSteps, Quaternion.identity,
                 Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
             if (nColls > 0)
@@ -843,7 +848,7 @@ namespace vnc
 
             // cast down
             bool foundDown;
-            halfExtends += Vector3.one * 0.01f;
+            halfExtends += Vector3.one * Profile.HullExtends;
             foundDown = Physics.BoxCast(upCenter, halfExtends, Vector3.down, out stepHit, Quaternion.identity, Profile.StepOffset,
                 Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
             if (foundDown && stepHit.distance > 0)
@@ -934,6 +939,23 @@ namespace vnc
                     }
                 }
             }
+        }
+
+        public virtual bool OnStairGroundDetect()
+        {
+            var offset = (Vector3.down * Profile.GroundCheck);
+            int n = PhysicsExtensions.BoxCastNonAlloc(_boxCollider, Vector3.down, stairGroundHit, Profile.Gravity, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
+            for (int i = 0; i < n; i++)
+            {
+                float dot = Vector3.Dot(stairGroundHit[i].normal, Vector3.up);
+                float slopeDot = (Profile.SlopeAngleLimit / 90f);
+                if (dot > slopeDot && dot <= 1)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public bool HasCollisionFlag(CC_Collision flag)

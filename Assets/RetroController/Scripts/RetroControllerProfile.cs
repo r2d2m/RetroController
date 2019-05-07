@@ -207,8 +207,10 @@ namespace vnc
         /// Advanced settings. Do not change this, except
         /// when experiencing collision imprecision.
         /// </summary>
-        [HideInInspector] public float Depenetration = 0.001f;
-        
+        [FancyHeader("Advanced Settings")]
+        public float Depenetration = 0.001f;
+        public float HullExtends = 0.01f;       // simulate bigger hull for stairs
+
         // TAGS
         /// <summary>
         /// Hidden property, used in <code>RetroControllerProfileEditor</code>
