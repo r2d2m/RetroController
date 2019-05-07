@@ -22,7 +22,7 @@ namespace vnc
 
         public Transform controllerView; // Controller view, tipically the first person camera
         public Vector3 viewPosition;     // original position for view
-        
+
         public const float EPSILON = 0.001f;
         public const float OVERBOUNCE = 1.01f;
 
@@ -73,7 +73,7 @@ namespace vnc
         public bool WalkedOnStep { get { return HasCollisionFlag(CC_Collision.CollisionStep); } }
         public bool NoClipping
         {
-            get { return HasState(CC_State.NoClip);}
+            get { return HasState(CC_State.NoClip); }
             set
             {
                 if (value) AddState(CC_State.NoClip);
@@ -593,8 +593,8 @@ namespace vnc
 
             Vector3 direction = movement.normalized;
             float distance = FloatFixer(movement.magnitude);
-            
-            if(NoClipping)
+
+            if (NoClipping)
             {
                 transform.position += movement;
                 return;
@@ -941,20 +941,50 @@ namespace vnc
             }
         }
 
+        /// <summary>
+        /// Special check to detect ground while on stairs
+        /// </summary>
+        /// <returns>Return true if still on the ground</returns>
         public virtual bool OnStairGroundDetect()
         {
-            var offset = (Vector3.down * Profile.GroundCheck);
-            int n = PhysicsExtensions.BoxCastNonAlloc(_boxCollider, Vector3.down, stairGroundHit, Profile.Gravity, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
-            for (int i = 0; i < n; i++)
+            
+            int n = 0;
+            //int n = PhysicsExtensions.BoxCastNonAlloc(_boxCollider, Vector3.down, stairGroundHit, Profile.Gravity, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
+            //int n = Physics.RaycastNonAlloc(transform.position, Vector3.down, stairGroundHit, distance, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
+            if (BoxEdgesRaycast(out n))
             {
-                float dot = Vector3.Dot(stairGroundHit[i].normal, Vector3.up);
-                float slopeDot = (Profile.SlopeAngleLimit / 90f);
-                if (dot > slopeDot && dot <= 1)
+                for(int i = 0; i < n; i++)
                 {
-                    return true;
+                    float dot = Vector3.Dot(stairGroundHit[i].normal, Vector3.up);
+                    float slopeDot = (Profile.SlopeAngleLimit / 90f);
+                    if (dot > slopeDot && dot <= 1)
+                    {
+                        return true;
+                    }
                 }
             }
+            return false;
+        }
 
+        public virtual bool BoxEdgesRaycast(out int n)
+        {
+            float distance = Profile.Gravity + _boxCollider.bounds.extents.y;
+
+            Vector3[] origins = new[]
+            {
+                transform.position + (Vector3.forward * _boxCollider.bounds.extents.z) + (Vector3.right * _boxCollider.bounds.extents.x),
+                transform.position + (Vector3.forward * _boxCollider.bounds.extents.z) + (Vector3.left * _boxCollider.bounds.extents.x),
+                transform.position + (Vector3.back * _boxCollider.bounds.extents.z) + (Vector3.right * _boxCollider.bounds.extents.x),
+                transform.position + (Vector3.back * _boxCollider.bounds.extents.z) + (Vector3.left * _boxCollider.bounds.extents.x)
+            };
+            for (int i = 0; i < origins.Length; i++)
+            {
+                n = Physics.RaycastNonAlloc(origins[i], Vector3.down, stairGroundHit, distance, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
+                if (n > 0)
+                    return true;
+            }
+
+            n = 0;
             return false;
         }
 
@@ -962,7 +992,7 @@ namespace vnc
         {
             return (Collisions & flag) != 0;
         }
-        
+
         /// <summary>
         /// Called when hitting surfaces.
         /// </summary>
