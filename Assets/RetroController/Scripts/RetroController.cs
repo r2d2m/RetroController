@@ -947,10 +947,7 @@ namespace vnc
         /// <returns>Return true if still on the ground</returns>
         public virtual bool OnStairGroundDetect()
         {
-            
             int n = 0;
-            //int n = PhysicsExtensions.BoxCastNonAlloc(_boxCollider, Vector3.down, stairGroundHit, Profile.Gravity, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
-            //int n = Physics.RaycastNonAlloc(transform.position, Vector3.down, stairGroundHit, distance, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
             if (BoxEdgesRaycast(out n))
             {
                 for(int i = 0; i < n; i++)
@@ -966,6 +963,11 @@ namespace vnc
             return false;
         }
 
+        /// <summary>
+        /// Detect collision casting down from the sides of a box
+        /// </summary>
+        /// <param name="n">Number of hits</param>
+        /// <returns>Return true for the first raycast that found a hit</returns>
         public virtual bool BoxEdgesRaycast(out int n)
         {
             float distance = Profile.Gravity + _boxCollider.bounds.extents.y;
