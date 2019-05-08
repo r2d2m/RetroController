@@ -27,7 +27,7 @@ namespace vnc.Development
         [HideInInspector] public bool isRecording = false;
         [HideInInspector] public bool isPlaying = false;
         int playIndex = 0;
-
+        float timeScale = 1f;
 
         [Header("Debug GUI Style")]
         public GUIStyle guiStyle;
@@ -76,6 +76,7 @@ namespace vnc.Development
                     jump = Input.GetKeyDown(KeyCode.Space);
                     sprint = Input.GetKey(KeyCode.LeftShift);
                     duck = Input.GetKey(KeyCode.C);
+                    timeScale += (Input.GetKeyDown(KeyCode.KeypadPlus) ? 0.1f : 0f) - (Input.GetKeyDown(KeyCode.KeypadMinus) ? 0.1f : 0f);
                 }
 
                 // these inputs are fed into the controller
@@ -98,6 +99,8 @@ namespace vnc.Development
 
             if (isRecording)
                 Record();
+
+            Time.timeScale = timeScale;
         }
 
         protected virtual void OnGUI()
@@ -106,8 +109,7 @@ namespace vnc.Development
             {
                 Rect rect = new Rect(0, 0, 250, 100);
                 Vector3 planeVel = retroController.Velocity; planeVel.y = 0;
-                string debugText = "\nStates: " +
-                    "\nDucking Input: " + retroController.DuckInput;
+                string debugText = "Time Scale: " + Time.timeScale;
 
                 if (guiStyle != null)
                     GUI.Label(rect, debugText, guiStyle);
