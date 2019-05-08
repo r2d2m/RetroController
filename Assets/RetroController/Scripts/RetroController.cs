@@ -520,7 +520,7 @@ namespace vnc
                     if (addspeed <= 0)
                         return;
 
-                    var accelSpeed = accelerate * wishSpeed * Time.deltaTime;
+                    var accelSpeed = accelerate * wishSpeed * Time.fixedDeltaTime;
                     if (accelSpeed > addspeed)
                         accelSpeed = addspeed;
 
