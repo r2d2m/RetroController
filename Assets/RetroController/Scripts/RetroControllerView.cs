@@ -11,6 +11,7 @@ namespace vnc
     public class RetroControllerView : MonoBehaviour
     {
         RetroController _controller;
+#pragma warning disable CS0649
         [SerializeField] Transform controllerCamera;
 
         [Header("Settings")]

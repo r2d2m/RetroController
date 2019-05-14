@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -22,7 +23,8 @@ namespace vnc.Editor.Utils
             if (importedAssets.Length == 0)
                 return;
 
-            //var config = AssetDatabase.LoadAssetAtPath<RetroPackageConfig>(configPath);
+            CheckChangelog(importedAssets);
+
             if (!File.Exists(configPath))
             {
                 bool hasPlatform, hasWater, hasLadder;
@@ -62,7 +64,14 @@ namespace vnc.Editor.Utils
                 else
                     Debug.LogError(string.Format("Error while creating RetroPackageConfig.\n'{0}' does not exist.", sourcePath));
             }
+        }
 
+        static void CheckChangelog(string[] importedAssets)
+        {
+            string newVersionPath = importedAssets.FirstOrDefault(p => p.Contains("retrocontroller_version"));
+            TextAsset newVersionText = AssetDatabase.LoadAssetAtPath<TextAsset>(newVersionPath);
+            if (newVersionText != null)
+                ChangelogWindow.OpenWindow();
         }
     }
 }

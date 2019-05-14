@@ -950,7 +950,7 @@ namespace vnc
             int n = 0;
             if (BoxEdgesRaycast(out n))
             {
-                for(int i = 0; i < n; i++)
+                for (int i = 0; i < n; i++)
                 {
                     float dot = Vector3.Dot(stairGroundHit[i].normal, Vector3.up);
                     float slopeDot = (Profile.SlopeAngleLimit / 90f);

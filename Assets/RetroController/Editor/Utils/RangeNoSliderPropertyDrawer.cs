@@ -22,5 +22,4 @@ namespace vnc.Editor.Utils
             }
         }
     }
-
 }

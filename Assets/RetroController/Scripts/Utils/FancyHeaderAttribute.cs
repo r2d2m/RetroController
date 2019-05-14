@@ -10,8 +10,7 @@ namespace vnc.Utils
 
         public FancyHeaderAttribute(string header)
         {
-            this.Header = header;
+            Header = header;
         }
     }
-
 }

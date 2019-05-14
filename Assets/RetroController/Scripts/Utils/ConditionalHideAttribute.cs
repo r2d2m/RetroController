@@ -15,30 +15,30 @@ namespace vnc.Utils
         // Use this for initialization
         public ConditionalHideAttribute(string conditionalSourceField)
         {
-            this.ConditionalSourceField = conditionalSourceField;
-            this.HideInInspector = false;
-            this.Inverse = false;
+            ConditionalSourceField = conditionalSourceField;
+            HideInInspector = false;
+            Inverse = false;
         }
 
         public ConditionalHideAttribute(string conditionalSourceField, bool hideInInspector)
         {
-            this.ConditionalSourceField = conditionalSourceField;
-            this.HideInInspector = hideInInspector;
-            this.Inverse = false;
+            ConditionalSourceField = conditionalSourceField;
+            HideInInspector = hideInInspector;
+            Inverse = false;
         }
 
         public ConditionalHideAttribute(string conditionalSourceField, bool hideInInspector, bool inverse)
         {
-            this.ConditionalSourceField = conditionalSourceField;
-            this.HideInInspector = hideInInspector;
-            this.Inverse = inverse;
+            ConditionalSourceField = conditionalSourceField;
+            HideInInspector = hideInInspector;
+            Inverse = inverse;
         }
 
         public ConditionalHideAttribute(bool hideInInspector = false)
         {
-            this.ConditionalSourceField = "";
-            this.HideInInspector = hideInInspector;
-            this.Inverse = false;
+            ConditionalSourceField = "";
+            HideInInspector = hideInInspector;
+            Inverse = false;
         }
 
     }
