@@ -1,6 +1,7 @@
 <b>
 1.1.4 (TBA)
 - Fixed glitch on stairs.
+- Changed sample layers.
 
 1.1.2 (April 5, 2019)
 - Fixed adding event callback on the inspector.
