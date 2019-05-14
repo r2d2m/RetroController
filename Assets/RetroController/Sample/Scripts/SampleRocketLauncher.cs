@@ -11,6 +11,8 @@ namespace vnc.Samples
         public LayerMask hitLayer;
         public LayerMask playerLayer;
         public float explosionForce = 0.5f;
+        public float shootingDelay = 0.3f;
+        float time;
 
         GameObject explosiveSphere = null;
 
@@ -18,8 +20,11 @@ namespace vnc.Samples
         {
             if (Input.GetMouseButtonDown(0))
             {
+                if (Time.time < time + shootingDelay)
+                    return;
+
                 RaycastHit hit;
-                if (Physics.Raycast(transform.position, m_camera.forward, out hit, Mathf.Infinity, hitLayer))
+                if (Physics.Raycast(transform.position, m_camera.forward, out hit, Mathf.Infinity, hitLayer, QueryTriggerInteraction.Ignore))
                 {
                     if (explosiveSphere != null)
                         Destroy(explosiveSphere);
@@ -32,6 +37,8 @@ namespace vnc.Samples
                         Vector3 dir = (transform.position - hit.point).normalized;
                         retroController.Velocity += dir * explosionForce;
                     }
+
+                    time = Time.time;
                 }
             }
         }
