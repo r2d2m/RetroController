@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -8,16 +7,6 @@ namespace vnc.Editor.Utils
 {
     public class OnImport : AssetPostprocessor
     {
-        static string configPath
-        {
-            get
-            {
-                var root = Directory.GetParent(Application.dataPath);
-                string path = Path.Combine(root.FullName, "ProjectSettings\\RetroPackageConfig.asset");
-                return path;
-            }
-        }
-
         static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
         {
             if (importedAssets.Length == 0)
@@ -25,7 +14,7 @@ namespace vnc.Editor.Utils
 
             CheckChangelog(importedAssets);
 
-            if (!File.Exists(configPath))
+            if (!EditorPrefs.HasKey("RetroControllerDate"))
             {
                 bool hasPlatform, hasWater, hasLadder;
 
@@ -36,9 +25,9 @@ namespace vnc.Editor.Utils
                 string message = string.Format("For the Sample Scene to work with all the RetroController " +
                     "functionalities, the package needs to add the following Tags:");
 
-                if (hasPlatform) message += "\n Platform";
-                if (hasWater) message += "\n Water";
-                if (hasLadder) message += "\n Ladder";
+                if (!hasPlatform) message += "\n Platform";
+                if (!hasWater) message += "\n Water";
+                if (!hasLadder) message += "\n Ladder";
 
                 message += "\n\n You can add them later but it's highly recommended that you do this" +
                     "process automatically. " +
@@ -54,15 +43,7 @@ namespace vnc.Editor.Utils
                     }
                 }
 
-                var config = ScriptableObject.CreateInstance<RetroPackageConfig>();
-                config.importedTime = DateTime.Now;
-
-                AssetDatabase.CreateAsset(config, "Assets/RetroPackageConfig.asset");
-                string sourcePath = Path.Combine(Application.dataPath, "RetroPackageConfig.asset");
-                if (File.Exists(sourcePath))
-                    File.Move(sourcePath, configPath);
-                else
-                    Debug.LogError(string.Format("Error while creating RetroPackageConfig.\n'{0}' does not exist.", sourcePath));
+                EditorPrefs.SetString("RetroControllerDate", DateTime.Now.ToString());
             }
         }
 
