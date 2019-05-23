@@ -602,9 +602,16 @@ namespace vnc
 
             StepDelta = Mathf.Clamp(StepDelta - Time.fixedDeltaTime, 0, Mathf.Infinity);
 
+            const float step = 0.01f;
             if (distance > 0)
             {
-                transform.position = FixOverlaps(transform.position + movement, direction, distance);
+                float solved = 0;
+                while (solved < distance)
+                {
+                    float nextStep = Mathf.Min(step, distance - solved);
+                    transform.position = FixOverlaps(transform.position + (direction * nextStep), direction, nextStep);
+                    solved += step;
+                }
             }
             else
             {

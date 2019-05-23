@@ -1,4 +1,7 @@
 <b>
+1.1.6 (May 24, 2019)
+- Improved collision.
+
 1.1.4 (May 14, 2019)
 - Fixed glitch on stairs.
 - Changed sample layers.
