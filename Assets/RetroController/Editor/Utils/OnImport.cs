@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -7,14 +8,14 @@ namespace vnc.Editor.Utils
 {
     public class OnImport : AssetPostprocessor
     {
+        static string AssetKey = "RetroController";
+
         static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
         {
             if (importedAssets.Length == 0)
                 return;
 
-            CheckChangelog(importedAssets);
-
-            if (!EditorPrefs.HasKey("RetroControllerDate"))
+            if (!PlayerPrefs.HasKey(AssetKey))
             {
                 bool hasPlatform, hasWater, hasLadder;
 
@@ -43,16 +44,21 @@ namespace vnc.Editor.Utils
                     }
                 }
 
-                EditorPrefs.SetString("RetroControllerDate", DateTime.Now.ToString());
+                PlayerPrefs.SetString(AssetKey, string.Empty);
+                PlayerPrefs.Save();
             }
         }
 
-        static void CheckChangelog(string[] importedAssets)
+        static Version AssetVersion()
         {
-            string newVersionPath = importedAssets.FirstOrDefault(p => p.Contains("retrocontroller_version"));
-            TextAsset newVersionText = AssetDatabase.LoadAssetAtPath<TextAsset>(newVersionPath);
+            var path = AssetDatabase.FindAssets("retrocontroller_version").FirstOrDefault();
+            TextAsset newVersionText = AssetDatabase.LoadAssetAtPath<TextAsset>(path);
             if (newVersionText != null)
-                ChangelogWindow.OpenWindow();
+            {
+                return new Version(newVersionText.text);
+            }
+
+            return null;
         }
     }
 }
