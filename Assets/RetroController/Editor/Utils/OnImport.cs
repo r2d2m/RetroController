@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -14,14 +13,12 @@ namespace vnc.Editor.Utils
         {
             if (importedAssets.Length == 0)
                 return;
-
+            
             if (!PlayerPrefs.HasKey(AssetKey))
             {
-                bool hasPlatform, hasWater, hasLadder;
-
-                hasPlatform = ArrayUtility.Contains(UnityEditorInternal.InternalEditorUtility.tags, "Platform");
-                hasWater = ArrayUtility.Contains(UnityEditorInternal.InternalEditorUtility.tags, "Water");
-                hasLadder = ArrayUtility.Contains(UnityEditorInternal.InternalEditorUtility.tags, "Ladder");
+                bool hasPlatform = ArrayUtility.Contains(UnityEditorInternal.InternalEditorUtility.tags, "Platform");
+                bool hasWater = ArrayUtility.Contains(UnityEditorInternal.InternalEditorUtility.tags, "Water");
+                bool hasLadder = ArrayUtility.Contains(UnityEditorInternal.InternalEditorUtility.tags, "Ladder");
 
                 string message = string.Format("For the Sample Scene to work with all the RetroController " +
                     "functionalities, the package needs to add the following Tags:");
@@ -36,11 +33,18 @@ namespace vnc.Editor.Utils
 
                 if (!hasPlatform || !hasWater || !hasLadder)
                 {
-                    if (EditorUtility.DisplayDialog("Altering Project Settings", message, "Yes", "No"))
+                    if (EditorUtility.DisplayDialog("Retro Controller", message, "Yes", "No"))
                     {
                         if (!hasPlatform) UnityEditorInternal.InternalEditorUtility.AddTag("Platform");
                         if (!hasWater) UnityEditorInternal.InternalEditorUtility.AddTag("Water");
                         if (!hasLadder) UnityEditorInternal.InternalEditorUtility.AddTag("Ladder");
+                        EditorUtility.DisplayDialog("Retro Controller", "Tags successfully imported!", "OK");
+                    }
+                    else
+                    {
+                        string msg = "You won't be asked again.\nIf you change your mind, you can import the " +
+                                "tags again in Window > Retro Controller > Reimport Tags.";
+                        EditorUtility.DisplayDialog("Retro Controller", msg, "OK");
                     }
                 }
 

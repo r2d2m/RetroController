@@ -654,7 +654,7 @@ namespace vnc
 
                 if (c.isTrigger)
                 {
-                    if (c.CompareTag(Profile.WaterTag))
+                    if (c.tag == Profile.WaterTag)
                         CheckWater(c);
                 }
                 else
@@ -681,7 +681,7 @@ namespace vnc
                             position += Vector3.up * dist;
                             surfaceNormals.floor = normal;
 
-                            if (c.CompareTag(Profile.PlatformTag))
+                            if (c.tag == Profile.PlatformTag)
                             {
                                 // on a platform
                                 // send the platform message that the player collided
@@ -701,7 +701,7 @@ namespace vnc
                         {
                             Collisions = Collisions | CC_Collision.CollisionSides;
 
-                            if (c.CompareTag(Profile.LadderTag))
+                            if (c.tag == Profile.LadderTag)
                             {
                                 foundLadder = true;
 
@@ -1084,7 +1084,7 @@ namespace vnc
         {
             ignoredColliders.Remove(collider);
         }
-
+        
         // do not modify
         protected virtual void _boxUpdate()
         {
