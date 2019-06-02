@@ -677,7 +677,7 @@ namespace vnc
                         // COLLISIONS BELOW
                         if (dot > SlopeDot && dot <= 1)
                         {
-                            Collisions = Collisions | CC_Collision.CollisionBelow;
+                            Collisions |= CC_Collision.CollisionBelow;
                             position += Vector3.up * dist;
                             surfaceNormals.floor = normal;
 
@@ -699,7 +699,7 @@ namespace vnc
                         // COLLISIONS ON SIDES
                         if (dot >= 0 && dot < SlopeDot)
                         {
-                            Collisions = Collisions | CC_Collision.CollisionSides;
+                            Collisions |= CC_Collision.CollisionSides;
 
                             if (c.tag == Profile.LadderTag)
                             {
@@ -727,7 +727,7 @@ namespace vnc
                         // COLLISIONS ABOVE
                         if (dot < -0.001)
                         {
-                            Collisions = Collisions | CC_Collision.CollisionAbove;
+                            Collisions |= CC_Collision.CollisionAbove;
                             position += normal * dist;
                             OnCCHit(normal);
                         }
