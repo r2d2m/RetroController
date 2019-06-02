@@ -18,7 +18,7 @@ namespace vnc.Samples
 
         void Update()
         {
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0) && retroController.updateController)
             {
                 if (Time.time < time + shootingDelay)
                     return;

@@ -11,8 +11,8 @@ namespace vnc
     [RequireComponent(typeof(RetroController))]
     public class RetroControllerView : MonoBehaviour
     {
-        RetroController _controller;
-        [SerializeField] Transform controllerCamera;
+        protected RetroController _controller;
+        [SerializeField] protected Transform controllerCamera;
 
         [Header("Settings")]
         public Bob bob;
@@ -101,14 +101,14 @@ namespace vnc
                 {
                     stepInterpolation.delta += _controller.StepDelta;
                 }
-
+                
+                stepInterpolation.delta = Mathf.Clamp(stepInterpolation.delta, 0, stepInterpolation.maximumDelta);
                 controllerCamera.localPosition = bob.currentPosition + (Vector3.down * stepInterpolation.delta);
 
                 float speed = _controller.Sprint ? stepInterpolation.sprintSpeed : stepInterpolation.normalSpeed;
                 float t = speed * Time.deltaTime;
 
                 stepInterpolation.delta -= Easings.Interpolate(t, stepInterpolation.easingFunction);
-                stepInterpolation.delta = Mathf.Clamp(stepInterpolation.delta, 0, float.MaxValue);
             }
             else
             {
@@ -122,6 +122,7 @@ namespace vnc
     [System.Serializable]
     public struct Bob
     {
+        [Tooltip("Toggle camera bobbing")]
         public bool enabled;
         public bool whenMovingOnly;
         public Vector3 origin;
@@ -137,8 +138,11 @@ namespace vnc
     [System.Serializable]
     public struct Roll
     {
+        [Tooltip("Toggle camera roll.")]
         public bool enabled;
+        [Tooltip("Maximum angle to both left and right.")]
         public float angle;
+        [Tooltip("How fast it will roll.")]
         public float speed;
         [EditDisabled] public float currentAngle;
 
@@ -149,10 +153,13 @@ namespace vnc
     [System.Serializable]
     public struct Step
     {
-        public bool enabled;
-        public float normalSpeed;
-        public float sprintSpeed;
-        public Easings.Functions easingFunction;
+        [Tooltip("Toggle interpolation.")]
+        public bool enabled;        // enables interpolation
+        public float normalSpeed;   // interpolation speed while walking
+        public float sprintSpeed;   // interpolation speed while sprinting
+        [RangeNoSlider(0f, float.MaxValue)]
+        public float maximumDelta;  
+        public Easings.Functions easingFunction;    // interpolation function to be used
         [EditDisabled] public float delta;
         [EditDisabled] public float nextPosY;
         [EditDisabled] public float viewUpPosition;

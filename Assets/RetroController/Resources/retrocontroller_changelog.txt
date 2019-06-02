@@ -1,6 +1,8 @@
 <b>
 1.1.7
 - Option to reimport necessary tags.
+- Maximum delta for step interpolation.
+- Changed property accessibility on controller view.
 
 1.1.6 (May 24, 2019)
 - Improved controller collision.
