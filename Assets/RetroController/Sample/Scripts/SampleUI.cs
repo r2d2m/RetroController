@@ -1,7 +1,9 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class SampleUI : MonoBehaviour
+namespace vnc.Samples
+{
+    public class SampleUI : MonoBehaviour
 {
     bool showInterface = true;
     public CanvasGroup instructions;
@@ -42,4 +44,5 @@ public class SampleUI : MonoBehaviour
         playerMouseLook.mouseSensitivity = mouseSensitivitySlider.value;
         mouseSensitivityText.text = playerMouseLook.mouseSensitivity.ToString();
     }
+}
 }

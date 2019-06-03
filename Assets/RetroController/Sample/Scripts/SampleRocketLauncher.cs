@@ -2,6 +2,11 @@
 
 namespace vnc.Samples
 {
+    /// <summary>
+    /// This is a sample script for a rocket launcher type of weapon.
+    /// The purpose of this is to show how can you propel the controller
+    /// by simply adding a value to it's Velocity property.
+    /// </summary>
     public class SampleRocketLauncher : MonoBehaviour
     {
         public RetroController retroController;

@@ -63,6 +63,8 @@ namespace vnc.Samples
 
             mouseLook.LookRotation(transform, playerView);
             mouseLook.UpdateCursorLock();
+
+            Time.timeScale = retroController.updateController ? 1 : 0;
         }
     }
 

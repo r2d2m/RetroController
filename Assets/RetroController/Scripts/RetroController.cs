@@ -29,7 +29,7 @@ namespace vnc
         // cache
         private Collider[] overlapingColliders = new Collider[8];
         private Collider[] overlapOnSteps = new Collider[4];
-        RaycastHit[] stairGroundHit = new RaycastHit[4];
+        RaycastHit[] groundHit = new RaycastHit[4];
 
         [HideInInspector] public CC_Collision Collisions { get; private set; }
         private BoxCollider _boxCollider;
@@ -44,7 +44,7 @@ namespace vnc
         public bool DuckInput { get; set; }
 
         // Velocity
-        [HideInInspector] public Vector3 Velocity;
+        public Vector3 Velocity;
         protected Vector3 wishDir;    // the direction from the input
         protected float wishSpeed;
 
@@ -65,7 +65,7 @@ namespace vnc
         [Tooltip("Ignore layers during runtime")]
         public LayerMask ignoredLayers;
         public UnorderedList<Collider> ignoredColliders;
-        [HideInInspector] public CC_State State { get; private set; }
+        public CC_State State { get; private set; }
         public bool IsGrounded { get { return (State & CC_State.IsGrounded) != 0; } }
         public bool OnPlatform { get { return (State & CC_State.OnPlatform) != 0; } }
         public bool OnLadder { get { return (State & CC_State.OnLadder) != 0; } }
@@ -90,7 +90,7 @@ namespace vnc
         private float WaterThreshold { get { return transform.position.y + Profile.SwimmingOffset; } }
 
         // Platforms
-        protected Collider platformCollider;
+        public Collider CurrentPlatform { get; protected set; }
         protected bool wasOnPlatform;
 
         // Ladders
@@ -265,23 +265,10 @@ namespace vnc
             if (!IsGrounded)
                 CalculateGravity();
 
-            // stick on platform
-            if (OnPlatform)
-            {
-                OnPlatformMove();
-            }
-            else
-            {
-                // movement on static surface
+            if (wasOnPlatform && !OnPlatform)
+                CurrentPlatform = null;
 
-                // was on platform?
-                if (wasOnPlatform && !OnPlatform)
-                {
-                    platformCollider = null;
-                }
-
-                CharacterMove(Velocity);
-            }
+            CharacterMove(Velocity);
 
             // player just got off ground
             if (wasGrounded && !IsGrounded)
@@ -356,15 +343,6 @@ namespace vnc
             CharacterMove(Velocity);
 
             wasGrounded = IsGrounded;
-        }
-
-        /// <summary>
-        /// Movement method when the controller is on a platform.
-        /// Override it to add custom platform code.
-        /// </summary>
-        protected virtual void OnPlatformMove()
-        {
-            CharacterMove(Velocity);
         }
 
         /// <summary>
@@ -587,8 +565,9 @@ namespace vnc
 
             movement = VectorFixer(movement);
 
-            // reset all collision flags
+            // reset flags
             Collisions = CC_Collision.None;
+            State &= ~CC_State.OnPlatform;
             IsSwimming = false;
 
             Vector3 direction = movement.normalized;
@@ -680,19 +659,7 @@ namespace vnc
                             Collisions |= CC_Collision.CollisionBelow;
                             position += Vector3.up * dist;
                             surfaceNormals.floor = normal;
-
-                            if (c.tag == Profile.PlatformTag)
-                            {
-                                // on a platform
-                                // send the platform message that the player collided
-                                State |= CC_State.OnPlatform;
-                                platformCollider = c;
-                            }
-                            else
-                            {
-                                State &= ~CC_State.OnPlatform;
-                            }
-
+                            CheckPlatform(c);
                             OnCCHit(normal);
                         }
 
@@ -810,10 +777,8 @@ namespace vnc
         {
             // after finding a collision, try to check if it's a step
             // the controller can be on
-
             foundStep = false;
             bool onGround = OnStairGroundDetect();
-            //DetectGround();
             if (!onGround)
             {
                 return position;
@@ -940,8 +905,9 @@ namespace vnc
                     float slopeDot = (Profile.SlopeAngleLimit / 90f);
                     if (dot > slopeDot && dot <= 1)
                     {
-                        Collisions = Collisions | CC_Collision.CollisionBelow;
+                        Collisions |= CC_Collision.CollisionBelow;
                         surfaceNormals.floor = normal;
+                        CheckPlatform(c);
                         OnCCHit(normal);
                     }
                 }
@@ -959,7 +925,7 @@ namespace vnc
             {
                 for (int i = 0; i < n; i++)
                 {
-                    float dot = Vector3.Dot(stairGroundHit[i].normal, Vector3.up);
+                    float dot = Vector3.Dot(groundHit[i].normal, Vector3.up);
                     float slopeDot = (Profile.SlopeAngleLimit / 90f);
                     if (dot > slopeDot && dot <= 1)
                     {
@@ -968,6 +934,21 @@ namespace vnc
                 }
             }
             return false;
+        }
+
+        /// <summary>
+        /// Check if the collider is a platform
+        /// </summary>
+        /// <param name="c">Collider to be checked</param>
+        public virtual void CheckPlatform(Collider c)
+        {
+            if (c.tag == Profile.PlatformTag)
+            {
+                // on a platform
+                // send the platform message that the player collided
+                State |= CC_State.OnPlatform;
+                CurrentPlatform = c;
+            }
         }
 
         /// <summary>
@@ -988,7 +969,7 @@ namespace vnc
             };
             for (int i = 0; i < origins.Length; i++)
             {
-                n = Physics.RaycastNonAlloc(origins[i], Vector3.down, stairGroundHit, distance, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
+                n = Physics.RaycastNonAlloc(origins[i], Vector3.down, groundHit, distance, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
                 if (n > 0)
                     return true;
             }
