@@ -1,88 +1,19 @@
 fileFormatVersion: 2
-guid: cb3db75ccbf178e49b74a11561c8d238
-timeCreated: 1544716813
+guid: 46ebb03b4905a9c49a792996c340deb9
+timeCreated: 1559552866
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
   fileIDToRecycleName:
     100000: //RootNode
-    100002: Cube
-    100004: Cube.001
-    100006: Cube.002
-    100008: World
-    100010: Ramp
-    100012: Stairs
-    100014: Wall Back
-    100016: Wall Front
-    100018: Wall Side
-    100020: Wall Side.001
-    100022: Wall Side.002
-    100024: Plane
+    100002: Mesh1
     400000: //RootNode
-    400002: Cube
-    400004: Cube.001
-    400006: Cube.002
-    400008: World
-    400010: Ramp
-    400012: Stairs
-    400014: Wall Back
-    400016: Wall Front
-    400018: Wall Side
-    400020: Wall Side.001
-    400022: Wall Side.002
-    400024: Plane
-    2300000: //RootNode
-    2300002: Cube
-    2300004: Cube.001
-    2300006: Cube.002
-    2300008: World
-    2300010: Ramp
-    2300012: Stairs
-    2300014: Wall Back
-    2300016: Wall Front
-    2300018: Wall Side
-    2300020: Wall Side.001
-    2300022: Wall Side.002
-    2300024: Plane
-    3300000: //RootNode
-    3300002: Cube
-    3300004: Cube.001
-    3300006: Cube.002
-    3300008: World
-    3300010: Ramp
-    3300012: Stairs
-    3300014: Wall Back
-    3300016: Wall Front
-    3300018: Wall Side
-    3300020: Wall Side.001
-    3300022: Wall Side.002
-    3300024: Plane
-    4300000: World
-    4300002: Cube
-    4300004: Cube.001
-    4300006: Cube.002
-    4300008: Stairs
-    4300010: Ramp
-    4300012: Wall Side
-    4300014: Wall Side.001
-    4300016: Wall Front
-    4300018: Wall Back
-    4300020: Wall Side.002
-    4300022: Plane
-    6400000: Cube
-    6400002: Cube.001
-    6400004: Cube.002
-    6400006: World
-    6400008: Ramp
-    6400010: Stairs
-    6400012: Wall Back
-    6400014: Wall Front
-    6400016: Wall Side
-    6400018: Wall Side.001
-    6400020: Wall Side.002
-    6400022: Plane
+    400002: Mesh1
+    2300000: Mesh1
+    3300000: Mesh1
+    4300000: Mesh1
   materials:
-    importMaterials: 0
+    importMaterials: 1
     materialName: 0
     materialSearch: 1
   animations:
@@ -109,7 +40,7 @@ ModelImporter:
     lODScreenPercentages: []
     globalScale: 1
     meshCompression: 0
-    addColliders: 1
+    addColliders: 0
     importBlendShapes: 1
     swapUVChannels: 0
     generateSecondaryUV: 0

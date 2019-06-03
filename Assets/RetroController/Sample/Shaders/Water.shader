@@ -18,7 +18,7 @@
 		
 		CGPROGRAM
 		// Physically based Standard lighting model, and enable shadows on all light types
-		#pragma surface surf Standard fullforwardshadows
+		#pragma surface surf Standard 
 
 		// Use shader model 3.0 target, to get nicer looking lighting
 		#pragma target 3.0
@@ -43,7 +43,7 @@
 		UNITY_INSTANCING_CBUFFER_START(Props)
 			// put more per-instance properties here
 		UNITY_INSTANCING_CBUFFER_END
-
+		
 		void surf (Input IN, inout SurfaceOutputStandard o) {
 			float sine = sin((IN.uv_MainTex.y + abs(_Time[1]))* _Intensity);
 			IN.uv_MainTex.x += sine * 0.01;

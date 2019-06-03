@@ -1,8 +1,10 @@
 <b>
-1.1.7
+1.2 (TBA)
 - Option to reimport necessary tags.
 - Maximum delta for step interpolation.
 - Changed property accessibility on controller view.
+- New Sample scene
+- New Tutorial scene
 
 1.1.6 (May 24, 2019)
 - Improved controller collision.
