@@ -1,48 +1,36 @@
 ﻿using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace vnc.Samples
 {
     public class SampleUI : MonoBehaviour
-{
-    bool showInterface = true;
-    public CanvasGroup instructions;
-    public CanvasGroup mouseSettings;
-    public Slider mouseSensitivitySlider;
-    public Text mouseSensitivityText;
-    MouseLook playerMouseLook;
-
-    void Start()
     {
-        playerMouseLook = FindObjectOfType<MouseLook>();
-        if (playerMouseLook != null)
-        {
-            mouseSensitivitySlider.onValueChanged.AddListener(onValueChange);
-            mouseSensitivitySlider.value = playerMouseLook.mouseSensitivity;
-            mouseSensitivityText.text = playerMouseLook.mouseSensitivity.ToString();
-        }
-    }
+        public Transform player;
+        public Text targetText;
+        public string[] message;
 
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.H))
+        public static SampleUI Instance { get; private set; }
+
+        public void Awake()
         {
-            showInterface = !showInterface;
+            Instance = this;
         }
 
-        instructions.interactable = showInterface;
-        instructions.alpha = showInterface ? 1 : 0;
-        instructions.blocksRaycasts = showInterface;
+        public void OnTeleport(int option)
+        {
+            //if (option >= eventOptions.Length)
+            //{
+            //    Debug.LogWarning("Invalid event option");
+            //    return;
+            //}
 
-        mouseSettings.interactable = showInterface;
-        mouseSettings.alpha = showInterface ? 1 : 0;
-        mouseSettings.blocksRaycasts = showInterface;
-    }
+            //eventOptions[option].Invoke();
+        }
 
-    public void onValueChange(float value)
-    {
-        playerMouseLook.mouseSensitivity = mouseSensitivitySlider.value;
-        mouseSensitivityText.text = playerMouseLook.mouseSensitivity.ToString();
+        public void Scream()
+        {
+            Debug.Log("AAAAAAAAAAAAAAAAAAA");
+        }
     }
-}
 }

@@ -8,12 +8,12 @@
 	}
 	SubShader
 	{
-		Tags{ "Queue" = "Transparent" "IgnoreProjector" = "True" "RenderType" = "Transparent" }
+		Tags{ "Queue" = "Transparent" "RenderType" = "Transparent" }
 		LOD 100
 		
 		ZWrite Off
 		Cull Off
-		Blend SrcAlpha One
+		Blend SrcAlpha OneMinusSrcAlpha
 		
 		Pass
 		{
