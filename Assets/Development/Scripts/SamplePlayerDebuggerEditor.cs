@@ -6,14 +6,14 @@ using vnc.Samples;
 
 namespace vnc.Development
 {
-    [CustomEditor(typeof(SamplePlayerDebug))]
+    [CustomEditor(typeof(SamplePlayerDebugger))]
     public class SamplePlayerEditor : UnityEditor.Editor
     {
-        SamplePlayerDebug samplePlayer;
+        SamplePlayerDebugger samplePlayer;
 
         public override void OnInspectorGUI()
         {
-            samplePlayer = ((SamplePlayerDebug)target);
+            samplePlayer = ((SamplePlayerDebugger)target);
 
             if (samplePlayer.isPlaying)
             {

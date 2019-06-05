@@ -4,7 +4,7 @@ using vnc.Samples;
 using vnc.Utils;
 namespace vnc.Development
 {
-    public class SamplePlayerDebug : SamplePlayer
+    public class SamplePlayerDebugger : SamplePlayer
     {
         public bool autoInput = false;
         [ConditionalHide("autoInput"), Range(-1, 1)]
@@ -120,6 +120,9 @@ namespace vnc.Development
 
         private void OnDrawGizmos()
         {
+            if (retroController == null)
+                return;
+
             if (retroController.Profile != null)
             {
                 Gizmos.color = Color.green;
