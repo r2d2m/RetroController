@@ -27,10 +27,5 @@ namespace vnc.Samples
 
             //eventOptions[option].Invoke();
         }
-
-        public void Scream()
-        {
-            Debug.Log("AAAAAAAAAAAAAAAAAAA");
-        }
     }
 }
