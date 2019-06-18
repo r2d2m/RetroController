@@ -203,6 +203,8 @@ namespace vnc
         /// </summary>
         public float GroundCheck = 0.21f;
 
+        public float LedgeDetectOffset = 0.8f;
+
         /// <summary>
         /// Advanced settings. Do not change this, except
         /// when experiencing collision imprecision.

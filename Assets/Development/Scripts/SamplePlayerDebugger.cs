@@ -109,7 +109,7 @@ namespace vnc.Development
             {
                 Rect rect = new Rect(0, 0, 250, 100);
                 Vector3 planeVel = retroController.Velocity; planeVel.y = 0;
-                string debugText = "Time Scale: " + Time.timeScale;
+                string debugText = "States: " + retroController.State;
 
                 if (guiStyle != null)
                     GUI.Label(rect, debugText, guiStyle);

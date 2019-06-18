@@ -10,15 +10,18 @@ namespace vnc.Editor
     {
         SerializedProperty profile;
         SerializedProperty view;
+        SerializedProperty state;
 
         static Dictionary<int, RetroControllerEditorState> callbackEventsFold = new Dictionary<int, RetroControllerEditorState>();
         SerializedProperty jumpCallback, landingCallback, fixedUpdateEndCalback;
         GUIStyle foldBold;
+        bool showDebugInfo = false;
 
         private void OnEnable()
         {
             profile = serializedObject.FindProperty("Profile");
             view = serializedObject.FindProperty("controllerView");
+            state = serializedObject.FindProperty("_state");
         }
 
         public override void OnInspectorGUI()
@@ -50,6 +53,8 @@ namespace vnc.Editor
             DrawDefaultInspectorWithoutScriptField();
 
             DrawEvents();
+
+            DrawDebugInfo();
         }
 
         public bool DrawDefaultInspectorWithoutScriptField()
@@ -106,6 +111,16 @@ namespace vnc.Editor
             if (GUI.changed)
             {
                 serializedObject.ApplyModifiedProperties();
+            }
+        }
+
+        public void DrawDebugInfo()
+        {
+            EditorGUILayout.Space();
+            showDebugInfo = EditorGUILayout.Foldout(showDebugInfo, "Debug Info", foldBold);
+            if (showDebugInfo)
+            {
+
             }
         }
 

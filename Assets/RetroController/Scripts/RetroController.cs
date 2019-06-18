@@ -65,7 +65,12 @@ namespace vnc
         [Tooltip("Ignore layers during runtime")]
         public LayerMask ignoredLayers;
         public UnorderedList<Collider> ignoredColliders;
-        public CC_State State { get; private set; }
+        [EnumFlags, SerializeField] CC_State _state;
+        public CC_State State
+        {
+            get { return _state; }
+            private set { _state = value; }
+        }
         public bool IsGrounded { get { return (State & CC_State.IsGrounded) != 0; } }
         public bool OnPlatform { get { return (State & CC_State.OnPlatform) != 0; } }
         public bool OnLadder { get { return (State & CC_State.OnLadder) != 0; } }
@@ -242,6 +247,7 @@ namespace vnc
             }
             else
             {
+                // TODO: no wishDir normalization?
                 MoveAir();
             }
 
@@ -262,8 +268,18 @@ namespace vnc
                 }
             }
 
+            // not grounded
             if (!IsGrounded)
+            {
+                //if(HasState(CC_State.OnLedge))
+                //{
+                //    Velocity.y = Profile.WaterEdgeJumpSpeed;
+                //}
+                //else
+                //{
+                //}
                 CalculateGravity();
+            }
 
             if (wasOnPlatform && !OnPlatform)
                 CurrentPlatform = null;
@@ -465,6 +481,7 @@ namespace vnc
         #endregion Acceleration
 
         #region Acceleration
+        // TODO: why it uses this formula instead of the same of the Air strafing?
         protected virtual Vector3 Accelerate(Vector3 wishdir, Vector3 prevVelocity, float accelerate, float max_velocity)
         {
             var projVel = Vector3.Dot(prevVelocity, wishdir);
@@ -568,6 +585,7 @@ namespace vnc
             // reset flags
             Collisions = CC_Collision.None;
             State &= ~CC_State.OnPlatform;
+            State &= ~CC_State.OnLedge;
             IsSwimming = false;
 
             Vector3 direction = movement.normalized;
@@ -687,7 +705,9 @@ namespace vnc
                                     surfaceNormals.wall = normal;
                                     OnCCHit(normal);
                                     WaterEdgePush(normal);
+                                    DetectLedge(c);
                                 }
+
                             }
                         }
 
@@ -951,6 +971,33 @@ namespace vnc
             }
         }
 
+        Vector3 projectedCenter;
+        public virtual void DetectLedge(Collider c)
+        {
+            Vector3 halfExtents;
+            Quaternion orientation;
+            _boxCollider.ToWorldSpaceBox(out projectedCenter, out halfExtents, out orientation);
+            projectedCenter += transform.forward + Vector3.up * (Profile.LedgeDetectOffset + halfExtents.y);
+            // check if the area is free from overlapping
+            int n_overlap = Physics.OverlapBoxNonAlloc(projectedCenter, halfExtents,
+                overlapingColliders, _boxCollider.transform.rotation, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
+            if (n_overlap == 0)
+            {
+                //Vector3 offsetCenter = projectedCenter + (Vector3.down * Profile.GroundCheck);
+                RaycastHit hit;
+                if (Physics.BoxCast(projectedCenter, halfExtents, Vector3.down, out hit, orientation,
+                    Profile.GroundCheck, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore))
+                {
+                    float dot = Vector3.Dot(hit.normal, Vector3.up);
+                    float slopeDot = (Profile.SlopeAngleLimit / 90f);
+                    if (dot > slopeDot && dot <= 1)
+                    {
+                        State |= CC_State.OnLedge;
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Detect collision casting down from the sides of a box
         /// </summary>
@@ -1065,7 +1112,7 @@ namespace vnc
         {
             ignoredColliders.Remove(collider);
         }
-        
+
         // do not modify
         protected virtual void _boxUpdate()
         {
@@ -1098,8 +1145,9 @@ namespace vnc
             IsGrounded = 2,
             OnPlatform = 4,
             OnLadder = 8,
-            Ducking = 16,
-            NoClip = 32
+            OnLedge = 16,
+            Ducking = 32,
+            NoClip = 64
         }
 
         [Flags]
@@ -1134,6 +1182,10 @@ namespace vnc
                 DebugExtension.DrawArrow(transform.position, wishDir, Color.black);
                 DebugExtension.DrawArrow(transform.position, Velocity.normalized, Color.red);
 
+                DebugExtension.DrawCircle(transform.position + Vector3.up * Profile.LedgeDetectOffset, Color.green, 1.2f);
+
+                Gizmos.color = Color.magenta;
+                Gizmos.DrawCube(projectedCenter, Profile.Size);
             }
         }
 
