@@ -107,6 +107,9 @@ namespace vnc
         [HideInInspector] public bool wasOnStep;
         public float SlopeDot { get { return (Profile.SlopeAngleLimit / 90f); } }
 
+        // Custom movements
+        [HideInInspector] public RetroMovement[] retroMovements;
+
         // CALLBACK EVENTS
         [HideInInspector]
         public UnityEvent OnJumpCallback,
@@ -140,23 +143,40 @@ namespace vnc
             if (!updateController)
                 return;
 
-            if (Profile.FlyingController)
+            // loop through all custom movements
+            bool isDone = false;
+            if (retroMovements.Length > 0)
             {
-                FlyMovementUpdate();
-            }
-            else
-            {
-                if (OnLadder && !detachLadder)
+                int index = 0;
+                while (!isDone && index < retroMovements.Length)
                 {
-                    LadderMovementUpdate();
+                    isDone = retroMovements[index].DoMovement(this);
+                    index++;
                 }
-                else if (IsSwimming && WaterState == CC_Water.Underwater)
+            }
+
+            // run built-in movements if custom movements
+            // where not executed
+            if (!isDone)
+            {
+                if (Profile.FlyingController)
                 {
-                    WaterMovementUpdate();
+                    FlyMovementUpdate();
                 }
                 else
                 {
-                    GroundMovementUpdate();
+                    if (OnLadder && !detachLadder)
+                    {
+                        LadderMovementUpdate();
+                    }
+                    else if (IsSwimming && WaterState == CC_Water.Underwater)
+                    {
+                        WaterMovementUpdate();
+                    }
+                    else
+                    {
+                        GroundMovementUpdate();
+                    }
                 }
             }
 

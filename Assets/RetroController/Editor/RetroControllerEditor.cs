@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEditor;
+using UnityEditorInternal;
 using UnityEngine;
 using vnc.Editor.Utils;
 
@@ -11,6 +12,8 @@ namespace vnc.Editor
         SerializedProperty profile;
         SerializedProperty view;
         SerializedProperty state;
+        SerializedProperty retroMovements;
+        private ReorderableList movementsList;
 
         static Dictionary<int, RetroControllerEditorState> callbackEventsFold = new Dictionary<int, RetroControllerEditorState>();
         SerializedProperty jumpCallback, landingCallback, fixedUpdateEndCalback;
@@ -22,10 +25,24 @@ namespace vnc.Editor
             profile = serializedObject.FindProperty("Profile");
             view = serializedObject.FindProperty("controllerView");
             state = serializedObject.FindProperty("_state");
+            retroMovements = serializedObject.FindProperty("retroMovements");
+            movementsList = new ReorderableList(serializedObject, retroMovements);
+            movementsList.drawHeaderCallback = rect =>
+            {
+                EditorGUI.LabelField(rect, "Movements List", EditorStyles.boldLabel);
+            };
+            movementsList.drawElementCallback =
+            (Rect rect, int index, bool isActive, bool isFocused) =>
+            {
+                var element = movementsList.serializedProperty.GetArrayElementAtIndex(index);
+                EditorGUI.ObjectField(new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight), element, GUIContent.none);
+            };
         }
 
         public override void OnInspectorGUI()
         {
+            serializedObject.Update();
+
             if (foldBold == null)
             {
                 foldBold = new GUIStyle(EditorStyles.foldout);
@@ -51,6 +68,9 @@ namespace vnc.Editor
             EditorUtils.SetIcon(serializedObject.targetObject, "retro_controller");
 
             DrawDefaultInspectorWithoutScriptField();
+
+            EditorGUILayout.Space();
+            movementsList.DoLayoutList();
 
             DrawEvents();
 
