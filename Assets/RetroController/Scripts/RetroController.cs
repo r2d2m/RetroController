@@ -33,6 +33,7 @@ namespace vnc
 
         [HideInInspector] public CC_Collision Collisions { get; private set; }
         private BoxCollider _boxCollider;
+        public BoxCollider controllerCollider { get { return _boxCollider; } }
 
         // Input
         [HideInInspector] public Vector2 inputDir;
@@ -48,9 +49,10 @@ namespace vnc
         protected Vector3 wishDir;    // the direction from the input
         protected float wishSpeed;
 
+        protected bool wasGrounded = false;   // if player was on ground on previous update
+
         // Jumping
         protected int triedJumping = 0;       // jumping timer for bunnyhopping
-        protected bool wasGrounded = false;   // if player was on ground on previous update
         protected float jumpGraceTimer;       // time window for jumping just before reaching the ground
         protected bool sprintJump;            // jump while sprinting
 
@@ -133,6 +135,10 @@ namespace vnc
                 _boxCollider = gameObject.AddComponent<BoxCollider>();
             }
             _boxCollider.hideFlags = HideFlags.DontSave | HideFlags.NotEditable;
+
+            // load custom movements
+            for (int i = 0; i < retroMovements.Length; i++)
+                retroMovements[i].OnAwake(this);
         }
 
         protected virtual void FixedUpdate()
@@ -150,7 +156,7 @@ namespace vnc
                 int index = 0;
                 while (!isDone && index < retroMovements.Length)
                 {
-                    isDone = retroMovements[index].DoMovement(this);
+                    isDone = retroMovements[index].DoMovement();
                     index++;
                 }
             }
@@ -596,7 +602,7 @@ namespace vnc
         /// Moves the controller and calculates collision.
         /// </summary>
         /// <param name="movement">Final movement</param>
-        protected virtual void CharacterMove(Vector3 movement)
+        public virtual void CharacterMove(Vector3 movement)
         {
             SetDuckHull();
 
@@ -635,6 +641,12 @@ namespace vnc
                 // when controller doesn't move
                 transform.position = FixOverlaps(transform.position, Vector3.zero, 0f);
             }
+
+            // execute the necessary checks for custom movements
+            for (int i = 0; i < retroMovements.Length; i++)
+                retroMovements[i].OnCharacterMove();
+
+            //DetectLedge();
 
             SetWaterLevel();
 
@@ -725,7 +737,6 @@ namespace vnc
                                     surfaceNormals.wall = normal;
                                     OnCCHit(normal);
                                     WaterEdgePush(normal);
-                                    DetectLedge(c);
                                 }
 
                             }
@@ -991,32 +1002,32 @@ namespace vnc
             }
         }
 
-        Vector3 projectedCenter;
-        public virtual void DetectLedge(Collider c)
-        {
-            Vector3 halfExtents;
-            Quaternion orientation;
-            _boxCollider.ToWorldSpaceBox(out projectedCenter, out halfExtents, out orientation);
-            projectedCenter += transform.forward + Vector3.up * (Profile.LedgeDetectOffset + halfExtents.y);
-            // check if the area is free from overlapping
-            int n_overlap = Physics.OverlapBoxNonAlloc(projectedCenter, halfExtents,
-                overlapingColliders, _boxCollider.transform.rotation, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
-            if (n_overlap == 0)
-            {
-                //Vector3 offsetCenter = projectedCenter + (Vector3.down * Profile.GroundCheck);
-                RaycastHit hit;
-                if (Physics.BoxCast(projectedCenter, halfExtents, Vector3.down, out hit, orientation,
-                    Profile.GroundCheck, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore))
-                {
-                    float dot = Vector3.Dot(hit.normal, Vector3.up);
-                    float slopeDot = (Profile.SlopeAngleLimit / 90f);
-                    if (dot > slopeDot && dot <= 1)
-                    {
-                        State |= CC_State.OnLedge;
-                    }
-                }
-            }
-        }
+        //Vector3 projectedCenter;
+        //public virtual void DetectLedge()
+        //{
+        //    Vector3 halfExtents;
+        //    Quaternion orientation;
+        //    _boxCollider.ToWorldSpaceBox(out projectedCenter, out halfExtents, out orientation);
+        //    projectedCenter += transform.forward + Vector3.up * (Profile.LedgeDetectOffset + halfExtents.y);
+        //    // check if the area is free from overlapping
+        //    int n_overlap = Physics.OverlapBoxNonAlloc(projectedCenter, halfExtents,
+        //        overlapingColliders, _boxCollider.transform.rotation, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
+        //    if (n_overlap == 0)
+        //    {
+        //        //Vector3 offsetCenter = projectedCenter + (Vector3.down * Profile.GroundCheck);
+        //        RaycastHit hit;
+        //        if (Physics.BoxCast(projectedCenter, halfExtents, Vector3.down, out hit, orientation,
+        //            Profile.GroundCheck, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore))
+        //        {
+        //            float dot = Vector3.Dot(hit.normal, Vector3.up);
+        //            float slopeDot = (Profile.SlopeAngleLimit / 90f);
+        //            if (dot > slopeDot && dot <= 1)
+        //            {
+        //                State |= CC_State.OnLedge;
+        //            }
+        //        }
+        //    }
+        //}
 
         /// <summary>
         /// Detect collision casting down from the sides of a box
@@ -1133,13 +1144,23 @@ namespace vnc
             ignoredColliders.Remove(collider);
         }
 
+        /// <summary>
+        /// Prevents controller from bunnyhopping
+        /// </summary>
+        public void ResetJumping()
+        {
+            triedJumping = 0;
+            jumpGraceTimer = 0;
+        }
+
         // do not modify
         protected virtual void _boxUpdate()
         {
             _boxCollider.size = Profile.Size;
             _boxCollider.center = Profile.Center;
         }
-        #region State
+
+        #region State Utils
         public bool HasState(CC_State state)
         {
             return (State & state) != 0;
@@ -1155,6 +1176,24 @@ namespace vnc
             State &= ~state;
         }
         #endregion
+
+        #region Collision Utils
+        public bool HasCollision(CC_Collision collision)
+        {
+            return (Collisions & collision) != 0;
+        }
+
+        public void AddCollision(CC_Collision collision)
+        {
+            Collisions |= collision;
+        }
+
+        public void RemoveCollision(CC_Collision collision)
+        {
+            Collisions &= ~collision;
+        }
+        #endregion
+
         #endregion
 
         #region Enums
@@ -1201,11 +1240,6 @@ namespace vnc
 
                 DebugExtension.DrawArrow(transform.position, wishDir, Color.black);
                 DebugExtension.DrawArrow(transform.position, Velocity.normalized, Color.red);
-
-                DebugExtension.DrawCircle(transform.position + Vector3.up * Profile.LedgeDetectOffset, Color.green, 1.2f);
-
-                Gizmos.color = Color.magenta;
-                Gizmos.DrawCube(projectedCenter, Profile.Size);
             }
         }
 

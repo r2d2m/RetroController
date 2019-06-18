@@ -1,5 +1,6 @@
 <b>
 1.2 (TBA)
+- CUSTOM MOVEMENTS!
 - Option to reimport necessary tags.
 - Maximum delta for step interpolation.
 - Changed property accessibility on controller view.

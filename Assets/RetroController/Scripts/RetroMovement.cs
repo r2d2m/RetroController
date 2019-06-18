@@ -7,11 +7,19 @@ namespace vnc
     /// </summary>
     public abstract class RetroMovement : MonoBehaviour
     {
+        protected RetroController retroController;
+
+        public virtual void OnAwake(RetroController retroController)
+        {
+            this.retroController = retroController;
+        }
+
         /// <summary>
-        /// Executes the movement on the controller.
-        /// Check if it the controller has the necessary conditions to perform the movement and execute it.
+        /// <para>Executes the movement on the controller, if it meets the necessary conditions.</para>
+        /// <para>
         /// When a movement is executed, it skips all the others in the list. Check out the Manual to see
         /// how it works in depth.
+        /// </para>
         /// </summary>
         /// <param name="retroController">
         /// The RetroController being used to perform the custom movement
@@ -19,6 +27,8 @@ namespace vnc
         /// <returns>
         /// Return a boolean value as to if the movement passed the check with success.
         /// </returns>
-        public abstract bool DoMovement(RetroController retroController);
+        public abstract bool DoMovement();
+
+        public abstract void OnCharacterMove();
     }
 }
