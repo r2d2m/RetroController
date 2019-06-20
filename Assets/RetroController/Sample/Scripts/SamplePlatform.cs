@@ -52,8 +52,7 @@ namespace vnc.Samples
 
             if (OnPlatform())
             {
-                // moves the player if it's standing on the platform
-                player.transform.position += diff;
+                player.CharacterMove(diff);
             }
         }
 

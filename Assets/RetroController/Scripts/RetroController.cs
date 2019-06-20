@@ -52,7 +52,7 @@ namespace vnc
         protected bool wasGrounded = false;   // if player was on ground on previous update
 
         // Jumping
-        protected int triedJumping = 0;       // jumping timer for bunnyhopping
+        public int TriedJumping { get; protected set; }       // jumping timer i.e. bunnyhopping
         protected float jumpGraceTimer;       // time window for jumping just before reaching the ground
         protected bool sprintJump;            // jump while sprinting
 
@@ -67,12 +67,7 @@ namespace vnc
         [Tooltip("Ignore layers during runtime")]
         public LayerMask ignoredLayers;
         public UnorderedList<Collider> ignoredColliders;
-        [EnumFlags, SerializeField] CC_State _state;
-        public CC_State State
-        {
-            get { return _state; }
-            private set { _state = value; }
-        }
+        public CC_State State { get; protected set; }
         public bool IsGrounded { get { return (State & CC_State.IsGrounded) != 0; } }
         public bool OnPlatform { get { return (State & CC_State.OnPlatform) != 0; } }
         public bool OnLadder { get { return (State & CC_State.OnLadder) != 0; } }
@@ -124,6 +119,7 @@ namespace vnc
             WaterState = CC_Water.None;
             Collisions = CC_Collision.None;
             jumpGraceTimer = Profile.JumpGraceTime;
+            TriedJumping = 0;
             ignoredColliders = new UnorderedList<Collider>();
 
             if (controllerView)
@@ -212,8 +208,8 @@ namespace vnc
             Sprint = sprint;
             DuckInput = duck;
 
-            if (JumpInput && triedJumping == 0)
-                triedJumping = Profile.JumpInputTimer;
+            if (JumpInput && TriedJumping == 0)
+                TriedJumping = Profile.JumpInputTimer;
 
             inputDir = new Vector2(strafe, forward);
         }
@@ -280,13 +276,13 @@ namespace vnc
             CheckLanding();
 
             // bunnyhopping
-            if (triedJumping > 0)
+            if (TriedJumping > 0)
             {
                 // normal jump, it's on the ground
                 if (IsGrounded || jumpGraceTimer > 0)
                 {
                     Velocity.y += Profile.JumpSpeed;
-                    triedJumping = 0;
+                    TriedJumping = 0;
                     jumpGraceTimer = 0;
                     sprintJump = Sprint;
                     RemoveState(CC_State.IsGrounded);
@@ -297,13 +293,6 @@ namespace vnc
             // not grounded
             if (!IsGrounded)
             {
-                //if(HasState(CC_State.OnLedge))
-                //{
-                //    Velocity.y = Profile.WaterEdgeJumpSpeed;
-                //}
-                //else
-                //{
-                //}
                 AddGravity();
             }
 
@@ -320,7 +309,7 @@ namespace vnc
                     jumpGraceTimer = Profile.JumpGraceTime;
             }
 
-            triedJumping = Mathf.Clamp(triedJumping - 1, 0, 100);
+            TriedJumping = Mathf.Clamp(TriedJumping - 1, 0, 100);
 
             wasGrounded = IsGrounded;
             wasOnPlatform = OnPlatform;
@@ -336,7 +325,7 @@ namespace vnc
             wishDir = (walk + strafe) + (Vector3.up * Swim);
             wishDir.Normalize();
 
-            triedJumping = 0;   // ignores jumping on water
+            TriedJumping = 0;   // ignores jumping on water
 
             Velocity = MoveWater(wishDir, Velocity);
             AddGravity(Profile.WaterGravityScale);
@@ -374,11 +363,11 @@ namespace vnc
             wishDir = AlignOnLadder();
             Velocity = MoveLadder(wishDir, Velocity);
 
-            if (triedJumping > 0)
+            if (TriedJumping > 0)
             {
                 // detach and jump away from ladder
                 Velocity = surfaceNormals.ladder * Profile.LadderDetachJumpSpeed;
-                triedJumping = 0;
+                TriedJumping = 0;
                 detachLadder = true;
             }
 
@@ -435,7 +424,7 @@ namespace vnc
 
         protected virtual void LimitVerticalSpeed()
         {
-            Velocity.y = Mathf.Min(Velocity.y, -Profile.MaxVerticalSpeedScale);
+            Velocity.y = Mathf.Clamp(Velocity.y, -Profile.MaxVerticalSpeedScale, Profile.MaxVerticalSpeedScale);
         }
 
         protected virtual void CheckLanding()
@@ -1006,34 +995,7 @@ namespace vnc
                 CurrentPlatform = c;
             }
         }
-
-        //Vector3 projectedCenter;
-        //public virtual void DetectLedge()
-        //{
-        //    Vector3 halfExtents;
-        //    Quaternion orientation;
-        //    _boxCollider.ToWorldSpaceBox(out projectedCenter, out halfExtents, out orientation);
-        //    projectedCenter += transform.forward + Vector3.up * (Profile.LedgeDetectOffset + halfExtents.y);
-        //    // check if the area is free from overlapping
-        //    int n_overlap = Physics.OverlapBoxNonAlloc(projectedCenter, halfExtents,
-        //        overlapingColliders, _boxCollider.transform.rotation, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
-        //    if (n_overlap == 0)
-        //    {
-        //        //Vector3 offsetCenter = projectedCenter + (Vector3.down * Profile.GroundCheck);
-        //        RaycastHit hit;
-        //        if (Physics.BoxCast(projectedCenter, halfExtents, Vector3.down, out hit, orientation,
-        //            Profile.GroundCheck, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore))
-        //        {
-        //            float dot = Vector3.Dot(hit.normal, Vector3.up);
-        //            float slopeDot = (Profile.SlopeAngleLimit / 90f);
-        //            if (dot > slopeDot && dot <= 1)
-        //            {
-        //                State |= CC_State.OnLedge;
-        //            }
-        //        }
-        //    }
-        //}
-
+        
         /// <summary>
         /// Detect collision casting down from the sides of a box
         /// </summary>
@@ -1154,7 +1116,7 @@ namespace vnc
         /// </summary>
         public void ResetJumping()
         {
-            triedJumping = 0;
+            TriedJumping = 0;
             jumpGraceTimer = 0;
         }
 

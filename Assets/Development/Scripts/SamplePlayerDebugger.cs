@@ -1,11 +1,16 @@
 ﻿#if UNITY_EDITOR
 using UnityEngine;
+using vnc.Movements;
 using vnc.Samples;
 using vnc.Utils;
 namespace vnc.Development
 {
     public class SamplePlayerDebugger : SamplePlayer
     {
+        [Header("Custom Movement")]
+        public RetroLedgeGrab retroLedgeGrab;
+
+        [Header("Auto Input System")]
         public bool autoInput = false;
         [ConditionalHide("autoInput"), Range(-1, 1)]
         public float autoFoward = 0f;
@@ -31,6 +36,7 @@ namespace vnc.Development
 
         [Header("Debug GUI Style")]
         public GUIStyle guiStyle;
+
 
         public override void Update()
         {
@@ -77,6 +83,7 @@ namespace vnc.Development
                     sprint = Input.GetKey(KeyCode.LeftShift);
                     duck = Input.GetKey(KeyCode.C);
                     timeScale += (Input.GetKeyDown(KeyCode.KeypadPlus) ? 0.1f : 0f) - (Input.GetKeyDown(KeyCode.KeypadMinus) ? 0.1f : 0f);
+                    retroLedgeGrab.ClimbInput = Input.GetKey(KeyCode.Space);
                 }
 
                 // these inputs are fed into the controller
@@ -109,7 +116,10 @@ namespace vnc.Development
             {
                 Rect rect = new Rect(0, 0, 250, 100);
                 Vector3 planeVel = retroController.Velocity; planeVel.y = 0;
-                string debugText = "States: " + retroController.State;
+                string debugText = "Velocity: " + retroController.Velocity
+                    + "\nCollisions: " + retroController.Collisions
+                    + "\nStates: " + retroController.State
+                    + "\nJumping? " + retroController.TriedJumping;
 
                 if (guiStyle != null)
                     GUI.Label(rect, debugText, guiStyle);
