@@ -26,7 +26,7 @@ namespace vnc.Movements
                 }
                 else if (isClimbing)
                 {
-                    retroController.transform.position = Vector3.Lerp(retroController.transform.position, projectedCenter, ClimbSpeed * Time.fixedDeltaTime);
+                    retroController.transform.position = Vector3.MoveTowards(retroController.transform.position, projectedCenter, ClimbSpeed * Time.fixedDeltaTime);
 
                     if (Vector3.Distance(transform.position, projectedCenter) < UnclimbDistance)
                     {

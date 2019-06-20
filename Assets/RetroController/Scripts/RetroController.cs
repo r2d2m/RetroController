@@ -304,7 +304,7 @@ namespace vnc
                 //else
                 //{
                 //}
-                CalculateGravity();
+                AddGravity();
             }
 
             if (wasOnPlatform && !OnPlatform)
@@ -339,7 +339,7 @@ namespace vnc
             triedJumping = 0;   // ignores jumping on water
 
             Velocity = MoveWater(wishDir, Velocity);
-            CalculateGravity(Profile.WaterGravityScale);
+            AddGravity(Profile.WaterGravityScale);
 
             CharacterMove(Velocity);
         }
@@ -418,20 +418,24 @@ namespace vnc
             return newDir;
         }
 
+        [Obsolete("Use 'AddGravity' instead.")]
+        protected virtual void CalculateGravity(float gravityMultiplier = 1f)
+        {
+            AddGravity(gravityMultiplier);
+        }
+
         /// <summary>
         /// Push the controller down the Y axis based on gravity value on settings
         /// </summary>
-        /// <param name="gravityMultiplier">
-        /// Multiplier used when dealing with different environments, like water. 
-        /// </param>
-        protected virtual void CalculateGravity(float gravityMultiplier = 1f)
+        /// <param name="gravityMultiplier"> Use this for different environments, like water. </param>
+        protected virtual void AddGravity(float multiplier = 1f)
         {
-            // calculate gravity but on water
-            Velocity += (Vector3.down * Profile.Gravity * gravityMultiplier) * Time.fixedDeltaTime;
+            Velocity += (Vector3.down * Profile.Gravity * multiplier) * Time.fixedDeltaTime;
+        }
 
-            // limit the Y Velocity so the player doesn't speed
-            // too much when falling or being propelled
-            Velocity.y = Mathf.Clamp(Velocity.y, -Profile.MaxVerticalSpeedScale, Profile.MaxVerticalSpeedScale);
+        protected virtual void LimitVerticalSpeed()
+        {
+            Velocity.y = Mathf.Min(Velocity.y, -Profile.MaxVerticalSpeedScale);
         }
 
         protected virtual void CheckLanding()
@@ -604,6 +608,7 @@ namespace vnc
         /// <param name="movement">Final movement</param>
         public virtual void CharacterMove(Vector3 movement)
         {
+            LimitVerticalSpeed();
             SetDuckHull();
 
             movement = VectorFixer(movement);
