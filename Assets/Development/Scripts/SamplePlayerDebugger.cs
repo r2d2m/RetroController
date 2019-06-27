@@ -7,9 +7,6 @@ namespace vnc.Development
 {
     public class SamplePlayerDebugger : SamplePlayer
     {
-        [Header("Custom Movement")]
-        public RetroLedgeGrab retroLedgeGrab;
-
         [Header("Auto Input System")]
         public bool autoInput = false;
         [ConditionalHide("autoInput"), Range(-1, 1)]
@@ -33,6 +30,10 @@ namespace vnc.Development
         [HideInInspector] public bool isPlaying = false;
         int playIndex = 0;
         float timeScale = 1f;
+
+        [Header("Custom Movement")]
+        public RetroLedgeGrab retroLedgeGrab;
+        public Camera gunCamera;
 
         [Header("Debug GUI Style")]
         public GUIStyle guiStyle;
@@ -83,7 +84,7 @@ namespace vnc.Development
                     sprint = Input.GetKey(KeyCode.LeftShift);
                     duck = Input.GetKey(KeyCode.C);
                     timeScale += (Input.GetKeyDown(KeyCode.KeypadPlus) ? 0.1f : 0f) - (Input.GetKeyDown(KeyCode.KeypadMinus) ? 0.1f : 0f);
-                    retroLedgeGrab.ClimbInput = Input.GetKey(KeyCode.Space);
+                    //retroLedgeGrab.ClimbInput = Input.GetKey(KeyCode.Space);
                 }
 
                 // these inputs are fed into the controller
@@ -108,6 +109,8 @@ namespace vnc.Development
                 Record();
 
             Time.timeScale = timeScale;
+
+            gunCamera.enabled = retroLedgeGrab.movementState == RetroLedgeGrab.MovementState.None;
         }
 
         protected virtual void OnGUI()

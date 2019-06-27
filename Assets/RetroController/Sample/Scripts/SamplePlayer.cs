@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using vnc.Movements;
 
 namespace vnc.Samples
 {
@@ -38,7 +39,7 @@ namespace vnc.Samples
             sprint = Input.GetKey(KeyCode.LeftShift);
 
             // you can choose how your controller is gonna duck
-            if(toggleDucking)
+            if (toggleDucking)
             {
                 // switch between modes by hitting the button once
                 if (Input.GetKeyDown(KeyCode.C))

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using vnc.Movements;
 
 namespace vnc.Samples
 {
@@ -10,6 +11,8 @@ namespace vnc.Samples
     public class SamplePlatform : MonoBehaviour
     {
         public RetroController player;
+        RetroLedgeGrab retroLedgeGrab;
+
         public Vector3[] points;
         public float speed = 6f;
         public float waitTime = 3f;
@@ -23,9 +26,12 @@ namespace vnc.Samples
 
             if (player == null)
                 Debug.LogWarning("No Retro Controller Player assigned to platform " + name);
+
+            if (player != null)
+                retroLedgeGrab = player.GetCustomMovement<RetroLedgeGrab>();
         }
 
-        public virtual void Update()
+        public virtual void FixedUpdate()
         {
             // don't move while wating
             if (Time.time < timer)
@@ -33,7 +39,7 @@ namespace vnc.Samples
 
             // move the platform
             var prevPosition = transform.position;
-            transform.position = Vector3.MoveTowards(transform.position, points[index], speed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, points[index], speed * Time.fixedDeltaTime);
             Vector3 diff = transform.position - prevPosition;
 
             // change index when reaching target
@@ -52,7 +58,7 @@ namespace vnc.Samples
 
             if (OnPlatform())
             {
-                player.CharacterMove(diff);
+                player.CharacterMove(diff, runCustomMovements: false);
             }
         }
 
@@ -68,6 +74,11 @@ namespace vnc.Samples
                     return false;
 
                 return player.CurrentPlatform.gameObject.Equals(gameObject);
+            }
+            else if(player.HasState(RetroController.CC_State.OnLedge)
+                && retroLedgeGrab != null)
+            {
+                return retroLedgeGrab.GrabbingTarget.gameObject.Equals(gameObject);
             }
 
             return false;

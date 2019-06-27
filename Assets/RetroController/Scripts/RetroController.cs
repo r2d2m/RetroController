@@ -1,5 +1,6 @@
 ﻿using AshNet.Util.Collections;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using vnc.Utils;
@@ -234,6 +235,41 @@ namespace vnc
             wasDucking = DuckInput;
         }
 
+        #region Custom Movements
+        /// <summary>
+        /// Get the first occurrence of custom movement registered in this controller.
+        /// </summary>
+        /// <typeparam name="T">The type of RetroMovement to retrieve.</typeparam>
+        /// <returns>Returns the custom movement of Type, null if it doesn't exist.</returns>
+        public T GetCustomMovement<T>() 
+            where T: RetroMovement
+        {
+            for (int i = 0; i < retroMovements.Length; i++)
+            {
+                if (retroMovements[i] is T)
+                    return retroMovements[i] as T;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Get all the occurrences of custom movement registered in this controller.
+        /// </summary>
+        /// <typeparam name="T">The type of RetroMovement to retrieve.</typeparam>
+        /// <returns>Returns all custom movements of Type, empty list if none exist.</returns>
+        public List<T> GetCustomMovements<T>()
+             where T : RetroMovement
+        {
+            List<T> results = new List<T>();
+            for (int i = 0; i < retroMovements.Length; i++)
+            {
+                if (retroMovements[i] is T)
+                    results.Add(retroMovements[i] as T);
+            }
+
+            return results;
+        }
+        #endregion
 
         #region Movement Update
         /// <summary>
@@ -595,7 +631,7 @@ namespace vnc
         /// Moves the controller and calculates collision.
         /// </summary>
         /// <param name="movement">Final movement</param>
-        public virtual void CharacterMove(Vector3 movement)
+        public virtual void CharacterMove(Vector3 movement, bool runCustomMovements = true)
         {
             LimitVerticalSpeed();
             SetDuckHull();
@@ -636,9 +672,12 @@ namespace vnc
                 transform.position = FixOverlaps(transform.position, Vector3.zero, 0f);
             }
 
-            // execute the necessary checks for custom movements
-            for (int i = 0; i < retroMovements.Length; i++)
-                retroMovements[i].OnCharacterMove();
+            if(runCustomMovements)
+            {
+                // execute the necessary checks for custom movements
+                for (int i = 0; i < retroMovements.Length; i++)
+                    retroMovements[i].OnCharacterMove();
+            }
 
             //DetectLedge();
 
