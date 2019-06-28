@@ -51,6 +51,7 @@ namespace vnc
         protected float wishSpeed;
 
         protected bool wasGrounded = false;   // if player was on ground on previous update
+        public bool WasGrounded { get { return wasGrounded; } }
 
         // Jumping
         public int TriedJumping { get; protected set; }       // jumping timer i.e. bunnyhopping

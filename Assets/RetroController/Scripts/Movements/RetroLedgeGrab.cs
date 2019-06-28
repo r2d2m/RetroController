@@ -128,6 +128,9 @@ namespace vnc.Movements
 
         private void OnDrawGizmos()
         {
+            if (retroController == null)
+                return;
+
             Gizmos.color = Color.magenta;
             DebugExtension.DrawCircle(transform.position + Vector3.up * UpOffset, Color.green, 1.2f);
 
