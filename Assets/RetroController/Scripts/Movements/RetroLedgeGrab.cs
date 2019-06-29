@@ -18,6 +18,9 @@ namespace vnc.Movements
         public Collider GrabbingTarget { get; private set; }
         public RaycastHit LedgeHit { get; private set; }
 
+        // end point relative to the grabbing target
+        Vector3 relativeEndPoint;
+
         private void Update()
         {
             ClimbInput = Input.GetKey(KeyCode.Space);
@@ -34,25 +37,33 @@ namespace vnc.Movements
                 case MovementState.None:
                     if (ClimbInput && onLedge)
                     {
+                        // grab ledge
                         movementState = MovementState.Grabbing;
                         retroController.AddIgnoredCollider(GrabbingTarget);
+                        relativeEndPoint = GrabbingTarget.transform.InverseTransformPoint(ClimbingTarget());
                         return true;
                     }
                     return false;
                 case MovementState.Grabbing:
                     if (retroController.JumpInput)
                     {
+                        // start climbing
                         movementState = MovementState.Climbing;
                         retroController.Velocity = Vector3.zero;
                     }
                     return true;
                 case MovementState.Climbing:
 
-                    Vector3 nextPosition = Vector3.LerpUnclamped(retroController.transform.position, ClimbingTarget(), ClimbSpeed * Time.fixedDeltaTime);
+                    Vector3 worldEndPoint = GrabbingTarget.transform.TransformPoint(relativeEndPoint);
+                    Vector3 nextPosition = Vector3.LerpUnclamped(
+                        retroController.transform.position,
+                        worldEndPoint,
+                        ClimbSpeed * Time.fixedDeltaTime);
+
                     Vector3 diff = nextPosition - retroController.transform.position;
                     retroController.CharacterMove(diff);
 
-                    if (Vector3.Distance(transform.position, ClimbingTarget()) < UnclimbDistance)
+                    if (Vector3.Distance(transform.position, worldEndPoint) < UnclimbDistance)
                     {
                         // finished climbing
                         retroController.RemoveState(RetroController.CC_State.OnLedge);
@@ -142,8 +153,11 @@ namespace vnc.Movements
                 RetroControllerProfile profile = retroController.Profile;
                 Gizmos.DrawCube(projectedCenter, profile.Size);
 
-                Gizmos.color = Color.magenta;
-                Gizmos.DrawRay(ClimbingTarget(), Vector3.down);
+                if(GrabbingTarget)
+                {
+                    Gizmos.color = Color.magenta;
+                    Gizmos.DrawSphere(GrabbingTarget.transform.TransformPoint(relativeEndPoint), 1.2f);
+                }
             }
 
         }
