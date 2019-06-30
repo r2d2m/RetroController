@@ -454,7 +454,7 @@ namespace vnc
         /// Push the controller down the Y axis based on gravity value on settings
         /// </summary>
         /// <param name="gravityMultiplier"> Use this for different environments, like water. </param>
-        protected virtual void AddGravity(float multiplier = 1f)
+        public virtual void AddGravity(float multiplier = 1f)
         {
             Velocity += (Vector3.down * Profile.Gravity * multiplier) * Time.fixedDeltaTime;
         }
