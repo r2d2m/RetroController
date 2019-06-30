@@ -75,10 +75,12 @@ namespace vnc.Samples
 
                 return player.CurrentPlatform.gameObject.Equals(gameObject);
             }
-            else if(player.HasState(RetroController.CC_State.OnLedge)
-                && retroLedgeGrab != null)
+            else if (retroLedgeGrab != null)
             {
-                return retroLedgeGrab.GrabbingTarget.gameObject.Equals(gameObject);
+                if (retroLedgeGrab.OnLedge && retroLedgeGrab != null)
+                {
+                    return retroLedgeGrab.GrabbingTarget.gameObject.Equals(gameObject);
+                }
             }
 
             return false;

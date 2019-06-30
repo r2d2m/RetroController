@@ -16,10 +16,17 @@ namespace vnc.Movements
         private Collider[] overlapingColliders = new Collider[4];
         [EditDisabled] public MovementState movementState;
         public Collider GrabbingTarget { get; private set; }
-        public RaycastHit LedgeHit { get; private set; }
+        public bool OnLedge { get; private set; }
+        RaycastHit[] raycastHits = new RaycastHit[4];
 
         // end point relative to the grabbing target
-        Vector3 relativeEndPoint;
+        Vector3 localEndPoint;
+        Vector3 localGrabPoint;
+
+        private void Awake()
+        {
+            OnLedge = false;
+        }
 
         private void Update()
         {
@@ -29,18 +36,15 @@ namespace vnc.Movements
         #region Override
         public override bool DoMovement()
         {
-            DetectLedge();
-            bool onLedge = retroController.HasState(RetroController.CC_State.OnLedge);
-
             switch (movementState)
             {
                 case MovementState.None:
-                    if (ClimbInput && onLedge)
+                    if (ClimbInput && OnLedge)
                     {
                         // grab ledge
                         movementState = MovementState.Grabbing;
                         retroController.AddIgnoredCollider(GrabbingTarget);
-                        relativeEndPoint = GrabbingTarget.transform.InverseTransformPoint(ClimbingTarget());
+                        localEndPoint = GrabbingTarget.transform.InverseTransformPoint(ClimbingTarget());
                         return true;
                     }
                     return false;
@@ -51,10 +55,14 @@ namespace vnc.Movements
                         movementState = MovementState.Climbing;
                         retroController.Velocity = Vector3.zero;
                     }
+                    else
+                    {
+                        OnGrabbing();
+                    }
                     return true;
                 case MovementState.Climbing:
 
-                    Vector3 worldEndPoint = GrabbingTarget.transform.TransformPoint(relativeEndPoint);
+                    Vector3 worldEndPoint = GrabbingTarget.transform.TransformPoint(localEndPoint);
                     Vector3 nextPosition = Vector3.LerpUnclamped(
                         retroController.transform.position,
                         worldEndPoint,
@@ -66,10 +74,7 @@ namespace vnc.Movements
                     if (Vector3.Distance(transform.position, worldEndPoint) < UnclimbDistance)
                     {
                         // finished climbing
-                        retroController.RemoveState(RetroController.CC_State.OnLedge);
-                        movementState = MovementState.None;
-                        retroController.ResetJumping();
-                        retroController.RemoveIgnoredCollider(GrabbingTarget);
+                        Detach();
                     }
                     return true;
                 default:
@@ -80,6 +85,7 @@ namespace vnc.Movements
         public override void OnCharacterMove()
         {
             if (retroController.HasState(RetroController.CC_State.OnLadder)
+                || retroController.WaterState != RetroController.CC_Water.None
                 || retroController.IsGrounded
                 || movementState != MovementState.None)
                 return;
@@ -87,10 +93,11 @@ namespace vnc.Movements
             if (!DetectSurfaceArea())
                 return;
 
-            DetectLedge();
+            if (!OnLedge)
+                OnDetectLedge();
         }
 
-        public void DetectLedge()
+        public void OnDetectLedge()
         {
             Vector3 halfExtents;
             Quaternion orientation;
@@ -113,12 +120,45 @@ namespace vnc.Movements
                     if (dot > slopeDot && dot <= 1)
                     {
                         retroController.CheckPlatform(hit.collider);
-                        retroController.AddState(RetroController.CC_State.OnLedge);
+                        OnLedge = true;
                         GrabbingTarget = hit.collider;
-                        LedgeHit = hit;
+                        localGrabPoint = hit.transform.InverseTransformPoint(hit.point);
                     }
                 }
             }
+        }
+
+        // detect if something isn't in the way
+        public void OnGrabbing()
+        {
+            Vector3 worldGrabPoint = GrabbingTarget.transform.TransformPoint(localGrabPoint);
+
+            float distance = Vector3.Distance(retroController.transform.position, worldGrabPoint);
+            Vector3 direction = (worldGrabPoint - retroController.transform.position).normalized;
+
+            int n_hits = Physics.BoxCastNonAlloc(retroController.transform.position, retroController.controllerCollider.size / 2f,
+                direction, raycastHits, retroController.transform.rotation, distance, 
+                retroController.Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
+            
+            for (int i = 0; i < n_hits; i++)
+            {
+                if (raycastHits[i].collider == GrabbingTarget)
+                    continue;
+
+                // something in the way, yeah...
+                Detach();
+                break;
+            }
+        }
+
+        // Detach from grabbing
+        public void Detach()
+        {
+            OnLedge = false;
+            movementState = MovementState.None;
+            retroController.ResetJumping();
+            retroController.RemoveIgnoredCollider(GrabbingTarget);
+            GrabbingTarget = null;
         }
         #endregion
 
@@ -141,22 +181,19 @@ namespace vnc.Movements
         {
             if (retroController == null)
                 return;
-
-            Gizmos.color = Color.magenta;
-            DebugExtension.DrawCircle(transform.position + Vector3.up * UpOffset, Color.green, 1.2f);
-
-            Gizmos.color = Color.cyan;
-            Gizmos.DrawCube(transform.position + transform.forward, contactExtension);
-
+            
             if (Application.isPlaying)
             {
+                Gizmos.color = Color.cyan;
                 RetroControllerProfile profile = retroController.Profile;
                 Gizmos.DrawCube(projectedCenter, profile.Size);
 
-                if(GrabbingTarget)
+                if (GrabbingTarget)
                 {
                     Gizmos.color = Color.magenta;
-                    Gizmos.DrawSphere(GrabbingTarget.transform.TransformPoint(relativeEndPoint), 1.2f);
+                    Gizmos.DrawSphere(GrabbingTarget.transform.TransformPoint(localEndPoint), 0.4f);
+                    Gizmos.color = Color.blue;
+                    Gizmos.DrawSphere(GrabbingTarget.transform.TransformPoint(localGrabPoint), 0.4f);
                 }
             }
 

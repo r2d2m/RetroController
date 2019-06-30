@@ -642,7 +642,6 @@ namespace vnc
             // reset flags
             Collisions = CC_Collision.None;
             State &= ~CC_State.OnPlatform;
-            State &= ~CC_State.OnLedge;
             IsSwimming = false;
 
             Vector3 direction = movement.normalized;
@@ -1214,9 +1213,8 @@ namespace vnc
             IsGrounded = 2,
             OnPlatform = 4,
             OnLadder = 8,
-            OnLedge = 16,
-            Ducking = 32,
-            NoClip = 64
+            Ducking = 16,
+            NoClip = 32
         }
 
         [Flags]
