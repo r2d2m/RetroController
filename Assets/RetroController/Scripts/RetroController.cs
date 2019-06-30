@@ -242,8 +242,8 @@ namespace vnc
         /// </summary>
         /// <typeparam name="T">The type of RetroMovement to retrieve.</typeparam>
         /// <returns>Returns the custom movement of Type, null if it doesn't exist.</returns>
-        public T GetCustomMovement<T>() 
-            where T: RetroMovement
+        public T GetCustomMovement<T>()
+            where T : RetroMovement
         {
             for (int i = 0; i < retroMovements.Length; i++)
             {
@@ -673,7 +673,7 @@ namespace vnc
                 transform.position = FixOverlaps(transform.position, Vector3.zero, 0f);
             }
 
-            if(runCustomMovements)
+            if (runCustomMovements)
             {
                 // execute the necessary checks for custom movements
                 for (int i = 0; i < retroMovements.Length; i++)
@@ -930,13 +930,14 @@ namespace vnc
         /// </summary>
         protected virtual void SetDuckHull()
         {
+            float t = 1;
+            if (Profile.DuckingLerp)
+            {
+                t = Profile.DuckingLerpSpeed * Time.fixedDeltaTime;
+            }
+
             if (IsDucking)
             {
-                float t = 1;
-                if (Profile.DuckingLerp)
-                {
-                    t = Profile.DuckingLerpSpeed * Time.fixedDeltaTime;
-                }
 
                 _boxCollider.size = Vector3.Lerp(_boxCollider.size, Profile.DuckingSize, t);
                 _boxCollider.center = Vector3.Lerp(_boxCollider.center, Profile.DuckingCenter, t);
@@ -946,8 +947,9 @@ namespace vnc
             }
             else
             {
-                _boxUpdate();
-                controllerView.localPosition = viewPosition;
+                _boxCollider.size = Vector3.Lerp(_boxCollider.size, Profile.Size, t);
+                _boxCollider.center = Vector3.Lerp(_boxCollider.center, Profile.Center, t);
+                controllerView.localPosition = Vector3.Lerp(controllerView.localPosition, viewPosition, t);
             }
         }
 
@@ -1035,7 +1037,7 @@ namespace vnc
                 CurrentPlatform = c;
             }
         }
-        
+
         /// <summary>
         /// Detect collision casting down from the sides of a box
         /// </summary>
@@ -1160,11 +1162,12 @@ namespace vnc
             jumpGraceTimer = 0;
         }
 
-        // do not modify
+        [Obsolete("Do not use.")]
         protected virtual void _boxUpdate()
         {
             _boxCollider.size = Profile.Size;
             _boxCollider.center = Profile.Center;
+
         }
 
         #region State Utils
