@@ -120,8 +120,7 @@ namespace vnc.Development
                 Rect rect = new Rect(0, 0, 250, 100);
                 Vector3 planeVel = retroController.Velocity; planeVel.y = 0;
                 string debugText = "Velocity: " + retroController.Velocity
-                    + "\nCollisions: " + retroController.Collisions
-                    + "\nStates: " + retroController.State
+                    + "\nGrounded: " + retroController.IsGrounded
                     + "\nJumping? " + retroController.TriedJumping;
 
                 if (guiStyle != null)
@@ -136,12 +135,12 @@ namespace vnc.Development
             if (retroController == null)
                 return;
 
-            if (retroController.Profile != null)
-            {
-                Gizmos.color = Color.green;
-                Vector3 center = transform.position + retroController.Profile.Center;
-                Gizmos.DrawCube(center, retroController.Profile.Size);
-            }
+            //if (retroController.Profile != null)
+            //{
+            //    Gizmos.color = Color.white;
+            //    Vector3 center = transform.position + retroController.Profile.Center;
+            //    Gizmos.DrawCube(center, retroController.Profile.Size);
+            //}
         }
 
         #region Input Recording

@@ -33,6 +33,7 @@ namespace vnc
         RaycastHit[] groundHit = new RaycastHit[4];
 
         [HideInInspector] public CC_Collision Collisions { get; private set; }
+        private Rigidbody _rigidbody;
         private BoxCollider _boxCollider;
         public BoxCollider controllerCollider { get { return _boxCollider; } }
 
@@ -134,6 +135,7 @@ namespace vnc
                 viewPosition = controllerView.localPosition;
 
             SetupCollider();
+            SetupRigidbody();
 
             // load custom movements
             for (int i = 0; i < retroMovements.Length; i++)
@@ -143,11 +145,11 @@ namespace vnc
             fixedStartTime = Time.time;
         }
 
-        protected virtual void Update()
-        {
-            float lerpTime = (Time.time - fixedStartTime) / Time.fixedDeltaTime;
-            transform.position = Vector3.LerpUnclamped(transform.position, FixedPosition, lerpTime);
-        }
+        //protected virtual void Update()
+        //{
+        //    float lerpTime = (Time.time - fixedStartTime) / Time.fixedDeltaTime;
+        //    transform.position = Vector3.LerpUnclamped(transform.position, FixedPosition, lerpTime);
+        //}
 
         protected virtual void FixedUpdate()
         {
@@ -200,6 +202,7 @@ namespace vnc
             wasOnStep = WalkedOnStep;
 
             fixedStartTime = Time.time;
+            _rigidbody.MovePosition(FixedPosition);
         }
 
         /// <summary>
@@ -1127,7 +1130,7 @@ namespace vnc
             Quaternion orientation;
             _boxCollider.ToWorldSpaceBox(out center, out halfExtents, out orientation);
             center += offset;
-            return Physics.OverlapBoxNonAlloc(FixedPosition + offset, halfExtents, results, Quaternion.identity, layerMask, queryTriggerInteraction);
+            return Physics.OverlapBoxNonAlloc(center, halfExtents, results, Quaternion.identity, layerMask, queryTriggerInteraction);
         }
 
         /// <summary>
@@ -1182,6 +1185,18 @@ namespace vnc
                 _boxCollider = gameObject.AddComponent<BoxCollider>();
             }
             _boxCollider.hideFlags = HideFlags.DontSave | HideFlags.NotEditable;
+        }
+
+        protected virtual void SetupRigidbody()
+        {
+            _rigidbody = GetComponent<Rigidbody>();
+            if (_rigidbody == null)
+                _rigidbody = gameObject.AddComponent<Rigidbody>();
+
+            _rigidbody.useGravity = false;
+            _rigidbody.interpolation = RigidbodyInterpolation.Interpolate;
+            _rigidbody.isKinematic = true;
+            _rigidbody.hideFlags = HideFlags.DontSave | HideFlags.NotEditable /*| HideFlags.HideInInspector*/;
         }
 
         [Obsolete("Do not use.")]
