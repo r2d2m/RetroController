@@ -890,7 +890,7 @@ namespace vnc
             Quaternion rot;
             _boxCollider.ToWorldSpaceBox(out center, out halfExtends, out rot);
             // override center with desired position
-            center = _boxCollider.center + position + (direction * 0.01f);
+            center = FixedPosition + position + (direction * 0.01f);
             // increase hull size
             halfExtends += Vector3.one * Profile.HullExtends;
 
