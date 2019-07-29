@@ -8,10 +8,12 @@ namespace vnc.Samples
     /// for your game, making it possible to move the controller
     /// when it's standing on the platform.
     /// </summary>
+    [RequireComponent(typeof(Rigidbody))]
     public class SamplePlatform : MonoBehaviour
     {
         public RetroController player;
         RetroLedgeGrab retroLedgeGrab;
+        Rigidbody _rigidbody;
 
         public Vector3[] points;
         public float speed = 6f;
@@ -29,8 +31,10 @@ namespace vnc.Samples
 
             if (player != null)
                 retroLedgeGrab = player.GetCustomMovement<RetroLedgeGrab>();
-        }
 
+            _rigidbody = GetComponent<Rigidbody>();
+        }
+        
         public virtual void FixedUpdate()
         {
             // don't move while wating
@@ -38,12 +42,13 @@ namespace vnc.Samples
                 return;
 
             // move the platform
-            var prevPosition = transform.position;
-            transform.position = Vector3.MoveTowards(transform.position, points[index], speed * Time.fixedDeltaTime);
-            Vector3 diff = transform.position - prevPosition;
+            var prevPosition = _rigidbody.position;
+            Vector3 targetPosition = Vector3.MoveTowards(_rigidbody.position, points[index], speed * Time.fixedDeltaTime);
+            _rigidbody.MovePosition(targetPosition);
+            Vector3 diff = targetPosition - prevPosition;
 
             // change index when reaching target
-            if (transform.position.Equals(points[index]))
+            if (_rigidbody.position.Equals(points[index]))
             {
                 index++;
                 if (index == points.Length)

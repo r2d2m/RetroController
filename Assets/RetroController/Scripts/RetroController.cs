@@ -133,18 +133,14 @@ namespace vnc
             if (controllerView)
                 viewPosition = controllerView.localPosition;
 
-            _boxCollider = GetComponent<BoxCollider>();
-            if (_boxCollider == null)
-            {
-                _boxCollider = gameObject.AddComponent<BoxCollider>();
-            }
-            _boxCollider.hideFlags = HideFlags.DontSave | HideFlags.NotEditable;
+            SetupCollider();
 
             // load custom movements
             for (int i = 0; i < retroMovements.Length; i++)
                 retroMovements[i].OnAwake(this);
 
             FixedPosition = transform.position;
+            fixedStartTime = Time.time;
         }
 
         protected virtual void Update()
@@ -890,7 +886,7 @@ namespace vnc
             Quaternion rot;
             _boxCollider.ToWorldSpaceBox(out center, out halfExtends, out rot);
             // override center with desired position
-            center = FixedPosition + position + (direction * 0.01f);
+            center = position + (direction * 0.01f);
             // increase hull size
             halfExtends += Vector3.one * Profile.HullExtends;
 
@@ -1094,7 +1090,7 @@ namespace vnc
         {
             Velocity = RetroPhysics.ClipVelocity(Velocity, normal, overbounce: true);
         }
-
+        
         #endregion
 
         #region Utility
@@ -1176,6 +1172,16 @@ namespace vnc
         {
             TriedJumping = 0;
             jumpGraceTimer = 0;
+        }
+
+        protected virtual void SetupCollider()
+        {
+            _boxCollider = GetComponent<BoxCollider>();
+            if (_boxCollider == null)
+            {
+                _boxCollider = gameObject.AddComponent<BoxCollider>();
+            }
+            _boxCollider.hideFlags = HideFlags.DontSave | HideFlags.NotEditable;
         }
 
         [Obsolete("Do not use.")]
