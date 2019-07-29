@@ -115,6 +115,12 @@ namespace vnc
             OnLandingCallback,
             OnFixedUpdateEndCallback;
 
+        /// <summary>
+        /// Position of the controller after each Fixed Update
+        /// </summary>
+        public Vector3 FixedPosition { get; private set; }
+        float fixedStartTime;
+
         protected virtual void Awake()
         {
             State = CC_State.None;
@@ -137,6 +143,14 @@ namespace vnc
             // load custom movements
             for (int i = 0; i < retroMovements.Length; i++)
                 retroMovements[i].OnAwake(this);
+
+            FixedPosition = transform.position;
+        }
+
+        protected virtual void Update()
+        {
+            float lerpTime = (Time.time - fixedStartTime) / Time.fixedDeltaTime;
+            transform.position = Vector3.LerpUnclamped(transform.position, FixedPosition, lerpTime);
         }
 
         protected virtual void FixedUpdate()
@@ -188,6 +202,8 @@ namespace vnc
 
             OnFixedUpdateEndCallback.Invoke();
             wasOnStep = WalkedOnStep;
+
+            fixedStartTime = Time.time;
         }
 
         /// <summary>
@@ -649,7 +665,7 @@ namespace vnc
 
             if (NoClipping)
             {
-                transform.position += movement;
+                FixedPosition += movement;
                 return;
             }
 
@@ -662,14 +678,14 @@ namespace vnc
                 while (solved < distance)
                 {
                     float nextStep = Mathf.Min(step, distance - solved);
-                    transform.position = FixOverlaps(transform.position + (direction * nextStep), direction, nextStep);
+                    FixedPosition = FixOverlaps(FixedPosition + (direction * nextStep), direction, nextStep);
                     solved += step;
                 }
             }
             else
             {
                 // when controller doesn't move
-                transform.position = FixOverlaps(transform.position, Vector3.zero, 0f);
+                FixedPosition = FixOverlaps(FixedPosition, Vector3.zero, 0f);
             }
 
             if (runCustomMovements)
@@ -806,7 +822,7 @@ namespace vnc
             IsSwimming = true;
 
             // cast a ray from the sky and detect the topmost point
-            var ray = new Ray(transform.position + Vector3.up * 1000f, Vector3.down);
+            var ray = new Ray(FixedPosition + Vector3.up * 1000f, Vector3.down);
             RaycastHit hit;
             if (waterCollider.Raycast(ray, out hit, Mathf.Infinity))
             {
@@ -962,7 +978,8 @@ namespace vnc
             // calculate if the standing capsule won't collider with anything
             Vector3 halfExtends, duckingCenter;
             Quaternion rotation;
-            var center = transform.TransformPoint(Profile.Center);
+            //var center = transform.TransformPoint(Profile.Center);
+            Vector3 center = FixedPosition + Profile.Center;
             duckingCenter = transform.TransformPoint(Profile.DuckingCenter);
             _boxCollider.ToWorldSpaceBox(out duckingCenter, out halfExtends, out rotation);
             bool isBlocking = Physics.CheckBox(center, halfExtends, Quaternion.identity, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
@@ -983,7 +1000,7 @@ namespace vnc
             for (int i = 0; i < nColls; i++)
             {
                 Collider c = overlapingColliders[i];
-                var position = transform.position + offset;
+                var position = FixedPosition + offset;
                 if (Physics.ComputePenetration(_boxCollider, position, transform.rotation,
                         c, c.transform.position, c.transform.rotation, out normal, out distance))
                 {
@@ -1048,10 +1065,10 @@ namespace vnc
 
             Vector3[] origins = new[]
             {
-                transform.position + (Vector3.forward * _boxCollider.bounds.extents.z) + (Vector3.right * _boxCollider.bounds.extents.x),
-                transform.position + (Vector3.forward * _boxCollider.bounds.extents.z) + (Vector3.left * _boxCollider.bounds.extents.x),
-                transform.position + (Vector3.back * _boxCollider.bounds.extents.z) + (Vector3.right * _boxCollider.bounds.extents.x),
-                transform.position + (Vector3.back * _boxCollider.bounds.extents.z) + (Vector3.left * _boxCollider.bounds.extents.x)
+                FixedPosition + (Vector3.forward * _boxCollider.bounds.extents.z) + (Vector3.right * _boxCollider.bounds.extents.x),
+                FixedPosition + (Vector3.forward * _boxCollider.bounds.extents.z) + (Vector3.left * _boxCollider.bounds.extents.x),
+                FixedPosition + (Vector3.back * _boxCollider.bounds.extents.z) + (Vector3.right * _boxCollider.bounds.extents.x),
+                FixedPosition + (Vector3.back * _boxCollider.bounds.extents.z) + (Vector3.left * _boxCollider.bounds.extents.x)
             };
             for (int i = 0; i < origins.Length; i++)
             {
@@ -1114,7 +1131,7 @@ namespace vnc
             Quaternion orientation;
             _boxCollider.ToWorldSpaceBox(out center, out halfExtents, out orientation);
             center += offset;
-            return Physics.OverlapBoxNonAlloc(center, halfExtents, results, Quaternion.identity, layerMask, queryTriggerInteraction);
+            return Physics.OverlapBoxNonAlloc(FixedPosition + offset, halfExtents, results, Quaternion.identity, layerMask, queryTriggerInteraction);
         }
 
         /// <summary>
@@ -1242,12 +1259,14 @@ namespace vnc
             {
                 Gizmos.color = new Color(1, 0.56f, 0.06f);
                 Vector3 center = transform.position + Profile.Center;
-                Gizmos.DrawCube(center, Profile.Size);
+                Gizmos.DrawWireCube(center, Profile.Size);
 
-                DebugExtension.DrawCircle(transform.position + Vector3.up * Profile.SwimmingOffset, Color.blue, 1f);
+                Gizmos.color = Color.green;
+                Gizmos.DrawWireCube(FixedPosition, Profile.Size);
 
-                DebugExtension.DrawArrow(transform.position, wishDir, Color.black);
-                DebugExtension.DrawArrow(transform.position, Velocity.normalized, Color.red);
+                //DebugExtension.DrawCircle(transform.position + Vector3.up * Profile.SwimmingOffset, Color.blue, 1f);
+                //DebugExtension.DrawArrow(transform.position, wishDir, Color.black);
+                //DebugExtension.DrawArrow(transform.position, Velocity.normalized, Color.red);
             }
         }
 
