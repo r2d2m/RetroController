@@ -889,7 +889,7 @@ namespace vnc
             Quaternion rot;
             _boxCollider.ToWorldSpaceBox(out center, out halfExtends, out rot);
             // override center with desired position
-            center = position + (direction * 0.01f);
+            center = position + _boxCollider.center + (direction * 0.01f);
             // increase hull size
 
             // cast up
@@ -905,7 +905,7 @@ namespace vnc
             {
                 upCenter = center + (Vector3.up * Profile.StepOffset);
             }
-
+            
             // check if it's free
             halfExtends -= Vector3.one * Profile.HullExtends;
             int nColls = Physics.OverlapBoxNonAlloc(upCenter, halfExtends, overlapOnSteps, Quaternion.identity,
@@ -915,6 +915,8 @@ namespace vnc
                 // still overlapping something, cancel stepping
                 return position;
             }
+
+            DebugExtension.DrawBoxCastBox(upCenter, halfExtends, Quaternion.identity, Vector3.down, Profile.StepOffset, Color.yellow);
 
             // cast down
             bool foundDown;
@@ -1274,20 +1276,20 @@ namespace vnc
         #region Debug
         protected virtual void OnDrawGizmos()
         {
-            if (Profile)
+            if (Profile && _boxCollider)
             {
-                Gizmos.color = new Color(1, 0.56f, 0.06f);
-                Vector3 center = transform.position + Profile.Center;
-                Gizmos.DrawWireCube(center, Profile.Size);
+                //Gizmos.color = Color.white;
+                //Vector3 center = FixedPosition + (Vector3.up * Profile.StepOffset);
+                //Gizmos.DrawWireCube(center, _boxCollider.size);
 
-                Gizmos.color = Color.green;
-                Gizmos.DrawWireCube(FixedPosition, Profile.Size);
+                //Gizmos.color = Color.green;
+                //Gizmos.DrawWireCube(FixedPosition, Profile.Size);
 
-                //DebugExtension.DrawCircle(transform.position + Vector3.up * Profile.SwimmingOffset, Color.blue, 1f);
-                //DebugExtension.DrawArrow(transform.position, wishDir, Color.black);
-                //DebugExtension.DrawArrow(transform.position, Velocity.normalized, Color.red);
-                Gizmos.color = Color.red;
-                Gizmos.DrawRay(transform.position, penetrationNormal);
+                ////DebugExtension.DrawCircle(transform.position + Vector3.up * Profile.SwimmingOffset, Color.blue, 1f);
+                ////DebugExtension.DrawArrow(transform.position, wishDir, Color.black);
+                ////DebugExtension.DrawArrow(transform.position, Velocity.normalized, Color.red);
+                //Gizmos.color = Color.red;
+                //Gizmos.DrawRay(transform.position, penetrationNormal);
             }
         }
 
