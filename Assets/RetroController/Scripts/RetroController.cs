@@ -703,6 +703,7 @@ namespace vnc
                 DetectGround();
         }
 
+        Vector3 penetrationNormal;
         /// <summary>
         /// Move the transform trying to stop being overlaping other colliders
         /// </summary>
@@ -711,7 +712,6 @@ namespace vnc
         protected virtual Vector3 FixOverlaps(Vector3 position, Vector3 direction, float distance)
         {
             Vector3 movement = VectorFixer(direction * distance);
-            Vector3 normal;
 
             float dist, dot;
             dist = dot = 0f;
@@ -737,28 +737,28 @@ namespace vnc
                 else
                 {
                     if (Physics.ComputePenetration(_boxCollider, position, Quaternion.identity,
-                        c, c.transform.position, c.transform.rotation, out normal, out dist))
+                        c, c.transform.position, c.transform.rotation, out penetrationNormal, out dist))
                     {
                         // if this occur, it's a bug in the PhysX engine
-                        if (float.IsNaN(normal.x) || float.IsNaN(normal.y) || float.IsNaN(normal.y))
+                        if (float.IsNaN(penetrationNormal.x) || float.IsNaN(penetrationNormal.y) || float.IsNaN(penetrationNormal.y))
                             continue;
 
                         // adjust floating point imprecision
                         dist = (float)Math.Round(dist, 3, MidpointRounding.ToEven);
-                        normal = VectorFixer(normal);
+                        penetrationNormal = VectorFixer(penetrationNormal);
 
                         dist += Profile.Depenetration;
 
-                        dot = Vector3.Dot(normal, Vector3.up);
+                        dot = Vector3.Dot(penetrationNormal, Vector3.up);
 
                         // COLLISIONS BELOW
                         if (dot > SlopeDot && dot <= 1)
                         {
                             Collisions |= CC_Collision.CollisionBelow;
                             position += Vector3.up * dist;
-                            surfaceNormals.floor = normal;
+                            surfaceNormals.floor = penetrationNormal;
                             CheckPlatform(c);
-                            OnCCHit(normal);
+                            OnCCHit(penetrationNormal);
                         }
 
                         // COLLISIONS ON SIDES
@@ -772,7 +772,7 @@ namespace vnc
 
                                 // pick the first normal on contact
                                 if (!OnLadder)
-                                    surfaceNormals.ladder = normal;
+                                    surfaceNormals.ladder = penetrationNormal;
 
                             }
                             else
@@ -781,10 +781,10 @@ namespace vnc
                                 position = MoveOnSteps(position, direction, out foundStep);
                                 if (!foundStep)
                                 {
-                                    position += normal * dist;
-                                    surfaceNormals.wall = normal;
-                                    OnCCHit(normal);
-                                    WaterEdgePush(normal);
+                                    position += penetrationNormal * dist;
+                                    surfaceNormals.wall = penetrationNormal;
+                                    OnCCHit(penetrationNormal);
+                                    WaterEdgePush(penetrationNormal);
                                 }
 
                             }
@@ -794,8 +794,8 @@ namespace vnc
                         if (dot < -0.001)
                         {
                             Collisions |= CC_Collision.CollisionAbove;
-                            position += normal * dist;
-                            OnCCHit(normal);
+                            position += penetrationNormal * dist;
+                            OnCCHit(penetrationNormal);
                         }
                     }
                 }
@@ -891,7 +891,6 @@ namespace vnc
             // override center with desired position
             center = position + (direction * 0.01f);
             // increase hull size
-            halfExtends += Vector3.one * Profile.HullExtends;
 
             // cast up
             bool foundUp;
@@ -919,7 +918,6 @@ namespace vnc
 
             // cast down
             bool foundDown;
-            halfExtends += Vector3.one * Profile.HullExtends;
             foundDown = Physics.BoxCast(upCenter, halfExtends, Vector3.down, out stepHit, Quaternion.identity, Profile.StepOffset,
                 Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
             if (foundDown && stepHit.distance > 0)
@@ -1288,6 +1286,8 @@ namespace vnc
                 //DebugExtension.DrawCircle(transform.position + Vector3.up * Profile.SwimmingOffset, Color.blue, 1f);
                 //DebugExtension.DrawArrow(transform.position, wishDir, Color.black);
                 //DebugExtension.DrawArrow(transform.position, Velocity.normalized, Color.red);
+                Gizmos.color = Color.red;
+                Gizmos.DrawRay(transform.position, penetrationNormal);
             }
         }
 
