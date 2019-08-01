@@ -33,7 +33,12 @@ namespace vnc
         {
             _controller = GetComponent<RetroController>();
             roll.currentAngle = controllerCamera.localEulerAngles.z;
-            _controller.OnFixedUpdateEndCallback.AddListener(ViewUpdate);
+            //_controller.OnFixedUpdateEndCallback.AddListener(ViewUpdate);
+        }
+
+        private void Update()
+        {
+            ViewUpdate();
         }
 
         protected virtual void ViewUpdate()
@@ -97,18 +102,18 @@ namespace vnc
         {
             if (stepInterpolation.enabled)
             {
-                if (_controller.WalkedOnStep && !_controller.wasOnStep)
-                {
-                    stepInterpolation.delta += _controller.StepDelta;
-                }
-                
-                stepInterpolation.delta = Mathf.Clamp(stepInterpolation.delta, 0, stepInterpolation.maximumDelta);
-                controllerCamera.localPosition = bob.currentPosition + (Vector3.down * stepInterpolation.delta);
+                //if (_controller.WalkedOnStep && !_controller.wasOnStep)
+                //{
+                //    stepInterpolation.delta += _controller.StepDelta;
+                //}
+
+                _controller.StepDelta = Mathf.Clamp(_controller.StepDelta, 0, stepInterpolation.maximumDelta);
+                controllerCamera.localPosition = bob.currentPosition + (Vector3.down * _controller.StepDelta);
 
                 float speed = _controller.Sprint ? stepInterpolation.sprintSpeed : stepInterpolation.normalSpeed;
                 float t = speed * Time.deltaTime;
 
-                stepInterpolation.delta -= Easings.Interpolate(t, stepInterpolation.easingFunction);
+                _controller.StepDelta -= Easings.Interpolate(t, stepInterpolation.easingFunction);
             }
             else
             {
@@ -160,7 +165,7 @@ namespace vnc
         [RangeNoSlider(0f, float.MaxValue)]
         public float maximumDelta;  
         public Easings.Functions easingFunction;    // interpolation function to be used
-        [EditDisabled] public float delta;
+        //[EditDisabled] public float delta;
         [EditDisabled] public float nextPosY;
         [EditDisabled] public float viewUpPosition;
         [EditDisabled] public bool walkedStep;

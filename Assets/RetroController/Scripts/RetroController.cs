@@ -103,7 +103,7 @@ namespace vnc
         protected bool detachLadder = false;  // detach from previous ladder
 
         // Helps camera smoothing on step.
-        public float StepDelta { get; private set; }    // how much the controller went up
+        public float StepDelta { get; set; }    // how much the controller went up
         [HideInInspector] public bool wasOnStep;
         public float SlopeDot { get { return (Profile.SlopeAngleLimit / 90f); } }
 
@@ -144,13 +144,7 @@ namespace vnc
             FixedPosition = transform.position;
             fixedStartTime = Time.time;
         }
-
-        //protected virtual void Update()
-        //{
-        //    float lerpTime = (Time.time - fixedStartTime) / Time.fixedDeltaTime;
-        //    transform.position = Vector3.LerpUnclamped(transform.position, FixedPosition, lerpTime);
-        //}
-
+        
         protected virtual void FixedUpdate()
         {
             if (Profile == null || controllerView == null)
@@ -719,7 +713,7 @@ namespace vnc
             foundLadder = false;
 
             LayerMask overlapMask = Profile.SurfaceLayers & ~ignoredLayers;
-            int nColls = OverlapBoxNonAlloc(movement, overlapingColliders, overlapMask, QueryTriggerInteraction.Collide);
+            int nColls = fixedOverlapBoxNonAlloc(movement, overlapingColliders, overlapMask, QueryTriggerInteraction.Collide);
 
             for (int i = 0; i < nColls; i++)
             {
@@ -929,7 +923,7 @@ namespace vnc
                 {
                     foundStep = true;
                     float upDist = Mathf.Abs(downCenter.y - center.y);
-                    StepDelta = upDist;
+                    StepDelta += upDist;
                     position.y += upDist;
                     Collisions |= CC_Collision.CollisionStep;
                 }
@@ -995,7 +989,7 @@ namespace vnc
 
             var offset = (Vector3.down * Profile.GroundCheck);
 
-            int nColls = OverlapBoxNonAlloc(offset, overlapingColliders, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
+            int nColls = fixedOverlapBoxNonAlloc(offset, overlapingColliders, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
             for (int i = 0; i < nColls; i++)
             {
                 Collider c = overlapingColliders[i];
@@ -1124,12 +1118,14 @@ namespace vnc
             return (float)Math.Round(value, 3, MidpointRounding.ToEven);
         }
 
-        public int OverlapBoxNonAlloc(Vector3 offset, Collider[] results, int layerMask = Physics.DefaultRaycastLayers, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
+        public int fixedOverlapBoxNonAlloc(Vector3 offset, Collider[] results, int layerMask = Physics.DefaultRaycastLayers, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
         {
             Vector3 center, halfExtents;
             Quaternion orientation;
             _boxCollider.ToWorldSpaceBox(out center, out halfExtents, out orientation);
-            center += offset;
+            // projects the position of the box collider where the physics 
+            // update, taking into account when standing or ducking
+            center = FixedPosition + _boxCollider.center + offset;
             return Physics.OverlapBoxNonAlloc(center, halfExtents, results, Quaternion.identity, layerMask, queryTriggerInteraction);
         }
 
@@ -1184,6 +1180,7 @@ namespace vnc
             {
                 _boxCollider = gameObject.AddComponent<BoxCollider>();
             }
+            _boxCollider.size = Profile.Size;
             _boxCollider.hideFlags = HideFlags.DontSave | HideFlags.NotEditable;
         }
 
@@ -1276,20 +1273,18 @@ namespace vnc
         #region Debug
         protected virtual void OnDrawGizmos()
         {
-            if (Profile && _boxCollider)
+            if (Profile)
             {
-                //Gizmos.color = Color.white;
-                //Vector3 center = FixedPosition + (Vector3.up * Profile.StepOffset);
-                //Gizmos.DrawWireCube(center, _boxCollider.size);
-
-                //Gizmos.color = Color.green;
-                //Gizmos.DrawWireCube(FixedPosition, Profile.Size);
-
-                ////DebugExtension.DrawCircle(transform.position + Vector3.up * Profile.SwimmingOffset, Color.blue, 1f);
-                ////DebugExtension.DrawArrow(transform.position, wishDir, Color.black);
-                ////DebugExtension.DrawArrow(transform.position, Velocity.normalized, Color.red);
-                //Gizmos.color = Color.red;
-                //Gizmos.DrawRay(transform.position, penetrationNormal);
+                if (Application.isPlaying)
+                {
+                    Gizmos.color = new Color(1f, 0.64f, 0.01f);
+                    Gizmos.DrawWireCube(FixedPosition, Profile.Size);
+                }
+                else
+                {
+                    Gizmos.color = Color.green;
+                    Gizmos.DrawWireCube(transform.position, Profile.Size);
+                }
             }
         }
 

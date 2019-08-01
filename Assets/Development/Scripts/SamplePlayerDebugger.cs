@@ -121,7 +121,8 @@ namespace vnc.Development
                 Vector3 planeVel = retroController.Velocity; planeVel.y = 0;
                 string debugText = "Velocity: " + retroController.Velocity
                     + "\nGrounded: " + retroController.IsGrounded
-                    + "\nJumping? " + retroController.TriedJumping;
+                    + "\nFixed Position: " + retroController.FixedPosition
+                    + "\nCollisions: " + retroController.Collisions;
 
                 if (guiStyle != null)
                     GUI.Label(rect, debugText, guiStyle);
