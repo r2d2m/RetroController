@@ -58,7 +58,8 @@ namespace vnc
 
         protected virtual void ViewUpdate()
         {
-            if (controllerCamera != null && playerView != null)
+            if (controllerCamera != null 
+                && playerView != null)
             {
                 if (bob.enabled)
                     Bobbing();
@@ -78,22 +79,26 @@ namespace vnc
         {
             float bobOscillate = Mathf.Sin(bob.cycle * Mathf.Deg2Rad) / 2;
 
-            if (bob.whenMovingOnly)
+            if (_controller.updateController)
             {
-                if (Mathf.Clamp01(horizontalVelocityMagnitude) > RetroController.EPSILON)
+                if (bob.whenMovingOnly)
+                {
+                    if (Mathf.Clamp01(horizontalVelocityMagnitude) > RetroController.EPSILON)
+                    {
+                        bob.cycle += (Time.fixedDeltaTime * bob.speed);
+                        if (bob.cycle >= 360) bob.cycle = 0;
+                    }
+                }
+                else
                 {
                     bob.cycle += (Time.fixedDeltaTime * bob.speed);
                     if (bob.cycle >= 360) bob.cycle = 0;
+
                 }
-            }
-            else
-            {
-                bob.cycle += (Time.fixedDeltaTime * bob.speed);
-                if (bob.cycle >= 360) bob.cycle = 0;
 
+                bob.currentPosition = bob.origin + (bob.offset * bobOscillate);
             }
 
-            bob.currentPosition = bob.origin + (bob.offset * bobOscillate);
             playerView.localPosition = _controller.localViewPosition + bob.currentPosition;
         }
 
