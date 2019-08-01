@@ -12,7 +12,8 @@ namespace vnc
     public class RetroControllerView : MonoBehaviour
     {
         protected RetroController _controller;
-        [SerializeField] protected Transform controllerCamera;
+
+        public Transform controllerCamera;
         public Transform playerView;
 
         Vector3 cameraPosition;
@@ -35,9 +36,18 @@ namespace vnc
         protected virtual void Awake()
         {
             _controller = GetComponent<RetroController>();
-            roll.currentAngle = controllerCamera.localEulerAngles.z;
-            //_controller.OnFixedUpdateEndCallback.AddListener(ViewUpdate);
-            _controller.OnJumpCallback.AddListener(() => _controller.StepCount = 0);
+
+            if (controllerCamera == null)
+                Debug.LogWarning("Nothing set up for Player View.");
+            else
+            {
+                roll.currentAngle = controllerCamera.localEulerAngles.z;
+                _controller.OnJumpCallback.AddListener(() => _controller.StepCount = 0);
+            }
+
+            if (playerView == null)
+                Debug.LogWarning("Nothing set up for Player View.");
+
             cameraPosition = playerView.position;
         }
 
@@ -48,13 +58,16 @@ namespace vnc
 
         protected virtual void ViewUpdate()
         {
-            if (bob.enabled)
-                Bobbing();
+            if (controllerCamera != null && playerView != null)
+            {
+                if (bob.enabled)
+                    Bobbing();
 
-            if (roll.enabled)
-                Rolling();
+                if (roll.enabled)
+                    Rolling();
 
-            StepInteporlate();
+                StepInteporlate();
+            }
         }
 
         #region Methods
@@ -82,7 +95,7 @@ namespace vnc
             }
 
             bob.currentPosition = bob.origin + (bob.offset * bobOscillate);
-            controllerCamera.localPosition = bob.currentPosition;
+            playerView.localPosition = bob.currentPosition;
         }
 
         /// <summary>
@@ -115,12 +128,8 @@ namespace vnc
                     cameraPosition.z = playerView.position.z;
 
                     float speed = _controller.Sprint ? stepInterpolation.sprintSpeed : stepInterpolation.normalSpeed;
-                    //float t = speed * (Time.time - _controller.FixedUpdateTime);
                     float t = speed * Time.deltaTime;
 
-                    //cameraPosition.y = Mathf.Lerp(cameraPosition.y, playerView.position.y, t);
-                    //cameraPosition.y = (playerView.position.y - cameraPosition.y) * Easings.Interpolate(t, stepInterpolation.easingFunction);
-                    //cameraPosition.y = Mathf.SmoothStep(cameraPosition.y, playerView.position.y, t);
                     if (playerView.position.y > cameraPosition.y)
                     {
                         cameraPosition.y = Mathf.SmoothStep(cameraPosition.y, playerView.position.y, t);
@@ -142,29 +151,6 @@ namespace vnc
 
                 controllerCamera.position = cameraPosition;
             }
-
-            //if (stepInterpolation.enabled && _controller.StepDelta > 0)
-            //{
-            //    //if (_controller.WalkedOnStep && !_controller.wasOnStep)
-            //    //{
-            //    //    stepInterpolation.delta += _controller.StepDelta;
-            //    //}
-
-            //    //controllerCamera.localPosition = bob.currentPosition + (Vector3.down * _controller.StepDelta);
-
-            //    controllerCamera.transform.position = _controller.FixedPosition + (Vector3.down * _controller.StepDelta);
-
-            //    float speed = _controller.Sprint ? stepInterpolation.sprintSpeed : stepInterpolation.normalSpeed;
-            //    float t = speed * (Time.time - _controller.FixedUpdateTime);
-
-            //    _controller.StepDelta -= Easings.Interpolate(t, stepInterpolation.easingFunction);
-            //    //_controller.StepDelta = Mathf.Lerp(_controller.StepDelta, 0, t);
-            //    _controller.StepDelta = Mathf.Clamp(_controller.StepDelta, 0, stepInterpolation.maximumDelta);
-            //}
-            //else
-            //{
-            //    controllerCamera.localPosition = bob.currentPosition;
-            //}
         }
         #endregion
 
@@ -208,13 +194,13 @@ namespace vnc
         public bool enabled;        // enables interpolation
         public float normalSpeed;   // interpolation speed while walking
         public float sprintSpeed;   // interpolation speed while sprinting
-        [RangeNoSlider(0f, float.MaxValue)]
-        public float maximumDelta;
-        public Easings.Functions easingFunction;    // interpolation function to be used
+        //[RangeNoSlider(0f, float.MaxValue)]
+        //public float maximumDelta;
+        //public Easings.Functions easingFunction;    // interpolation function to be used
         //[EditDisabled] public float delta;
-        [EditDisabled] public float nextPosY;
-        [EditDisabled] public float viewUpPosition;
-        [EditDisabled] public bool walkedStep;
+        //[EditDisabled] public float nextPosY;
+        //[EditDisabled] public float viewUpPosition;
+        //[EditDisabled] public bool walkedStep;
 
         public void Enabled() { enabled = true; }
         public void Disabled() { enabled = false; }
