@@ -122,7 +122,8 @@ namespace vnc.Development
                 string debugText = "Velocity: " + retroController.Velocity
                     + "\nGrounded: " + retroController.IsGrounded
                     + "\nFixed Position: " + retroController.FixedPosition
-                    + "\nCollisions: " + retroController.Collisions;
+                    + "\nCollisions: " + retroController.Collisions
+                    +"\nStep Delta: " + retroController.StepCount;
 
                 if (guiStyle != null)
                     GUI.Label(rect, debugText, guiStyle);

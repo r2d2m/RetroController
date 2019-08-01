@@ -103,7 +103,7 @@ namespace vnc
         protected bool detachLadder = false;  // detach from previous ladder
 
         // Helps camera smoothing on step.
-        public float StepDelta { get; set; }    // how much the controller went up
+        public ushort StepCount { get; set; }    // how much the controller went up
         [HideInInspector] public bool wasOnStep;
         public float SlopeDot { get { return (Profile.SlopeAngleLimit / 90f); } }
 
@@ -120,7 +120,7 @@ namespace vnc
         /// Position of the controller after each Fixed Update
         /// </summary>
         public Vector3 FixedPosition { get; private set; }
-        float fixedStartTime;
+        public float FixedUpdateTime { get; private set; }
 
         protected virtual void Awake()
         {
@@ -142,7 +142,7 @@ namespace vnc
                 retroMovements[i].OnAwake(this);
 
             FixedPosition = transform.position;
-            fixedStartTime = Time.time;
+            FixedUpdateTime = Time.time;
         }
         
         protected virtual void FixedUpdate()
@@ -195,7 +195,7 @@ namespace vnc
             OnFixedUpdateEndCallback.Invoke();
             wasOnStep = WalkedOnStep;
 
-            fixedStartTime = Time.time;
+            FixedUpdateTime = Time.time;
             _rigidbody.MovePosition(FixedPosition);
         }
 
@@ -662,7 +662,7 @@ namespace vnc
                 return;
             }
 
-            StepDelta = Mathf.Clamp(StepDelta - Time.fixedDeltaTime, 0, Mathf.Infinity);
+            //StepDelta = Mathf.Clamp(StepDelta - Time.fixedDeltaTime, 0, Mathf.Infinity);
 
             const float step = 0.01f;
             if (distance > 0)
@@ -910,7 +910,6 @@ namespace vnc
                 return position;
             }
 
-            DebugExtension.DrawBoxCastBox(upCenter, halfExtends, Quaternion.identity, Vector3.down, Profile.StepOffset, Color.yellow);
 
             // cast down
             bool foundDown;
@@ -919,13 +918,15 @@ namespace vnc
             if (foundDown && stepHit.distance > 0)
             {
                 downCenter = upCenter + (Vector3.down * stepHit.distance);
+                DebugExtension.DrawBox(downCenter, halfExtends, Quaternion.identity, Color.yellow);
                 if (downCenter.y > center.y)
                 {
                     foundStep = true;
                     float upDist = Mathf.Abs(downCenter.y - center.y);
-                    StepDelta += upDist;
                     position.y += upDist;
                     Collisions |= CC_Collision.CollisionStep;
+
+                    StepCount++;
                 }
             }
 

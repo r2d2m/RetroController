@@ -13,6 +13,9 @@ namespace vnc
     {
         protected RetroController _controller;
         [SerializeField] protected Transform controllerCamera;
+        public Transform playerView;
+
+        Vector3 cameraPosition;
 
         [Header("Settings")]
         public Bob bob;
@@ -34,9 +37,11 @@ namespace vnc
             _controller = GetComponent<RetroController>();
             roll.currentAngle = controllerCamera.localEulerAngles.z;
             //_controller.OnFixedUpdateEndCallback.AddListener(ViewUpdate);
+            _controller.OnJumpCallback.AddListener(() => _controller.StepCount = 0);
+            cameraPosition = playerView.position;
         }
 
-        private void Update()
+        private void LateUpdate()
         {
             ViewUpdate();
         }
@@ -102,23 +107,64 @@ namespace vnc
         {
             if (stepInterpolation.enabled)
             {
-                //if (_controller.WalkedOnStep && !_controller.wasOnStep)
-                //{
-                //    stepInterpolation.delta += _controller.StepDelta;
-                //}
+                if (_controller.StepCount > 0)
+                {
+                    float deltaTime = (Time.time - _controller.FixedUpdateTime);
 
-                _controller.StepDelta = Mathf.Clamp(_controller.StepDelta, 0, stepInterpolation.maximumDelta);
-                controllerCamera.localPosition = bob.currentPosition + (Vector3.down * _controller.StepDelta);
+                    cameraPosition.x = playerView.position.x;
+                    cameraPosition.z = playerView.position.z;
 
-                float speed = _controller.Sprint ? stepInterpolation.sprintSpeed : stepInterpolation.normalSpeed;
-                float t = speed * Time.deltaTime;
+                    float speed = _controller.Sprint ? stepInterpolation.sprintSpeed : stepInterpolation.normalSpeed;
+                    //float t = speed * (Time.time - _controller.FixedUpdateTime);
+                    float t = speed * Time.deltaTime;
 
-                _controller.StepDelta -= Easings.Interpolate(t, stepInterpolation.easingFunction);
+                    //cameraPosition.y = Mathf.Lerp(cameraPosition.y, playerView.position.y, t);
+                    //cameraPosition.y = (playerView.position.y - cameraPosition.y) * Easings.Interpolate(t, stepInterpolation.easingFunction);
+                    //cameraPosition.y = Mathf.SmoothStep(cameraPosition.y, playerView.position.y, t);
+                    if (playerView.position.y > cameraPosition.y)
+                    {
+                        cameraPosition.y = Mathf.SmoothStep(cameraPosition.y, playerView.position.y, t);
+                    }
+                    else
+                    {
+                        cameraPosition.y = playerView.position.y;
+                    }
+                }
+                else
+                {
+                    cameraPosition = playerView.position;
+                }
+
+                // if reaches the final position, end the step count
+                if (cameraPosition == playerView.position)
+                    _controller.StepCount = 0;
+
+
+                controllerCamera.position = cameraPosition;
             }
-            else
-            {
-                controllerCamera.localPosition = bob.currentPosition;
-            }
+
+            //if (stepInterpolation.enabled && _controller.StepDelta > 0)
+            //{
+            //    //if (_controller.WalkedOnStep && !_controller.wasOnStep)
+            //    //{
+            //    //    stepInterpolation.delta += _controller.StepDelta;
+            //    //}
+
+            //    //controllerCamera.localPosition = bob.currentPosition + (Vector3.down * _controller.StepDelta);
+
+            //    controllerCamera.transform.position = _controller.FixedPosition + (Vector3.down * _controller.StepDelta);
+
+            //    float speed = _controller.Sprint ? stepInterpolation.sprintSpeed : stepInterpolation.normalSpeed;
+            //    float t = speed * (Time.time - _controller.FixedUpdateTime);
+
+            //    _controller.StepDelta -= Easings.Interpolate(t, stepInterpolation.easingFunction);
+            //    //_controller.StepDelta = Mathf.Lerp(_controller.StepDelta, 0, t);
+            //    _controller.StepDelta = Mathf.Clamp(_controller.StepDelta, 0, stepInterpolation.maximumDelta);
+            //}
+            //else
+            //{
+            //    controllerCamera.localPosition = bob.currentPosition;
+            //}
         }
         #endregion
 
@@ -163,7 +209,7 @@ namespace vnc
         public float normalSpeed;   // interpolation speed while walking
         public float sprintSpeed;   // interpolation speed while sprinting
         [RangeNoSlider(0f, float.MaxValue)]
-        public float maximumDelta;  
+        public float maximumDelta;
         public Easings.Functions easingFunction;    // interpolation function to be used
         //[EditDisabled] public float delta;
         [EditDisabled] public float nextPosY;
