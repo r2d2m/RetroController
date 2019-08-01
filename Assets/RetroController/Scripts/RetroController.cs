@@ -22,7 +22,10 @@ namespace vnc
         public RetroControllerProfile Profile;
 
         public Transform controllerView; // Controller view, tipically the first person camera
-        public Vector3 viewPosition;     // original position for view
+
+        // view
+        protected Vector3 originalViewPosition;
+        [HideInInspector] public Vector3 localViewPosition;
 
         public const float EPSILON = 0.001f;
         public const float OVERBOUNCE = 1.01f;
@@ -47,7 +50,7 @@ namespace vnc
         public bool DuckInput { get; set; }
 
         // Velocity
-        public Vector3 Velocity;
+        [HideInInspector] public Vector3 Velocity;
         protected Vector3 wishDir;    // the direction from the input
         protected float wishSpeed;
 
@@ -132,7 +135,9 @@ namespace vnc
             ignoredColliders = new UnorderedList<Collider>();
 
             if (controllerView)
-                viewPosition = controllerView.localPosition;
+            {
+                localViewPosition = originalViewPosition = controllerView.localPosition;
+            }
 
             SetupCollider();
             SetupRigidbody();
@@ -951,15 +956,17 @@ namespace vnc
                 _boxCollider.size = Vector3.Lerp(_boxCollider.size, Profile.DuckingSize, t);
                 _boxCollider.center = Vector3.Lerp(_boxCollider.center, Profile.DuckingCenter, t);
 
-                controllerView.localPosition = Vector3.Lerp(controllerView.localPosition,
-                    viewPosition + (Vector3.down * Profile.DuckingViewOffset), t);
+                localViewPosition = Vector3.Lerp(localViewPosition,
+                    originalViewPosition + (Vector3.down * Profile.DuckingViewOffset), t);
             }
             else
             {
                 _boxCollider.size = Vector3.Lerp(_boxCollider.size, Profile.Size, t);
                 _boxCollider.center = Vector3.Lerp(_boxCollider.center, Profile.Center, t);
-                controllerView.localPosition = Vector3.Lerp(controllerView.localPosition, viewPosition, t);
+                localViewPosition = Vector3.Lerp(localViewPosition, originalViewPosition, t);
             }
+
+            controllerView.localPosition = localViewPosition;
         }
 
         /// <summary>

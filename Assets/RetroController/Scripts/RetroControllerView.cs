@@ -80,7 +80,6 @@ namespace vnc
 
             if (bob.whenMovingOnly)
             {
-
                 if (Mathf.Clamp01(horizontalVelocityMagnitude) > RetroController.EPSILON)
                 {
                     bob.cycle += (Time.fixedDeltaTime * bob.speed);
@@ -95,7 +94,7 @@ namespace vnc
             }
 
             bob.currentPosition = bob.origin + (bob.offset * bobOscillate);
-            playerView.localPosition = bob.currentPosition;
+            playerView.localPosition = _controller.localViewPosition + bob.currentPosition;
         }
 
         /// <summary>
