@@ -41,16 +41,9 @@ namespace AshNet.Util.Collections {
 			this.step_increment = stepIncrement;
 		}
 
-#if NET_2_0 || NET_2_0_SUBSET
         public T this[int index] {
 			get { return elements[index]; }
 		}
-
-#elif NET_4_6
-        public ref T this[int index] {
-			get { return ref elements[index]; }
-		}
-#endif
 
         /// <summary>
         /// Adds an Element to the Array
