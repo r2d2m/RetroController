@@ -6,6 +6,7 @@ public class ChangelogWindow : EditorWindow
     public static ChangelogWindow Singleton;
     GUIStyle style, versionStyle, texStyle;
     Texture changelogTex;
+    Texture2D changelogBackgroundTex;
     TextAsset changelogText;
     TextAsset versionText;
 
@@ -19,6 +20,8 @@ public class ChangelogWindow : EditorWindow
 
     private void OnEnable()
     {
+        changelogBackgroundTex = Resources.Load<Texture2D>("retrocontroller_changelog_background");
+
         texStyle = new GUIStyle();
         texStyle.alignment = TextAnchor.MiddleCenter;
         texStyle.padding = new RectOffset(5, 5, 5, 0);
@@ -27,8 +30,9 @@ public class ChangelogWindow : EditorWindow
         style.richText = true;
         style.fontSize = 14;
         style.normal.textColor = Color.white;
+        style.normal.background = changelogBackgroundTex;
         style.alignment = TextAnchor.UpperLeft;
-        style.padding = new RectOffset(10, 10, 50, 10);
+        style.padding = new RectOffset(10, 10, 20, 10);
 
         versionStyle = new GUIStyle();
         versionStyle.fontSize = 22;

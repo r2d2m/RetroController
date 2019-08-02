@@ -1,6 +1,6 @@
 <b>
 1.2 (TBA)
-- CUSTOM MOVEMENTS!
+- Support for custom movement, samples coming soon.
 - Controller now uses rigidbody with interpolation.
 - Option to reimport necessary tags.
 - Reworked camera smoothing on steps.
