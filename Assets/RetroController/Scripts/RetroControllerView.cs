@@ -137,6 +137,12 @@ namespace vnc
                     if (playerView.position.y > cameraPosition.y)
                     {
                         cameraPosition.y = Mathf.SmoothStep(cameraPosition.y, playerView.position.y, t);
+                        float distance = Mathf.Abs(playerView.position.y - cameraPosition.y);
+                        if(distance > stepInterpolation.maximumDistance)
+                        {
+                            float difference = distance - stepInterpolation.maximumDistance;
+                            cameraPosition.y += difference;
+                        }
                     }
                     else
                     {
@@ -198,13 +204,8 @@ namespace vnc
         public bool enabled;        // enables interpolation
         public float normalSpeed;   // interpolation speed while walking
         public float sprintSpeed;   // interpolation speed while sprinting
-        //[RangeNoSlider(0f, float.MaxValue)]
-        //public float maximumDelta;
-        //public Easings.Functions easingFunction;    // interpolation function to be used
-        //[EditDisabled] public float delta;
-        //[EditDisabled] public float nextPosY;
-        //[EditDisabled] public float viewUpPosition;
-        //[EditDisabled] public bool walkedStep;
+        [RangeNoSlider(0f, float.MaxValue)]
+        public float maximumDistance;
 
         public void Enabled() { enabled = true; }
         public void Disabled() { enabled = false; }
