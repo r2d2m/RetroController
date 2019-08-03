@@ -10,38 +10,32 @@ namespace vnc.Samples
     public class SampleRocketLauncher : MonoBehaviour
     {
         public RetroController retroController;
-        public GameObject rocketLauncher;
-        public GameObject explosion;
-        public Transform m_camera;
-        public LayerMask hitLayer;
-        public LayerMask playerLayer;
-        public float explosionForce = 0.5f;
-        public float shootingDelay = 0.3f;
-        float time;
 
-        GameObject explosiveSphere = null;
+        [Space]
+        public Rigidbody _rocket;
+        public float _rocketSpeed = 6;
+        public Transform _rocketSpawn;
+
+        public Transform m_camera;
+        
+        public float shootingDelay = 0.3f;
+        float time;        
 
         void Update()
         {
-            if (Input.GetMouseButtonDown(0) && retroController.updateController)
+            if (Input.GetMouseButton(0) && retroController.updateController)
             {
                 if (Time.time < time + shootingDelay)
                     return;
 
                 RaycastHit hit;
-                if (Physics.Raycast(transform.position, m_camera.forward, out hit, Mathf.Infinity, hitLayer, QueryTriggerInteraction.Ignore))
+                if (Physics.Raycast(transform.position, m_camera.forward, out hit, Mathf.Infinity, LayerMask.GetMask("Default"), QueryTriggerInteraction.Ignore))
                 {
-                    if (explosiveSphere != null)
-                        Destroy(explosiveSphere);
+                    var rocketInstance = Instantiate(_rocket, _rocketSpawn.position, _rocket.transform.rotation);
+                    rocketInstance.transform.LookAt(hit.point);
+                    rocketInstance.AddForce(rocketInstance.transform.forward * _rocketSpeed, ForceMode.Force);
 
-                    explosiveSphere = Instantiate(explosion, hit.point, explosion.transform.rotation);
-                    Destroy(explosiveSphere, 2f);
-
-                    if (Physics.CheckSphere(hit.point, 3, playerLayer))
-                    {
-                        Vector3 dir = (transform.position - hit.point).normalized;
-                        retroController.Velocity += dir * explosionForce;
-                    }
+                    
 
                     time = Time.time;
                 }

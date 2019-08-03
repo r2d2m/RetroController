@@ -1,17 +1,15 @@
 fileFormatVersion: 2
-guid: 69ff94f3d081cd847867702731218d00
-timeCreated: 1553103174
+guid: b37fee1fda6495e489863faddf4419af
+timeCreated: 1564780037
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
   fileIDToRecycleName:
-    100000: default
-    100002: //RootNode
-    400000: default
-    400002: //RootNode
-    2300000: default
-    3300000: default
-    4300000: default
+    100000: //RootNode
+    400000: //RootNode
+    2300000: //RootNode
+    3300000: //RootNode
+    4300000: rocket
   materials:
     importMaterials: 1
     materialName: 0
