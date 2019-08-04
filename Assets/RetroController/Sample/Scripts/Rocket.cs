@@ -2,6 +2,10 @@
 
 namespace vnc.Samples
 {
+    /// <summary>
+    /// The purpose of this is to show how can you propel the controller
+    /// by simply adding a value to it's Velocity property.
+    /// </summary>
     public class Rocket : MonoBehaviour
     {
         public float explosionForce = 0.5f;
@@ -32,12 +36,12 @@ namespace vnc.Samples
                 for (int i = 0; i < n_col; i++)
                 {
                     var retroController = results[i].GetComponent<RetroController>();
-                    if(retroController)
+                    if (retroController)
                     {
                         Vector3 dir = (retroController.transform.position - medianPoint).normalized;
                         retroController.Velocity += dir * explosionForce;
                     }
-                }                
+                }
             }
 
             Destroy(gameObject);
