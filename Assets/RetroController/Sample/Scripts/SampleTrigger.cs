@@ -1,23 +1,43 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.Events;
 
 namespace vnc.Samples
 {
-    [RequireComponent(typeof(BoxCollider))]
+    [ExecuteInEditMode]
     public class SampleTrigger : MonoBehaviour
     {
-        BoxCollider _box;
         public LayerMask playerLayer;
+        public UnityEvent unityEvent;
+        BoxCollider boxCollider;
 
-        public void FixedUpdate()
+        private void OnEnable()
         {
-            if (Physics.CheckBox(_box.center + transform.position, _box.size, transform.rotation, playerLayer, QueryTriggerInteraction.Ignore))
+            boxCollider = GetComponent<BoxCollider>();
+        }
+
+        private void OnTriggerStay(Collider other)
+        {
+            // player is on selected layer mask
+            if (Contains(playerLayer, other.gameObject.layer))
             {
-                //TODO: set message in the player screen
+                unityEvent.Invoke();
             }
         }
 
+
+        bool Contains(LayerMask layerMask, int layer)
+        {
+            return layerMask == (layerMask | (1 << layer));
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            if (boxCollider)
+            {
+                Gizmos.color = Color.green;
+                Gizmos.DrawCube(transform.position + boxCollider.center, boxCollider.size);
+            }
+        }
     }
 
 }

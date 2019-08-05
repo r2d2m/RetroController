@@ -1138,6 +1138,18 @@ namespace vnc
         }
 
         /// <summary>
+        /// Allows the controller to be teleporter to
+        /// any position in world space
+        /// </summary>
+        /// <param name="resetVelocity">Set velocity to 0.</param>
+        public void TeleportTo(Vector3 worldPosition, bool resetVelocity = true)
+        {
+            FixedPosition = worldPosition;
+            if (resetVelocity)
+                Velocity = Vector3.zero;
+        }
+
+        /// <summary>
         /// Set the ignored layers 
         /// </summary>
         /// <param name="layers"></param>

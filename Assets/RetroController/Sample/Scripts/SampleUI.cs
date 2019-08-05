@@ -6,9 +6,8 @@ namespace vnc.Samples
 {
     public class SampleUI : MonoBehaviour
     {
-        public Transform player;
-        public Text targetText;
-        public string[] message;
+        public RetroController player;
+        public TargetOption[] targetOptions;
 
         public static SampleUI Instance { get; private set; }
 
@@ -19,13 +18,17 @@ namespace vnc.Samples
 
         public void OnTeleport(int option)
         {
-            //if (option >= eventOptions.Length)
-            //{
-            //    Debug.LogWarning("Invalid event option");
-            //    return;
-            //}
+            Debug.Log("Option " + option + " chosen");
+            if (option < targetOptions.Length)
+            {
+                player.TeleportTo(targetOptions[option].targetPoint.position);
+            }
+        }
 
-            //eventOptions[option].Invoke();
+        [System.Serializable]
+        public struct TargetOption
+        {
+            public Transform targetPoint;
         }
     }
 }
