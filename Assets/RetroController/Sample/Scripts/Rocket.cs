@@ -17,7 +17,6 @@ namespace vnc.Samples
         Collider[] results = new Collider[4];
         private void OnCollisionEnter(Collision collision)
         {
-            RaycastHit hit;
             if (explosiveSphere != null)
                 Destroy(explosiveSphere);
 
