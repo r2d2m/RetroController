@@ -149,7 +149,7 @@ namespace vnc
             FixedPosition = transform.position;
             FixedUpdateTime = Time.time;
         }
-        
+
         protected virtual void FixedUpdate()
         {
             if (Profile == null || controllerView == null)
@@ -731,7 +731,9 @@ namespace vnc
                 if (c.isTrigger)
                 {
                     if (c.tag == Profile.WaterTag)
+                    {
                         CheckWater(c);
+                    }
                 }
                 else
                 {
@@ -904,7 +906,7 @@ namespace vnc
             {
                 upCenter = center + (Vector3.up * Profile.StepOffset);
             }
-            
+
             // check if it's free
             halfExtends -= Vector3.one * Profile.HullExtends;
             int nColls = Physics.OverlapBoxNonAlloc(upCenter, halfExtends, overlapOnSteps, Quaternion.identity,
@@ -1095,7 +1097,7 @@ namespace vnc
         {
             Velocity = RetroPhysics.ClipVelocity(Velocity, normal, overbounce: true);
         }
-        
+
         #endregion
 
         #region Utility
