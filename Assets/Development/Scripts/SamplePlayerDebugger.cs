@@ -110,7 +110,8 @@ namespace vnc.Development
 
             Time.timeScale = timeScale;
 
-            gunCamera.enabled = retroLedgeGrab.movementState == RetroLedgeGrab.MovementState.None;
+            if(gunCamera && retroLedgeGrab)
+                gunCamera.enabled = retroLedgeGrab.movementState == RetroLedgeGrab.MovementState.None;
         }
 
         protected virtual void OnGUI()
@@ -119,11 +120,7 @@ namespace vnc.Development
             {
                 Rect rect = new Rect(0, 0, 250, 100);
                 Vector3 planeVel = retroController.Velocity; planeVel.y = 0;
-                string debugText = "Velocity: " + retroController.Velocity
-                    + "\nGrounded: " + retroController.IsGrounded
-                    + "\nFixed Position: " + retroController.FixedPosition
-                    + "\nCollisions: " + retroController.Collisions
-                    +"\nStep Delta: " + retroController.StepCount;
+                string debugText = "States: " + retroController.State;
 
                 if (guiStyle != null)
                     GUI.Label(rect, debugText, guiStyle);

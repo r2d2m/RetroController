@@ -528,8 +528,8 @@ namespace vnc
         /// </summary>
         protected virtual void MoveAir()
         {
-            float maxSpeed = sprintJump ? Profile.MaxAirSprintSpeed : Profile.MaxAirSpeed;
-            AccelerateAir(wishDir, wishSpeed, Profile.AirAcceleration, maxSpeed);
+            //float maxSpeed = sprintJump ? Profile.MaxAirSprintSpeed : Profile.MaxAirSpeed;
+            AccelerateAir(wishDir, wishSpeed, Profile.AirAcceleration, Profile.MaxAirSpeed);
         }
 
         // move with water friction

@@ -14,6 +14,7 @@ namespace vnc.Samples
         public RetroController player;
         //RetroLedgeGrab retroLedgeGrab;
         Rigidbody _rigidbody;
+        Collider _collider;
 
         public Vector3[] points;
         public float speed = 6f;
@@ -33,6 +34,7 @@ namespace vnc.Samples
             //    retroLedgeGrab = player.GetCustomMovement<RetroLedgeGrab>();
 
             _rigidbody = GetComponent<Rigidbody>();
+            _collider = GetComponentInChildren<Collider>();
         }
         
         public virtual void FixedUpdate()
@@ -78,7 +80,7 @@ namespace vnc.Samples
                 if (player.CurrentPlatform == null)
                     return false;
 
-                return player.CurrentPlatform.gameObject.Equals(gameObject);
+                return player.CurrentPlatform.Equals(_collider);
             }
             //else if (retroLedgeGrab != null)
             //{

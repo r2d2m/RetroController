@@ -1,28 +1,29 @@
 ﻿using UnityEngine;
 
-public class TaggedVolumeComponent : MonoBehaviour
+namespace vnc.Development
 {
-    [HideInInspector] public Material material;
-    [HideInInspector] public string _tag;
-    [HideInInspector] public bool isTrigger;
-    private MeshRenderer meshRenderer;
-    private MeshCollider meshCollider;
-
-    private void Start()
+    public class TaggedVolumeComponent : MonoBehaviour
     {
-        meshRenderer = gameObject.AddComponent<MeshRenderer>();
-        meshCollider = GetComponent<MeshCollider>();
-        gameObject.hideFlags = HideFlags.DontSave;
-    }
+        [HideInInspector] public Material material;
+        [HideInInspector] public string _tag;
+        [HideInInspector] public bool isTrigger;
+        [HideInInspector] public MeshRenderer meshRenderer;
+        [HideInInspector] public MeshCollider meshCollider;
+        
+        private void Update()
+        {
+            gameObject.tag = _tag;
 
-    private void Update()
-    {
-        meshRenderer.material = material;
-        gameObject.tag = _tag;
+            if (meshRenderer)
+                meshRenderer.material = material;
 
-        if (isTrigger)
-            meshCollider.convex = meshCollider.isTrigger = true;
-        else
-            meshCollider.convex = meshCollider.isTrigger = false;
+            if(meshCollider)
+            {
+                if (isTrigger)
+                    meshCollider.convex = meshCollider.isTrigger = true;
+                else
+                    meshCollider.convex = meshCollider.isTrigger = false;
+            }
+        }
     }
 }

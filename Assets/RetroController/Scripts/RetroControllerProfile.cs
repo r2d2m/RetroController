@@ -97,9 +97,8 @@ namespace vnc
         /// Max speed while on air.
         /// </summary>
         public float MaxAirSpeed;
-        /// <summary>
-        /// Max speed on air, after jumping while sprinting.
-        /// </summary>
+
+        [System.Obsolete("Not used on the RetroController anymore.")]
         public float MaxAirSprintSpeed;
         /// <summary>
         /// Max speed when underwater.
