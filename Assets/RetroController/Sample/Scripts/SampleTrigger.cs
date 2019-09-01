@@ -15,7 +15,7 @@ namespace vnc.Samples
             boxCollider = GetComponent<BoxCollider>();
         }
 
-        private void OnTriggerStay(Collider other)
+        private void OnTriggerEnter(Collider other)
         {
             // player is on selected layer mask
             if (Contains(playerLayer, other.gameObject.layer))
@@ -24,19 +24,9 @@ namespace vnc.Samples
             }
         }
 
-
         bool Contains(LayerMask layerMask, int layer)
         {
             return layerMask == (layerMask | (1 << layer));
-        }
-
-        private void OnDrawGizmosSelected()
-        {
-            if (boxCollider)
-            {
-                Gizmos.color = Color.green;
-                Gizmos.DrawCube(transform.position + boxCollider.center, boxCollider.size);
-            }
         }
     }
 

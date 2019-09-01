@@ -112,22 +112,25 @@ namespace vnc.Development
 
             if(gunCamera && retroLedgeGrab)
                 gunCamera.enabled = retroLedgeGrab.movementState == RetroLedgeGrab.MovementState.None;
+
+
+            DebugGUI.LogPersistent("velocity", "Velocity: " + retroController.Velocity);
         }
 
-        protected virtual void OnGUI()
-        {
-            if (Application.isEditor)
-            {
-                Rect rect = new Rect(0, 0, 250, 100);
-                Vector3 planeVel = retroController.Velocity; planeVel.y = 0;
-                string debugText = "States: " + retroController.State;
+        //protected virtual void OnGUI()
+        //{
+        //    if (Application.isEditor)
+        //    {
+        //        Rect rect = new Rect(0, 0, 250, 100);
+        //        Vector3 planeVel = retroController.Velocity; planeVel.y = 0;
+        //        string debugText = "States: " + retroController.State;
 
-                if (guiStyle != null)
-                    GUI.Label(rect, debugText, guiStyle);
-                else
-                    GUI.Label(rect, debugText);
-            }
-        }
+        //        if (guiStyle != null)
+        //            GUI.Label(rect, debugText, guiStyle);
+        //        else
+        //            GUI.Label(rect, debugText);
+        //    }
+        //}
 
         private void OnDrawGizmos()
         {

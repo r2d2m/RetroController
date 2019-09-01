@@ -8,10 +8,9 @@ namespace vnc.Samples
     /// for your game, making it possible to move the controller
     /// when it's standing on the platform.
     /// </summary>
-    [RequireComponent(typeof(Rigidbody))]
     public class SamplePlatform : MonoBehaviour
     {
-        public RetroController player;
+        RetroController player;
         //RetroLedgeGrab retroLedgeGrab;
         Rigidbody _rigidbody;
         Collider _collider;
@@ -22,22 +21,28 @@ namespace vnc.Samples
         int index = 0;
         float timer;
 
-        public virtual void Start()
+        public void Awake()
         {
+            player = FindObjectOfType<RetroController>();
+
             if (points.Length > 0)
                 transform.position = points[0];
 
             if (player == null)
                 Debug.LogWarning("No Retro Controller Player assigned to platform " + name);
 
-            //if (player != null)
-            //    retroLedgeGrab = player.GetCustomMovement<RetroLedgeGrab>();
-
-            _rigidbody = GetComponent<Rigidbody>();
+            if (_rigidbody == null)
+            {
+                _rigidbody = gameObject.AddComponent<Rigidbody>();
+                _rigidbody.hideFlags = HideFlags.DontSave;
+                _rigidbody.useGravity = false;
+                _rigidbody.isKinematic = true;
+                _rigidbody.interpolation = RigidbodyInterpolation.Interpolate;
+            }
             _collider = GetComponentInChildren<Collider>();
         }
-        
-        public virtual void FixedUpdate()
+
+        public void FixedUpdate()
         {
             // don't move while wating
             if (Time.time < timer)
@@ -91,6 +96,17 @@ namespace vnc.Samples
             //}
 
             return false;
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            Gizmos.color = Color.green;
+            for (int i = 0; i < points.Length; i++)
+            {
+                Gizmos.DrawSphere(points[i], 1f);
+                if (i > 0)
+                    Gizmos.DrawLine(points[i], points[i - 1]);
+            }
         }
     }
 
