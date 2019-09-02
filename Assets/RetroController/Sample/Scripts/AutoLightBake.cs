@@ -12,7 +12,7 @@ public class AutoLightBake : MonoBehaviour
         if (Lightmapping.lightingDataAsset == null)
         {
             string message = "To display the Tutorial scene correctly, you need to " +
-                "bake the lighmap. Do you wanna do this automatically?";
+                "bake the lightmap. Do you wanna do this automatically?";
             if (EditorUtility.DisplayDialog("Lightmap Bake", message, "Yes", "No"))
             {
                 Lightmapping.completed = () =>

@@ -490,7 +490,7 @@ namespace vnc
 
                 jumpGraceTimer = 0;
                 sprintJump = false;
-                OnLandingCallback.Invoke(); // notify when player reaches the gorund
+                OnLandingCallback.Invoke(); // notify when player reaches the ground
             }
         }
         #endregion
