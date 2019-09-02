@@ -1,5 +1,5 @@
 <b>
-1.2 (TBA)
+2.0 (TBA)
 - Support for custom movement, samples coming soon.
 - Controller now uses rigidbody with interpolation.
 - Option to reimport necessary tags.
