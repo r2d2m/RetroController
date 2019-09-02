@@ -99,7 +99,7 @@ namespace vnc
         public float MaxAirSpeed;
 
         [System.Obsolete("Not used on the RetroController anymore.")]
-        public float MaxAirSprintSpeed;
+        [HideInInspector] public float MaxAirSprintSpeed;
         /// <summary>
         /// Max speed when underwater.
         /// </summary>
