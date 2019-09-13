@@ -31,14 +31,14 @@ namespace vnc.Samples
             if (player == null)
                 Debug.LogWarning("No Retro Controller Player assigned to platform " + name);
 
+            _rigidbody = GetComponent<Rigidbody>();
             if (_rigidbody == null)
-            {
                 _rigidbody = gameObject.AddComponent<Rigidbody>();
-                _rigidbody.hideFlags = HideFlags.DontSave;
-                _rigidbody.useGravity = false;
-                _rigidbody.isKinematic = true;
-                _rigidbody.interpolation = RigidbodyInterpolation.Interpolate;
-            }
+
+            _rigidbody.hideFlags = HideFlags.HideAndDontSave;
+            _rigidbody.useGravity = false;
+            _rigidbody.isKinematic = true;
+            _rigidbody.interpolation = RigidbodyInterpolation.Interpolate;
             _collider = GetComponentInChildren<Collider>();
         }
 

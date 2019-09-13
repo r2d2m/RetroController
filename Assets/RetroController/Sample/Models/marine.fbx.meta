@@ -1,0 +1,180 @@
+fileFormatVersion: 2
+guid: 1c7afdfc3ca9bf24a96b542f1146dfa2
+timeCreated: 1568058005
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: Arm 1.L
+    100002: Arm 1.R
+    100004: Arm 2.L
+    100006: Arm 2.R
+    100008: Arm IK.L
+    100010: Arm IK.R
+    100012: Arm Pole.L
+    100014: Arm Pole.R
+    100016: armor
+    100018: Back
+    100020: body
+    100022: default rig
+    100024: Finger 1 Joint 1.L
+    100026: Finger 1 Joint 1.R
+    100028: Finger 1 Joint 2.L
+    100030: Finger 1 Joint 2.R
+    100032: Foot.L
+    100034: Foot.R
+    100036: Hand hold.L
+    100038: Hand hold.R
+    100040: Hand.L
+    100042: Hand.R
+    100044: Head
+    100046: head
+    100048: helmet
+    100050: Hips
+    100052: Leg 1.L
+    100054: Leg 1.R
+    100056: Leg 2.L
+    100058: Leg 2.R
+    100060: Leg IK.L
+    100062: Leg IK.R
+    100064: Leg Pole.L
+    100066: Leg Pole.R
+    100068: Neck
+    100070: rocket launcher
+    100072: Shoulder.L
+    100074: Shoulder.R
+    100076: //RootNode
+    100078: Thumb 2.L
+    100080: Thumb 2.R
+    100082: Thumb.L
+    100084: Thumb.R
+    100086: Torso
+    400000: Arm 1.L
+    400002: Arm 1.R
+    400004: Arm 2.L
+    400006: Arm 2.R
+    400008: Arm IK.L
+    400010: Arm IK.R
+    400012: Arm Pole.L
+    400014: Arm Pole.R
+    400016: armor
+    400018: Back
+    400020: body
+    400022: default rig
+    400024: Finger 1 Joint 1.L
+    400026: Finger 1 Joint 1.R
+    400028: Finger 1 Joint 2.L
+    400030: Finger 1 Joint 2.R
+    400032: Foot.L
+    400034: Foot.R
+    400036: Hand hold.L
+    400038: Hand hold.R
+    400040: Hand.L
+    400042: Hand.R
+    400044: Head
+    400046: head
+    400048: helmet
+    400050: Hips
+    400052: Leg 1.L
+    400054: Leg 1.R
+    400056: Leg 2.L
+    400058: Leg 2.R
+    400060: Leg IK.L
+    400062: Leg IK.R
+    400064: Leg Pole.L
+    400066: Leg Pole.R
+    400068: Neck
+    400070: rocket launcher
+    400072: Shoulder.L
+    400074: Shoulder.R
+    400076: //RootNode
+    400078: Thumb 2.L
+    400080: Thumb 2.R
+    400082: Thumb.L
+    400084: Thumb.R
+    400086: Torso
+    2300000: rocket launcher
+    3300000: rocket launcher
+    4300000: rocket launcher
+    4300002: head
+    4300004: armor
+    4300006: helmet
+    4300008: body
+    7400000: default rig|Action
+    7400002: default rig|Idle
+    7400004: default rig|Walk
+    9500000: //RootNode
+    13700000: armor
+    13700002: body
+    13700004: head
+    13700006: helmet
+  materials:
+    importMaterials: 0
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 0.1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
