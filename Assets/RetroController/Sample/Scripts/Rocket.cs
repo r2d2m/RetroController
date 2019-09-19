@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Events;
 
 namespace vnc.Samples
 {
@@ -14,9 +15,27 @@ namespace vnc.Samples
         public LayerMask hitLayer;
         public LayerMask playerLayer;
 
+        RetroController retroController;
+        Collider _collider;
+        public DestroyCallback onDestroyCallback;
+
+        public void OnCreate(Vector3 direction, RetroController retroController)
+        {
+            transform.rotation = Quaternion.LookRotation(direction);
+            _collider = GetComponent<Collider>();
+            retroController.AddIgnoredCollider(_collider);
+
+            this.retroController = retroController;
+            onDestroyCallback = new DestroyCallback();
+            onDestroyCallback.AddListener(() => retroController.RemoveIgnoredCollider(_collider));
+        }
+
         Collider[] results = new Collider[4];
         private void OnCollisionEnter(Collision collision)
         {
+            if (collision.gameObject == retroController.gameObject)
+                return;
+
             if (explosiveSphere != null)
                 Destroy(explosiveSphere);
 
@@ -44,6 +63,10 @@ namespace vnc.Samples
             }
 
             Destroy(gameObject);
+            onDestroyCallback.Invoke();
         }
     }
+
+    [SerializeField]
+    public class DestroyCallback : UnityEvent { };
 }

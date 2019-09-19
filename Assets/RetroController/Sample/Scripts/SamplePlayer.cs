@@ -96,6 +96,7 @@ namespace vnc.Samples
             float mag = retroController.Velocity.magnitude / retroController.Profile.MaxGroundSpeed;
             playerAnimator.SetFloat("Horizontal", animHorizontal);
             playerAnimator.SetFloat("Vertical", FixSmallValues(animVertical));
+            playerAnimator.SetFloat("Speed", Mathf.Clamp(retroController.Velocity.magnitude, 1, 3));
         }
 
         const float SMALL = 0.01f;

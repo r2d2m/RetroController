@@ -46,11 +46,8 @@ namespace vnc.Samples
             if (shoot)
             {
                 var rocketInstance = Instantiate(_rocket, _rocketSpawn.position, _rocket.transform.rotation);
-                rocketInstance.transform.rotation = Quaternion.LookRotation(m_camera.forward);
+                rocketInstance.GetComponent<Rocket>().OnCreate(m_camera.forward, retroController);
                 rocketInstance.AddForce(rocketInstance.transform.forward * _rocketSpeed, ForceMode.Force);
-
-                Physics.IgnoreCollision(rocketInstance.GetComponent<Collider>(), _collider, true);
-
                 shoot = false;
             }
         }
