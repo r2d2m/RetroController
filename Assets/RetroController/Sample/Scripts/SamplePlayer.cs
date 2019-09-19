@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace vnc.Samples
 {
@@ -18,10 +19,24 @@ namespace vnc.Samples
         [Space, Tooltip("Switch to ducking and standing by pressing once instead of holding")]
         public bool toggleDucking;
 
-        private void Awake()
+        [Header("Animation")]
+        public Animator playerAnimator;
+        public float animDelta = 6f;
+        float animHorizontal, animVertical;
+
+        private void Start()
         {
             mouseLook.Init(transform, playerView);
             mouseLook.SetCursorLock(true);
+
+            retroController.OnJumpCallback.AddListener(() =>
+            {
+                playerAnimator.SetTrigger("Jump");
+            });
+            retroController.OnLandingCallback.AddListener(() =>
+            {
+                playerAnimator.SetTrigger("Land");
+            });
         }
 
         // input variables
@@ -53,7 +68,7 @@ namespace vnc.Samples
             // these inputs are fed into the controller
             // this is the main entry point for the controller
             retroController.SetInput(fwd, strafe, swim, jump, sprint, duck);
-            
+
 
             if (Input.GetKeyDown(KeyCode.Escape))
             {
@@ -65,6 +80,37 @@ namespace vnc.Samples
             mouseLook.UpdateCursorLock();
 
             Time.timeScale = retroController.updateController ? 1 : 0;
+
+            SetAnimatorParameters();
+        }
+
+        private void SetAnimatorParameters()
+        {
+            float angle = playerView.eulerAngles.x;
+            angle = (angle > 180) ? angle - 360 : angle;
+            playerAnimator.SetFloat("Angle", angle);
+
+            animHorizontal = Mathf.Lerp(animHorizontal, retroController.inputDir.x, Time.deltaTime * animDelta);
+            animVertical = Mathf.Lerp(animVertical, retroController.inputDir.y, Time.deltaTime * animDelta);
+
+            float mag = retroController.Velocity.magnitude / retroController.Profile.MaxGroundSpeed;
+            playerAnimator.SetFloat("Horizontal", animHorizontal);
+            playerAnimator.SetFloat("Vertical", FixSmallValues(animVertical));
+        }
+
+        const float SMALL = 0.01f;
+        float FixSmallValues (float value)
+        {
+            if (value > -SMALL && value < SMALL)
+                return 0;
+
+            return value;
+        }
+
+        private void OnGUI()
+        {
+            Rect r = new Rect(0, 0, 200, 50);
+            GUI.Label(r, ("Angle: " + playerView.localEulerAngles));
         }
     }
 
