@@ -113,7 +113,7 @@ namespace vnc.Development
                 gunCamera.enabled = retroLedgeGrab.movementState == RetroLedgeGrab.MovementState.None;
 
 
-            DebugGUI.LogPersistent("velocity", "Velocity: " + retroController.Velocity);
+            //DebugGUI.LogPersistent("velocity", "Velocity: " + retroController.Velocity);
         }
 
         //protected virtual void OnGUI()

@@ -113,12 +113,6 @@ namespace vnc.Samples
 
             return value;
         }
-
-        private void OnGUI()
-        {
-            Rect r = new Rect(0, 0, 200, 50);
-            GUI.Label(r, ("Angle: " + playerView.localEulerAngles));
-        }
     }
 
 }
