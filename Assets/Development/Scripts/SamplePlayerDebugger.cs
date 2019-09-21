@@ -94,7 +94,7 @@ namespace vnc.Development
                 if (!(autoInput && ignoreMouse))
                 {
                     // controls mouse look
-                    mouseLook.LookRotation(transform, playerView);
+                    mouseLook.LookRotation();
                     mouseLook.UpdateCursorLock();
                 }
             }

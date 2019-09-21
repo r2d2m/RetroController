@@ -18,6 +18,7 @@ namespace vnc.Samples
         public Vector3[] points;
         public float speed = 6f;
         public float waitTime = 3f;
+        public RigidbodyInterpolation rigidbodyInterpolation = RigidbodyInterpolation.Interpolate;
         int index = 0;
         float timer;
 
@@ -38,19 +39,20 @@ namespace vnc.Samples
             _rigidbody.hideFlags = HideFlags.HideAndDontSave;
             _rigidbody.useGravity = false;
             _rigidbody.isKinematic = true;
-            _rigidbody.interpolation = RigidbodyInterpolation.Interpolate;
             _collider = GetComponentInChildren<Collider>();
         }
 
         public void FixedUpdate()
         {
+            _rigidbody.interpolation = rigidbodyInterpolation;
+
             // don't move while wating
             if (Time.time < timer)
                 return;
 
             // move the platform
             var prevPosition = _rigidbody.position;
-            Vector3 targetPosition = Vector3.MoveTowards(_rigidbody.position, points[index], speed * Time.fixedDeltaTime);
+            Vector3 targetPosition = Vector3.MoveTowards(_rigidbody.position, points[index], speed);
             _rigidbody.MovePosition(targetPosition);
             Vector3 diff = targetPosition - prevPosition;
 

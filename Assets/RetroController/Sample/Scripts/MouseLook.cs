@@ -18,18 +18,23 @@ namespace vnc.Samples
         public float cameraKickoffsetWindow;
         public float cameraKickSpeed = 10;
 
+        private Rigidbody characterRigidbody;
+        private Transform characterCamera;
+
         private Quaternion m_CharacterTargetRot;
         private Quaternion m_CameraTargetRot;
         private float kick = 0;
 
         public void Init(Transform character, Transform camera)
         {
-            m_CharacterTargetRot = character.localRotation;
+            characterRigidbody = character.GetComponent<Rigidbody>();
+            characterCamera = camera;
+
+            m_CharacterTargetRot = characterRigidbody.rotation;
             m_CameraTargetRot = camera.localRotation;
         }
 
-
-        public void LookRotation(Transform character, Transform camera)
+        public void LookRotation()
         {
             if (!lockCursor)
                 return;
@@ -48,20 +53,20 @@ namespace vnc.Samples
 
             if (smooth)
             {
-                character.localRotation = Quaternion.Slerp(character.localRotation, m_CharacterTargetRot,
-                    smoothTime * Time.deltaTime);
-                camera.localRotation = Quaternion.Slerp(camera.localRotation, m_CameraTargetRot,
+                characterRigidbody.MoveRotation(Quaternion.Slerp(characterRigidbody.rotation, m_CharacterTargetRot,
+                    smoothTime * Time.deltaTime));
+                characterCamera.localRotation = Quaternion.Slerp(characterCamera.localRotation, m_CameraTargetRot,
                     smoothTime * Time.deltaTime);
             }
             else
             {
-                character.localRotation = m_CharacterTargetRot;
-                camera.localRotation = m_CameraTargetRot;
+                characterRigidbody.MoveRotation(m_CharacterTargetRot);
+                characterCamera.localRotation = m_CameraTargetRot;
 
                 if (cameraKick)
                 {
                     var x = Mathf.Clamp(kick, 0, cameraKickOffset - cameraKickoffsetWindow);
-                    camera.localRotation *= Quaternion.Euler(-x, 0, 0);
+                    characterCamera.localRotation *= Quaternion.Euler(-x, 0, 0);
                 }
             }
         }
