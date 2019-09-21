@@ -26,7 +26,7 @@ namespace vnc.Samples
 
         private void Start()
         {
-            mouseLook.Init(transform, playerView);
+            mouseLook.Init(retroController, playerView);
             mouseLook.SetCursorLock(true);
 
             if (playerAnimator)

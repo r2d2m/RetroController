@@ -126,8 +126,6 @@ namespace vnc
             {
                 if (_controller.StepCount > 0)
                 {
-                    float deltaTime = (Time.time - _controller.FixedUpdateTime);
-
                     cameraPosition.x = playerView.position.x;
                     cameraPosition.z = playerView.position.z;
 

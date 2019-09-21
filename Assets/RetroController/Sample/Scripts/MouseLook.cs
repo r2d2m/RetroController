@@ -25,7 +25,7 @@ namespace vnc.Samples
         private Quaternion m_CameraTargetRot;
         private float kick = 0;
 
-        public void Init(Transform character, Transform camera)
+        public void Init(RetroController character, Transform camera)
         {
             characterRigidbody = character.GetComponent<Rigidbody>();
             characterCamera = camera;
