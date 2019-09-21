@@ -29,14 +29,17 @@ namespace vnc.Samples
             mouseLook.Init(transform, playerView);
             mouseLook.SetCursorLock(true);
 
-            retroController.OnJumpCallback.AddListener(() =>
+            if (playerAnimator)
             {
-                playerAnimator.SetTrigger("Jump");
-            });
-            retroController.OnLandingCallback.AddListener(() =>
-            {
-                playerAnimator.SetTrigger("Land");
-            });
+                retroController.OnJumpCallback.AddListener(() =>
+                {
+                    playerAnimator.SetTrigger("Jump");
+                });
+                retroController.OnLandingCallback.AddListener(() =>
+                {
+                    playerAnimator.SetTrigger("Land");
+                });
+            }
         }
 
         // input variables
@@ -86,17 +89,20 @@ namespace vnc.Samples
 
         private void SetAnimatorParameters()
         {
-            float angle = playerView.eulerAngles.x;
-            angle = (angle > 180) ? angle - 360 : angle;
-            playerAnimator.SetFloat("Angle", angle);
+            if (playerAnimator)
+            {
+                float angle = playerView.eulerAngles.x;
+                angle = (angle > 180) ? angle - 360 : angle;
+                playerAnimator.SetFloat("Angle", angle);
 
-            animHorizontal = Mathf.Lerp(animHorizontal, retroController.inputDir.x, Time.deltaTime * animDelta);
-            animVertical = Mathf.Lerp(animVertical, retroController.inputDir.y, Time.deltaTime * animDelta);
+                animHorizontal = Mathf.Lerp(animHorizontal, retroController.inputDir.x, Time.deltaTime * animDelta);
+                animVertical = Mathf.Lerp(animVertical, retroController.inputDir.y, Time.deltaTime * animDelta);
 
-            float mag = retroController.Velocity.magnitude / retroController.Profile.MaxGroundSpeed;
-            playerAnimator.SetFloat("Horizontal", animHorizontal);
-            playerAnimator.SetFloat("Vertical", FixSmallValues(animVertical));
-            playerAnimator.SetFloat("Speed", Mathf.Clamp(retroController.Velocity.magnitude, 1, 3));
+                float mag = retroController.Velocity.magnitude / retroController.Profile.MaxGroundSpeed;
+                playerAnimator.SetFloat("Horizontal", animHorizontal);
+                playerAnimator.SetFloat("Vertical", FixSmallValues(animVertical));
+                playerAnimator.SetFloat("Speed", Mathf.Clamp(retroController.Velocity.magnitude, 1, 3));
+            }
         }
 
         const float SMALL = 0.01f;

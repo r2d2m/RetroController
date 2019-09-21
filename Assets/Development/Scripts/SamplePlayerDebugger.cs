@@ -38,7 +38,6 @@ namespace vnc.Development
         [Header("Debug GUI Style")]
         public GUIStyle guiStyle;
 
-
         public override void Update()
         {
             if (Input.GetKeyDown(KeyCode.R) && !isPlaying)
