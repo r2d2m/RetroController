@@ -111,6 +111,7 @@ namespace vnc
         public float SlopeDot { get { return (Profile.SlopeAngleLimit / 90f); } }
 
         // Custom movements
+        [HideInInspector] public bool autoFillMovements;
         [HideInInspector] public RetroMovement[] retroMovements;
 
         // CALLBACK EVENTS
@@ -143,6 +144,9 @@ namespace vnc
             SetupRigidbody();
 
             // load custom movements
+            if (autoFillMovements)
+                retroMovements = GetComponentsInChildren<RetroMovement>();
+
             for (int i = 0; i < retroMovements.Length; i++)
                 retroMovements[i].OnAwake(this);
 

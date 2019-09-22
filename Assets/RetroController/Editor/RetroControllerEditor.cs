@@ -12,8 +12,10 @@ namespace vnc.Editor
         SerializedProperty profile;
         SerializedProperty view;
         SerializedProperty state;
+
         SerializedProperty retroMovements;
-        private ReorderableList movementsList;
+        SerializedProperty autoFillMovements;
+        ReorderableList movementsList;
 
         static Dictionary<int, RetroControllerEditorState> callbackEventsFold = new Dictionary<int, RetroControllerEditorState>();
         SerializedProperty jumpCallback, landingCallback, fixedUpdateEndCalback;
@@ -25,6 +27,7 @@ namespace vnc.Editor
             profile = serializedObject.FindProperty("Profile");
             view = serializedObject.FindProperty("controllerView");
             state = serializedObject.FindProperty("_state");
+            autoFillMovements = serializedObject.FindProperty("autoFillMovements");
             retroMovements = serializedObject.FindProperty("retroMovements");
             movementsList = new ReorderableList(serializedObject, retroMovements);
             movementsList.drawHeaderCallback = rect =>
@@ -70,7 +73,13 @@ namespace vnc.Editor
             DrawDefaultInspectorWithoutScriptField();
 
             EditorGUILayout.Space();
-            movementsList.DoLayoutList();
+            EditorGUILayout.LabelField("Retro Movements", EditorStyles.boldLabel);
+            var autoFillGUIContent = new GUIContent("Auto-Fill Movements", "Searches in the RetroController Game Object hierarchy" +
+                " for components that match the RetroMovement and fill the list on runtime.");
+            autoFillMovements.boolValue = EditorGUILayout.Toggle(autoFillGUIContent, autoFillMovements.boolValue);
+
+            if(!autoFillMovements.boolValue)
+                movementsList.DoLayoutList();
 
             DrawEvents();
 
