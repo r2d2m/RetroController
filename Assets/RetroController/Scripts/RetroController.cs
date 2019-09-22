@@ -169,7 +169,9 @@ namespace vnc
                 int index = 0;
                 while (!isDone && index < retroMovements.Length)
                 {
-                    isDone = retroMovements[index].DoMovement();
+                    if (retroMovements[index].isActive)
+                        isDone = retroMovements[index].DoMovement();
+
                     index++;
                 }
             }
@@ -694,7 +696,8 @@ namespace vnc
             {
                 // execute the necessary checks for custom movements
                 for (int i = 0; i < retroMovements.Length; i++)
-                    retroMovements[i].OnCharacterMove();
+                    if (retroMovements[i].isActive)
+                        retroMovements[i].OnCharacterMove();
             }
 
             //DetectLedge();

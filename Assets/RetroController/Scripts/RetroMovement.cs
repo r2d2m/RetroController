@@ -7,6 +7,8 @@ namespace vnc
     /// </summary>
     public abstract class RetroMovement : MonoBehaviour
     {
+        public bool isActive = true;
+
         protected RetroController retroController;
 
         public virtual void OnAwake(RetroController retroController)
