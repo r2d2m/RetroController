@@ -189,19 +189,20 @@ namespace vnc
                     if (OnLadder && !detachLadder)
                     {
                         LadderMovementUpdate();
+                        RemoveState(CC_State.Ducking);
                     }
                     else if (IsSwimming && WaterState == CC_Water.Underwater)
                     {
                         WaterMovementUpdate();
+                        OnDuckState();
                     }
                     else
                     {
                         GroundMovementUpdate();
+                        OnDuckState();
                     }
                 }
             }
-
-            OnDuckState();
 
             OnFixedUpdateEndCallback.Invoke();
             wasOnStep = WalkedOnStep;
@@ -239,7 +240,7 @@ namespace vnc
         /// <summary>
         /// Set the Ducking state on the controller
         /// </summary>
-        protected virtual void OnDuckState()
+        public virtual void OnDuckState()
         {
             if (!wasDucking && DuckInput)
                 duckingTimer = Time.time;
