@@ -1092,9 +1092,11 @@ namespace vnc
             return false;
         }
 
+        [System.Obsolete("Use 'HasCollision' instead")]
         public bool HasCollisionFlag(CC_Collision flag)
         {
-            return (Collisions & flag) != 0;
+            return HasCollision(flag);
+            //return (Collisions & flag) != 0;
         }
 
         /// <summary>

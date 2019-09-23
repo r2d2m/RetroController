@@ -113,7 +113,11 @@ namespace vnc.Development
                 gunCamera.enabled = retroLedgeGrab.movementState == RetroLedgeGrab.MovementState.None;
 
 
-            //DebugGUI.LogPersistent("velocity", "Velocity: " + retroController.Velocity);
+            DebugGUI.LogPersistent("velocity", "Velocity: " + retroController.Velocity);
+            Vector2 XZ = new Vector2(retroController.Velocity.x, retroController.Velocity.z);
+            DebugGUI.LogPersistent("velocity_magnitude", "XZ Magnitude: " + XZ.magnitude);
+            DebugGUI.LogPersistent("ducking", "Is Ducking: " + retroController.HasState(RetroController.CC_State.Ducking));
+
         }
 
         //protected virtual void OnGUI()
