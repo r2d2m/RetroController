@@ -616,7 +616,7 @@ namespace vnc
         /// <summary>
         /// Generic friction, decrease the Velocity of the controller.
         /// </summary>
-        protected virtual Vector3 Friction(Vector3 prevVelocity, float friction)
+        public virtual Vector3 Friction(Vector3 prevVelocity, float friction)
         {
             var wishspeed = prevVelocity;
 

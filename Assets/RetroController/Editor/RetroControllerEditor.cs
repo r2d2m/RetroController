@@ -74,7 +74,7 @@ namespace vnc.Editor
 
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Retro Movements", EditorStyles.boldLabel);
-            var autoFillGUIContent = new GUIContent("Auto-Fill Movements", "Searches in the RetroController Game Object hierarchy" +
+            var autoFillGUIContent = new GUIContent("Autofill Movements", "Searches in the RetroController Game Object hierarchy" +
                 " for components that match the RetroMovement and fill the list on runtime.");
             autoFillMovements.boolValue = EditorGUILayout.Toggle(autoFillGUIContent, autoFillMovements.boolValue);
 
