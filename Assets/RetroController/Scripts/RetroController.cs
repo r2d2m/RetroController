@@ -1157,6 +1157,7 @@ namespace vnc
         public void TeleportTo(Vector3 worldPosition, bool resetVelocity = true)
         {
             FixedPosition = worldPosition;
+            _rigidbody.position = FixedPosition;
             if (resetVelocity)
                 Velocity = Vector3.zero;
         }
