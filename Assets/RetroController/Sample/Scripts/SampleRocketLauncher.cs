@@ -36,7 +36,9 @@ namespace vnc.Samples
 
                 shoot = true;
 
-                _animator.SetTrigger("Fire");
+                if(_animator)
+                    _animator.SetTrigger("Fire");
+
                 time = Time.time;
             }
         }

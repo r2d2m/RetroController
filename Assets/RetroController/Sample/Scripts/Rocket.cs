@@ -24,6 +24,7 @@ namespace vnc.Samples
             transform.rotation = Quaternion.LookRotation(direction);
             _collider = GetComponent<Collider>();
             retroController.AddIgnoredCollider(_collider);
+            Physics.IgnoreCollision(_collider, retroController.controllerCollider, true);
 
             this.retroController = retroController;
             onDestroyCallback = new DestroyCallback();
