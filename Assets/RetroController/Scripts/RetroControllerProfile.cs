@@ -118,13 +118,12 @@ namespace vnc
         /// </summary>
         public float LadderSpeed;
         /// <summary>
-        /// Speed on the opposite direction of the velocity.
-        /// Adding a little value allows for some airborne control.
+        /// Controls airborne speed changes and bunnyhopping.
         /// Setting to 0 makes it stop completely.
         /// Don't set this value to lower than 0;
         /// </summary>
         [RangeNoSlider(0f, Mathf.Infinity)]
-        public float MaxAirControl = 0.02f;
+        public float MaxAirControl = 0.1f;
         #endregion
 
         #region Acceleration
@@ -149,7 +148,7 @@ namespace vnc
         /// Define wheather the character can
         /// be controlled on mid-air (change the velocity)
         /// </summary>
-        public AirControl AirControl = AirControl.Full;
+        public AirControl AirControl = AirControl.AirStrafing;
         #endregion
 
         #region Friction
