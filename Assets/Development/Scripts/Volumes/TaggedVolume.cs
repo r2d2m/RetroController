@@ -72,5 +72,5 @@ namespace vnc.Development
             component.gameObject.hideFlags = HideFlags.DontSave;
         }
     }
-#endif
 }
+#endif
