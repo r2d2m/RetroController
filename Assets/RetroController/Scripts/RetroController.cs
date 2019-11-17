@@ -52,6 +52,7 @@ namespace vnc
         // Velocity
         [HideInInspector] public Vector3 Velocity;
         protected Vector3 wishDir;    // the direction from the input
+        public Vector3 WishDirection { get { return wishDir; } }
         protected float wishSpeed;
 
         protected bool wasGrounded = false;   // if player was on ground on previous update
@@ -535,7 +536,6 @@ namespace vnc
         /// </summary>
         protected virtual void MoveAir()
         {
-            //float maxSpeed = sprintJump ? Profile.MaxAirSprintSpeed : Profile.MaxAirSpeed;
             AccelerateAir(wishDir, wishSpeed, Profile.AirAcceleration, Profile.MaxAirSpeed);
         }
 
@@ -573,6 +573,8 @@ namespace vnc
 
         protected virtual void AccelerateAir(Vector3 wishDir, float wishSpeed, float accelerate, float maxSpeed)
         {
+            float currentSpeed, addspeed, accelSpeed, wspd;
+
             switch (Profile.AirControl)
             {
                 case AirControl.AirStrafing:
@@ -583,22 +585,21 @@ namespace vnc
                         wishSpeed = maxSpeed;
                     }
 
-                    float wishspd = wishDir.magnitude;
-                    if (wishspd > Profile.MaxAirControl)
-                        wishspd = Profile.MaxAirControl;
+                    //Controls how much the player can move mid-air
+                    wspd = MidairControl(wishSpeed);
 
-                    var currentSpeed = Vector3.Dot(Velocity, wishDir);
-                    var addspeed = wishspd - currentSpeed;
+                    currentSpeed = Vector3.Dot(Velocity, wishDir);
+                    addspeed = wspd - currentSpeed;
                     if (addspeed <= 0)
                         return;
 
-                    var accelSpeed = accelerate * wishSpeed * Time.fixedDeltaTime;
+                    accelSpeed = accelerate * wishSpeed * Time.fixedDeltaTime;
                     if (accelSpeed > addspeed)
                         accelSpeed = addspeed;
 
                     Velocity += accelSpeed * wishDir;
                     break;
-                case AirControl.Full:
+                case AirControl.Normal:
                 default:
                     var projVel = Vector3.Dot(Velocity, wishDir);
 
@@ -610,6 +611,14 @@ namespace vnc
                     Velocity = Velocity + wishDir * accelVel;
                     break;
             }
+        }
+
+        protected virtual float MidairControl(float wishSpeed)
+        {
+            if (wishSpeed > Profile.MaxAirControl)
+                return  Profile.MaxAirControl;
+
+            return wishSpeed;
         }
         #endregion
 

@@ -226,5 +226,5 @@ namespace vnc
     }
 
     public enum ControllerDirection { X, Y, Z };
-    public enum AirControl { Full, AirStrafing }
+    public enum AirControl { Normal, AirStrafing }
 }
