@@ -102,6 +102,7 @@ namespace vnc.Samples
                 playerAnimator.SetFloat("Horizontal", animHorizontal);
                 playerAnimator.SetFloat("Vertical", FixSmallValues(animVertical));
                 playerAnimator.SetFloat("Speed", Mathf.Clamp(retroController.Velocity.magnitude, 1, 3));
+                playerAnimator.SetBool("Ducking", retroController.IsDucking);
             }
         }
 

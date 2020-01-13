@@ -24,7 +24,7 @@ namespace vnc.Development
                 p.y = 0;
                 double distance = Vector3.Distance(lastPosition, p);
                 distance = Math.Truncate((distance * 100));
-                speedText.text = (distance / Time.fixedDeltaTime).ToString("0.0");
+                speedText.text = (distance / Time.fixedDeltaTime).ToString("0");
                 lastPosition = retroController.FixedPosition;
             }
         }

@@ -1,0 +1,2010 @@
+fileFormatVersion: 2
+guid: cbba25fedc2fb4f439eeae5d02052268
+ModelImporter:
+  serializedVersion: 22
+  fileIDToRecycleName:
+    100000: Arm 1.L
+    100002: Arm 1.R
+    100004: Arm 2.L
+    100006: Arm 2.R
+    100008: Arm IK.L
+    100010: Arm IK.R
+    100012: Arm Pole.L
+    100014: Arm Pole.R
+    100016: armor
+    100018: Back
+    100020: body
+    100022: default rig
+    100024: Finger 1 Joint 1.L
+    100026: Finger 1 Joint 1.R
+    100028: Finger 1 Joint 2.L
+    100030: Finger 1 Joint 2.R
+    100032: Foot.L
+    100034: Foot.R
+    100036: Hand hold.L
+    100038: Hand hold.R
+    100040: Hand.L
+    100042: Hand.R
+    100044: Head
+    100046: head
+    100048: helmet
+    100050: Hips
+    100052: Leg 1.L
+    100054: Leg 1.R
+    100056: Leg 2.L
+    100058: Leg 2.R
+    100060: Leg IK.L
+    100062: Leg IK.R
+    100064: Leg Pole.L
+    100066: Leg Pole.R
+    100068: Neck
+    100070: rocket launcher--
+    100072: Shoulder.L
+    100074: Shoulder.R
+    100076: //RootNode
+    100078: Thumb 2.L
+    100080: Thumb 2.R
+    100082: Thumb.L
+    100084: Thumb.R
+    100086: Torso
+    400000: Arm 1.L
+    400002: Arm 1.R
+    400004: Arm 2.L
+    400006: Arm 2.R
+    400008: Arm IK.L
+    400010: Arm IK.R
+    400012: Arm Pole.L
+    400014: Arm Pole.R
+    400016: armor
+    400018: Back
+    400020: body
+    400022: default rig
+    400024: Finger 1 Joint 1.L
+    400026: Finger 1 Joint 1.R
+    400028: Finger 1 Joint 2.L
+    400030: Finger 1 Joint 2.R
+    400032: Foot.L
+    400034: Foot.R
+    400036: Hand hold.L
+    400038: Hand hold.R
+    400040: Hand.L
+    400042: Hand.R
+    400044: Head
+    400046: head
+    400048: helmet
+    400050: Hips
+    400052: Leg 1.L
+    400054: Leg 1.R
+    400056: Leg 2.L
+    400058: Leg 2.R
+    400060: Leg IK.L
+    400062: Leg IK.R
+    400064: Leg Pole.L
+    400066: Leg Pole.R
+    400068: Neck
+    400070: rocket launcher--
+    400072: Shoulder.L
+    400074: Shoulder.R
+    400076: //RootNode
+    400078: Thumb 2.L
+    400080: Thumb 2.R
+    400082: Thumb.L
+    400084: Thumb.R
+    400086: Torso
+    2300000: rocket launcher--
+    3300000: rocket launcher--
+    4300000: rocket launcher--
+    4300002: head
+    4300004: armor
+    4300006: helmet
+    4300008: body
+    7400000: crouch to stand R
+    7400002: Crouch walk
+    7400004: crouch to stand L
+    7400006: Crouch walk.002
+    7400008: crouch to stand L.001
+    7400010: Idle upper body only
+    7400012: default rig|crouch to stand L
+    7400014: default rig|crouch to stand L.001
+    7400016: default rig|crouch to stand R
+    7400018: default rig|Crouch walk
+    7400020: default rig|Crouch walk back
+    7400022: default rig|Crouch walk left
+    7400024: default rig|Crouch walk right
+    7400026: default rig|Crouch walk.002
+    7400028: default rig|Idle
+    7400030: default rig|Idle upper body only
+    7400032: default rig|Idle upper body only front, up and down
+    7400034: default rig|Idle upper body only up
+    7400036: default rig|Jump
+    7400038: default rig|run backwards
+    7400040: default rig|run forward
+    7400042: default rig|run left
+    7400044: default rig|run right
+    7400046: Jump
+    7400048: Jump
+    7400050: Mid-Air
+    7400052: Mid-Air
+    7400054: Land
+    7400056: Look Up
+    7400058: Look Down
+    7400060: Crouch Idle
+    9500000: //RootNode
+    13700000: armor
+    13700002: body
+    13700004: head
+    13700006: helmet
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material
+    second: {fileID: 2100000, guid: ab7c764bddb44134f85e439a573e3ed4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.002
+    second: {fileID: 2100000, guid: d62e0692780246449956af850fac8a9d, type: 2}
+  materials:
+    importMaterials: 0
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 0
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    animationCompression: 3
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: crouch to stand R
+      takeName: crouch to stand R
+      firstFrame: 0
+      lastFrame: 75
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Crouch walk
+      takeName: Crouch walk
+      firstFrame: 0
+      lastFrame: 120
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: crouch to stand L
+      takeName: crouch to stand L
+      firstFrame: 0
+      lastFrame: 75
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Crouch walk.002
+      takeName: Crouch walk.002
+      firstFrame: 0
+      lastFrame: 120
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: crouch to stand L.001
+      takeName: crouch to stand L.001
+      firstFrame: 0
+      lastFrame: 75
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Idle upper body only
+      takeName: Idle upper body only
+      firstFrame: 0
+      lastFrame: 1
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: default rig|crouch to stand L
+      takeName: default rig|crouch to stand L
+      firstFrame: 0
+      lastFrame: 75
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: default rig|crouch to stand L.001
+      takeName: default rig|crouch to stand L.001
+      firstFrame: 0
+      lastFrame: 75
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: default rig|crouch to stand R
+      takeName: default rig|crouch to stand R
+      firstFrame: 0
+      lastFrame: 75
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: default rig|Crouch walk
+      takeName: default rig|Crouch walk
+      firstFrame: 0
+      lastFrame: 40
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000000000000000000001000000010000000000000000000000000000000000000001000000010000000000000000000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: armor
+        weight: 1
+      - path: body
+        weight: 1
+      - path: default rig
+        weight: 1
+      - path: default rig/Hand hold.L
+        weight: 0
+      - path: default rig/Hand hold.R
+        weight: 0
+      - path: default rig/Hips
+        weight: 1
+      - path: default rig/Hips/Back
+        weight: 0
+      - path: default rig/Hips/Back/Torso
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Arm IK.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Arm IK.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Arm Pole.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Arm Pole.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Neck
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Neck/Head
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L/Finger
+          1 Joint 1.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L/Finger
+          1 Joint 1.L/Finger 1 Joint 2.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L/Thumb.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L/Thumb.L/Thumb
+          2.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R/Finger
+          1 Joint 1.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R/Finger
+          1 Joint 1.R/Finger 1 Joint 2.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R/Thumb.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R/Thumb.R/Thumb
+          2.R
+        weight: 0
+      - path: default rig/Hips/Leg 1.L
+        weight: 1
+      - path: default rig/Hips/Leg 1.L/Leg 2.L
+        weight: 1
+      - path: default rig/Hips/Leg 1.L/Leg 2.L/Foot.L
+        weight: 1
+      - path: default rig/Hips/Leg 1.R
+        weight: 1
+      - path: default rig/Hips/Leg 1.R/Leg 2.R
+        weight: 1
+      - path: default rig/Hips/Leg 1.R/Leg 2.R/Foot.R
+        weight: 1
+      - path: default rig/Leg IK.L
+        weight: 1
+      - path: default rig/Leg IK.L/Leg Pole.L
+        weight: 1
+      - path: default rig/Leg IK.R
+        weight: 1
+      - path: default rig/Leg IK.R/Leg Pole.R
+        weight: 1
+      - path: head
+        weight: 0
+      - path: helmet
+        weight: 0
+      - path: rocket launcher--
+        weight: 0
+      maskType: 1
+      maskSource: {fileID: 31900000, guid: 280e1961a19aadd4bbca3655f959d898, type: 2}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: default rig|Crouch walk back
+      takeName: default rig|Crouch walk back
+      firstFrame: 0
+      lastFrame: 40
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000000000000000000001000000010000000000000000000000000000000000000001000000010000000000000000000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: armor
+        weight: 1
+      - path: body
+        weight: 1
+      - path: default rig
+        weight: 1
+      - path: default rig/Hand hold.L
+        weight: 0
+      - path: default rig/Hand hold.R
+        weight: 0
+      - path: default rig/Hips
+        weight: 1
+      - path: default rig/Hips/Back
+        weight: 0
+      - path: default rig/Hips/Back/Torso
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Arm IK.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Arm IK.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Arm Pole.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Arm Pole.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Neck
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Neck/Head
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L/Finger
+          1 Joint 1.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L/Finger
+          1 Joint 1.L/Finger 1 Joint 2.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L/Thumb.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L/Thumb.L/Thumb
+          2.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R/Finger
+          1 Joint 1.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R/Finger
+          1 Joint 1.R/Finger 1 Joint 2.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R/Thumb.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R/Thumb.R/Thumb
+          2.R
+        weight: 0
+      - path: default rig/Hips/Leg 1.L
+        weight: 1
+      - path: default rig/Hips/Leg 1.L/Leg 2.L
+        weight: 1
+      - path: default rig/Hips/Leg 1.L/Leg 2.L/Foot.L
+        weight: 1
+      - path: default rig/Hips/Leg 1.R
+        weight: 1
+      - path: default rig/Hips/Leg 1.R/Leg 2.R
+        weight: 1
+      - path: default rig/Hips/Leg 1.R/Leg 2.R/Foot.R
+        weight: 1
+      - path: default rig/Leg IK.L
+        weight: 1
+      - path: default rig/Leg IK.L/Leg Pole.L
+        weight: 1
+      - path: default rig/Leg IK.R
+        weight: 1
+      - path: default rig/Leg IK.R/Leg Pole.R
+        weight: 1
+      - path: head
+        weight: 0
+      - path: helmet
+        weight: 0
+      - path: rocket launcher--
+        weight: 0
+      maskType: 1
+      maskSource: {fileID: 31900000, guid: 280e1961a19aadd4bbca3655f959d898, type: 2}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: default rig|Crouch walk left
+      takeName: default rig|Crouch walk left
+      firstFrame: 0
+      lastFrame: 30
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000000000000000000001000000010000000000000000000000000000000000000001000000010000000000000000000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: armor
+        weight: 1
+      - path: body
+        weight: 1
+      - path: default rig
+        weight: 1
+      - path: default rig/Hand hold.L
+        weight: 0
+      - path: default rig/Hand hold.R
+        weight: 0
+      - path: default rig/Hips
+        weight: 1
+      - path: default rig/Hips/Back
+        weight: 0
+      - path: default rig/Hips/Back/Torso
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Arm IK.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Arm IK.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Arm Pole.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Arm Pole.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Neck
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Neck/Head
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L/Finger
+          1 Joint 1.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L/Finger
+          1 Joint 1.L/Finger 1 Joint 2.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L/Thumb.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L/Thumb.L/Thumb
+          2.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R/Finger
+          1 Joint 1.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R/Finger
+          1 Joint 1.R/Finger 1 Joint 2.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R/Thumb.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R/Thumb.R/Thumb
+          2.R
+        weight: 0
+      - path: default rig/Hips/Leg 1.L
+        weight: 1
+      - path: default rig/Hips/Leg 1.L/Leg 2.L
+        weight: 1
+      - path: default rig/Hips/Leg 1.L/Leg 2.L/Foot.L
+        weight: 1
+      - path: default rig/Hips/Leg 1.R
+        weight: 1
+      - path: default rig/Hips/Leg 1.R/Leg 2.R
+        weight: 1
+      - path: default rig/Hips/Leg 1.R/Leg 2.R/Foot.R
+        weight: 1
+      - path: default rig/Leg IK.L
+        weight: 1
+      - path: default rig/Leg IK.L/Leg Pole.L
+        weight: 1
+      - path: default rig/Leg IK.R
+        weight: 1
+      - path: default rig/Leg IK.R/Leg Pole.R
+        weight: 1
+      - path: head
+        weight: 0
+      - path: helmet
+        weight: 0
+      - path: rocket launcher--
+        weight: 0
+      maskType: 1
+      maskSource: {fileID: 31900000, guid: 280e1961a19aadd4bbca3655f959d898, type: 2}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: default rig|Crouch walk right
+      takeName: default rig|Crouch walk right
+      firstFrame: 0
+      lastFrame: 30
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000000000000000000001000000010000000000000000000000000000000000000001000000010000000000000000000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: armor
+        weight: 1
+      - path: body
+        weight: 1
+      - path: default rig
+        weight: 1
+      - path: default rig/Hand hold.L
+        weight: 0
+      - path: default rig/Hand hold.R
+        weight: 0
+      - path: default rig/Hips
+        weight: 1
+      - path: default rig/Hips/Back
+        weight: 0
+      - path: default rig/Hips/Back/Torso
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Arm IK.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Arm IK.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Arm Pole.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Arm Pole.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Neck
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Neck/Head
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L/Finger
+          1 Joint 1.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L/Finger
+          1 Joint 1.L/Finger 1 Joint 2.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L/Thumb.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L/Thumb.L/Thumb
+          2.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R/Finger
+          1 Joint 1.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R/Finger
+          1 Joint 1.R/Finger 1 Joint 2.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R/Thumb.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R/Thumb.R/Thumb
+          2.R
+        weight: 0
+      - path: default rig/Hips/Leg 1.L
+        weight: 1
+      - path: default rig/Hips/Leg 1.L/Leg 2.L
+        weight: 1
+      - path: default rig/Hips/Leg 1.L/Leg 2.L/Foot.L
+        weight: 1
+      - path: default rig/Hips/Leg 1.R
+        weight: 1
+      - path: default rig/Hips/Leg 1.R/Leg 2.R
+        weight: 1
+      - path: default rig/Hips/Leg 1.R/Leg 2.R/Foot.R
+        weight: 1
+      - path: default rig/Leg IK.L
+        weight: 1
+      - path: default rig/Leg IK.L/Leg Pole.L
+        weight: 1
+      - path: default rig/Leg IK.R
+        weight: 1
+      - path: default rig/Leg IK.R/Leg Pole.R
+        weight: 1
+      - path: head
+        weight: 0
+      - path: helmet
+        weight: 0
+      - path: rocket launcher--
+        weight: 0
+      maskType: 1
+      maskSource: {fileID: 31900000, guid: 280e1961a19aadd4bbca3655f959d898, type: 2}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: default rig|Crouch walk.002
+      takeName: default rig|Crouch walk.002
+      firstFrame: 0
+      lastFrame: 40
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: default rig|Idle
+      takeName: default rig|Idle
+      firstFrame: 0
+      lastFrame: 1
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: default rig|Idle upper body only
+      takeName: default rig|Idle upper body only
+      firstFrame: 0
+      lastFrame: 1
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: default rig|Idle upper body only front, up and down
+      takeName: default rig|Idle upper body only front, up and down
+      firstFrame: 0
+      lastFrame: 59
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: default rig|Idle upper body only up
+      takeName: default rig|Idle upper body only up
+      firstFrame: 0
+      lastFrame: 1
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: default rig|Jump
+      takeName: default rig|Jump
+      firstFrame: 0
+      lastFrame: 50
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: default rig|run backwards
+      takeName: default rig|run backwards
+      firstFrame: 0
+      lastFrame: 20
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: default rig|run forward
+      takeName: default rig|run forward
+      firstFrame: 0
+      lastFrame: 20
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: default rig|run left
+      takeName: default rig|run left
+      firstFrame: 0
+      lastFrame: 15
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: default rig|run right
+      takeName: default rig|run right
+      firstFrame: 0
+      lastFrame: 15
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Jump
+      takeName: default rig|Jump
+      firstFrame: 10
+      lastFrame: 14
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000000000000000000001000000010000000000000000000000000000000000000001000000010000000000000000000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: armor
+        weight: 1
+      - path: body
+        weight: 1
+      - path: default rig
+        weight: 1
+      - path: default rig/Hand hold.L
+        weight: 0
+      - path: default rig/Hand hold.L/Hand hold.L_end
+        weight: 0
+      - path: default rig/Hand hold.R
+        weight: 0
+      - path: default rig/Hand hold.R/Hand hold.R_end
+        weight: 0
+      - path: default rig/Hips
+        weight: 0
+      - path: default rig/Hips/Back
+        weight: 0
+      - path: default rig/Hips/Back/Torso
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Arm IK.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Arm IK.L/Arm IK.L_end
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Arm IK.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Arm IK.R/Arm IK.R_end
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Arm Pole.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Arm Pole.L/Arm Pole.L_end
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Arm Pole.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Arm Pole.R/Arm Pole.R_end
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Neck
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Neck/Head
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Neck/Head/Head_end
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L/Finger
+          1 Joint 1.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L/Finger
+          1 Joint 1.L/Finger 1 Joint 2.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L/Finger
+          1 Joint 1.L/Finger 1 Joint 2.L/Finger 1 Joint 2.L_end
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L/Thumb.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L/Thumb.L/Thumb
+          2.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L/Thumb.L/Thumb
+          2.L/Thumb 2.L_end
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R/Finger
+          1 Joint 1.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R/Finger
+          1 Joint 1.R/Finger 1 Joint 2.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R/Finger
+          1 Joint 1.R/Finger 1 Joint 2.R/Finger 1 Joint 2.R_end
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R/Thumb.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R/Thumb.R/Thumb
+          2.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R/Thumb.R/Thumb
+          2.R/Thumb 2.R_end
+        weight: 0
+      - path: default rig/Hips/Leg 1.L
+        weight: 1
+      - path: default rig/Hips/Leg 1.L/Leg 2.L
+        weight: 1
+      - path: default rig/Hips/Leg 1.L/Leg 2.L/Foot.L
+        weight: 1
+      - path: default rig/Hips/Leg 1.L/Leg 2.L/Foot.L/Foot.L_end
+        weight: 1
+      - path: default rig/Hips/Leg 1.R
+        weight: 1
+      - path: default rig/Hips/Leg 1.R/Leg 2.R
+        weight: 1
+      - path: default rig/Hips/Leg 1.R/Leg 2.R/Foot.R
+        weight: 1
+      - path: default rig/Hips/Leg 1.R/Leg 2.R/Foot.R/Foot.R_end
+        weight: 1
+      - path: default rig/Leg IK.L
+        weight: 1
+      - path: default rig/Leg IK.L/Leg Pole.L
+        weight: 1
+      - path: default rig/Leg IK.L/Leg Pole.L/Leg Pole.L_end
+        weight: 1
+      - path: default rig/Leg IK.R
+        weight: 1
+      - path: default rig/Leg IK.R/Leg Pole.R
+        weight: 1
+      - path: default rig/Leg IK.R/Leg Pole.R/Leg Pole.R_end
+        weight: 1
+      - path: head
+        weight: 0
+      - path: helmet
+        weight: 0
+      - path: rocket launcher--
+        weight: 0
+      maskType: 1
+      maskSource: {fileID: 31900000, guid: 280e1961a19aadd4bbca3655f959d898, type: 2}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Mid-Air
+      takeName: default rig|Jump
+      firstFrame: 16
+      lastFrame: 40
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000000000000000000001000000010000000000000000000000000000000000000001000000010000000000000000000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: armor
+        weight: 1
+      - path: body
+        weight: 1
+      - path: default rig
+        weight: 1
+      - path: default rig/Hand hold.L
+        weight: 0
+      - path: default rig/Hand hold.R
+        weight: 0
+      - path: default rig/Hips
+        weight: 1
+      - path: default rig/Hips/Back
+        weight: 0
+      - path: default rig/Hips/Back/Torso
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Arm IK.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Arm IK.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Arm Pole.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Arm Pole.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Neck
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Neck/Head
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L/Finger
+          1 Joint 1.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L/Finger
+          1 Joint 1.L/Finger 1 Joint 2.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L/Thumb.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L/Thumb.L/Thumb
+          2.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R/Finger
+          1 Joint 1.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R/Finger
+          1 Joint 1.R/Finger 1 Joint 2.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R/Thumb.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R/Thumb.R/Thumb
+          2.R
+        weight: 0
+      - path: default rig/Hips/Leg 1.L
+        weight: 1
+      - path: default rig/Hips/Leg 1.L/Leg 2.L
+        weight: 1
+      - path: default rig/Hips/Leg 1.L/Leg 2.L/Foot.L
+        weight: 1
+      - path: default rig/Hips/Leg 1.R
+        weight: 1
+      - path: default rig/Hips/Leg 1.R/Leg 2.R
+        weight: 1
+      - path: default rig/Hips/Leg 1.R/Leg 2.R/Foot.R
+        weight: 1
+      - path: default rig/Leg IK.L
+        weight: 1
+      - path: default rig/Leg IK.L/Leg Pole.L
+        weight: 1
+      - path: default rig/Leg IK.R
+        weight: 1
+      - path: default rig/Leg IK.R/Leg Pole.R
+        weight: 1
+      - path: head
+        weight: 0
+      - path: helmet
+        weight: 0
+      - path: rocket launcher--
+        weight: 0
+      maskType: 1
+      maskSource: {fileID: 31900000, guid: 280e1961a19aadd4bbca3655f959d898, type: 2}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Land
+      takeName: crouch to stand R
+      firstFrame: 0
+      lastFrame: 75
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: armor
+        weight: 1
+      - path: body
+        weight: 1
+      - path: default rig
+        weight: 1
+      - path: default rig/Hand hold.L
+        weight: 0
+      - path: default rig/Hand hold.R
+        weight: 0
+      - path: default rig/Hips
+        weight: 1
+      - path: default rig/Hips/Back
+        weight: 0
+      - path: default rig/Hips/Back/Torso
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Arm IK.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Arm IK.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Arm Pole.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Arm Pole.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Neck
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Neck/Head
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L/Finger
+          1 Joint 1.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L/Finger
+          1 Joint 1.L/Finger 1 Joint 2.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L/Thumb.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L/Thumb.L/Thumb
+          2.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R/Finger
+          1 Joint 1.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R/Finger
+          1 Joint 1.R/Finger 1 Joint 2.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R/Thumb.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R/Thumb.R/Thumb
+          2.R
+        weight: 0
+      - path: default rig/Hips/Leg 1.L
+        weight: 1
+      - path: default rig/Hips/Leg 1.L/Leg 2.L
+        weight: 1
+      - path: default rig/Hips/Leg 1.L/Leg 2.L/Foot.L
+        weight: 1
+      - path: default rig/Hips/Leg 1.R
+        weight: 1
+      - path: default rig/Hips/Leg 1.R/Leg 2.R
+        weight: 1
+      - path: default rig/Hips/Leg 1.R/Leg 2.R/Foot.R
+        weight: 1
+      - path: default rig/Leg IK.L
+        weight: 1
+      - path: default rig/Leg IK.L/Leg Pole.L
+        weight: 1
+      - path: default rig/Leg IK.R
+        weight: 1
+      - path: default rig/Leg IK.R/Leg Pole.R
+        weight: 1
+      - path: head
+        weight: 0
+      - path: helmet
+        weight: 0
+      - path: rocket launcher--
+        weight: 0
+      maskType: 3
+      maskSource: {fileID: 31900000, guid: 280e1961a19aadd4bbca3655f959d898, type: 2}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Look Up
+      takeName: default rig|Idle upper body only front, up and down
+      firstFrame: 20
+      lastFrame: 21
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 00000000010000000100000000000000000000000100000001000000010000000100000000000000000000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: armor
+        weight: 0
+      - path: body
+        weight: 0
+      - path: default rig
+        weight: 1
+      - path: default rig/Hand hold.L
+        weight: 0
+      - path: default rig/Hand hold.R
+        weight: 0
+      - path: default rig/Hips
+        weight: 1
+      - path: default rig/Hips/Back
+        weight: 1
+      - path: default rig/Hips/Back/Torso
+        weight: 1
+      - path: default rig/Hips/Back/Torso/Arm IK.L
+        weight: 1
+      - path: default rig/Hips/Back/Torso/Arm IK.R
+        weight: 1
+      - path: default rig/Hips/Back/Torso/Arm Pole.L
+        weight: 1
+      - path: default rig/Hips/Back/Torso/Arm Pole.R
+        weight: 1
+      - path: default rig/Hips/Back/Torso/Neck
+        weight: 1
+      - path: default rig/Hips/Back/Torso/Neck/Head
+        weight: 1
+      - path: default rig/Hips/Back/Torso/Shoulder.L
+        weight: 1
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L
+        weight: 1
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L
+        weight: 1
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L
+        weight: 1
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L/Finger
+          1 Joint 1.L
+        weight: 1
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L/Finger
+          1 Joint 1.L/Finger 1 Joint 2.L
+        weight: 1
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L/Thumb.L
+        weight: 1
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L/Thumb.L/Thumb
+          2.L
+        weight: 1
+      - path: default rig/Hips/Back/Torso/Shoulder.R
+        weight: 1
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R
+        weight: 1
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R
+        weight: 1
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R
+        weight: 1
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R/Finger
+          1 Joint 1.R
+        weight: 1
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R/Finger
+          1 Joint 1.R/Finger 1 Joint 2.R
+        weight: 1
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R/Thumb.R
+        weight: 1
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R/Thumb.R/Thumb
+          2.R
+        weight: 1
+      - path: default rig/Hips/Leg 1.L
+        weight: 1
+      - path: default rig/Hips/Leg 1.L/Leg 2.L
+        weight: 1
+      - path: default rig/Hips/Leg 1.L/Leg 2.L/Foot.L
+        weight: 1
+      - path: default rig/Hips/Leg 1.R
+        weight: 1
+      - path: default rig/Hips/Leg 1.R/Leg 2.R
+        weight: 1
+      - path: default rig/Hips/Leg 1.R/Leg 2.R/Foot.R
+        weight: 1
+      - path: default rig/Leg IK.L
+        weight: 0
+      - path: default rig/Leg IK.L/Leg Pole.L
+        weight: 0
+      - path: default rig/Leg IK.R
+        weight: 0
+      - path: default rig/Leg IK.R/Leg Pole.R
+        weight: 0
+      - path: head
+        weight: 1
+      - path: helmet
+        weight: 1
+      - path: rocket launcher--
+        weight: 1
+      maskType: 1
+      maskSource: {fileID: 31900000, guid: 5a3cd897c32d27d4cb7c36c11614169d, type: 2}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Look Down
+      takeName: default rig|Idle upper body only front, up and down
+      firstFrame: 40
+      lastFrame: 41
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 00000000010000000100000000000000000000000100000001000000010000000100000000000000000000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: armor
+        weight: 0
+      - path: body
+        weight: 0
+      - path: default rig
+        weight: 1
+      - path: default rig/Hand hold.L
+        weight: 0
+      - path: default rig/Hand hold.R
+        weight: 0
+      - path: default rig/Hips
+        weight: 1
+      - path: default rig/Hips/Back
+        weight: 1
+      - path: default rig/Hips/Back/Torso
+        weight: 1
+      - path: default rig/Hips/Back/Torso/Arm IK.L
+        weight: 1
+      - path: default rig/Hips/Back/Torso/Arm IK.R
+        weight: 1
+      - path: default rig/Hips/Back/Torso/Arm Pole.L
+        weight: 1
+      - path: default rig/Hips/Back/Torso/Arm Pole.R
+        weight: 1
+      - path: default rig/Hips/Back/Torso/Neck
+        weight: 1
+      - path: default rig/Hips/Back/Torso/Neck/Head
+        weight: 1
+      - path: default rig/Hips/Back/Torso/Shoulder.L
+        weight: 1
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L
+        weight: 1
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L
+        weight: 1
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L
+        weight: 1
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L/Finger
+          1 Joint 1.L
+        weight: 1
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L/Finger
+          1 Joint 1.L/Finger 1 Joint 2.L
+        weight: 1
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L/Thumb.L
+        weight: 1
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L/Thumb.L/Thumb
+          2.L
+        weight: 1
+      - path: default rig/Hips/Back/Torso/Shoulder.R
+        weight: 1
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R
+        weight: 1
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R
+        weight: 1
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R
+        weight: 1
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R/Finger
+          1 Joint 1.R
+        weight: 1
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R/Finger
+          1 Joint 1.R/Finger 1 Joint 2.R
+        weight: 1
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R/Thumb.R
+        weight: 1
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R/Thumb.R/Thumb
+          2.R
+        weight: 1
+      - path: default rig/Hips/Leg 1.L
+        weight: 1
+      - path: default rig/Hips/Leg 1.L/Leg 2.L
+        weight: 1
+      - path: default rig/Hips/Leg 1.L/Leg 2.L/Foot.L
+        weight: 1
+      - path: default rig/Hips/Leg 1.R
+        weight: 1
+      - path: default rig/Hips/Leg 1.R/Leg 2.R
+        weight: 1
+      - path: default rig/Hips/Leg 1.R/Leg 2.R/Foot.R
+        weight: 1
+      - path: default rig/Leg IK.L
+        weight: 0
+      - path: default rig/Leg IK.L/Leg Pole.L
+        weight: 0
+      - path: default rig/Leg IK.R
+        weight: 0
+      - path: default rig/Leg IK.R/Leg Pole.R
+        weight: 0
+      - path: head
+        weight: 1
+      - path: helmet
+        weight: 1
+      - path: rocket launcher--
+        weight: 0
+      maskType: 1
+      maskSource: {fileID: 31900000, guid: 5a3cd897c32d27d4cb7c36c11614169d, type: 2}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Crouch Idle
+      takeName: default rig|crouch to stand L
+      firstFrame: 0
+      lastFrame: 1
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000000000000000000001000000010000000000000000000000000000000000000001000000010000000000000000000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: armor
+        weight: 1
+      - path: body
+        weight: 1
+      - path: default rig
+        weight: 1
+      - path: default rig/Hand hold.L
+        weight: 0
+      - path: default rig/Hand hold.R
+        weight: 0
+      - path: default rig/Hips
+        weight: 1
+      - path: default rig/Hips/Back
+        weight: 0
+      - path: default rig/Hips/Back/Torso
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Arm IK.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Arm IK.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Arm Pole.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Arm Pole.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Neck
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Neck/Head
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L/Finger
+          1 Joint 1.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L/Finger
+          1 Joint 1.L/Finger 1 Joint 2.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L/Thumb.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L/Thumb.L/Thumb
+          2.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R/Finger
+          1 Joint 1.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R/Finger
+          1 Joint 1.R/Finger 1 Joint 2.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R/Thumb.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R/Thumb.R/Thumb
+          2.R
+        weight: 0
+      - path: default rig/Hips/Leg 1.L
+        weight: 1
+      - path: default rig/Hips/Leg 1.L/Leg 2.L
+        weight: 1
+      - path: default rig/Hips/Leg 1.L/Leg 2.L/Foot.L
+        weight: 1
+      - path: default rig/Hips/Leg 1.R
+        weight: 1
+      - path: default rig/Hips/Leg 1.R/Leg 2.R
+        weight: 1
+      - path: default rig/Hips/Leg 1.R/Leg 2.R/Foot.R
+        weight: 1
+      - path: default rig/Leg IK.L
+        weight: 1
+      - path: default rig/Leg IK.L/Leg Pole.L
+        weight: 1
+      - path: default rig/Leg IK.R
+        weight: 1
+      - path: default rig/Leg IK.R/Leg Pole.R
+        weight: 1
+      - path: head
+        weight: 0
+      - path: helmet
+        weight: 0
+      - path: rocket launcher--
+        weight: 0
+      maskType: 1
+      maskSource: {fileID: 31900000, guid: 280e1961a19aadd4bbca3655f959d898, type: 2}
+      additiveReferencePoseFrame: 0
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 0.1
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 0
+    importBlendShapes: 1
+    importCameras: 0
+    importLights: 0
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 1
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
