@@ -98,7 +98,6 @@ namespace vnc.Samples
                 animHorizontal = Mathf.Lerp(animHorizontal, retroController.inputDir.x, Time.deltaTime * animDelta);
                 animVertical = Mathf.Lerp(animVertical, retroController.inputDir.y, Time.deltaTime * animDelta);
 
-                float mag = retroController.Velocity.magnitude / retroController.Profile.MaxGroundSpeed;
                 playerAnimator.SetFloat("Horizontal", animHorizontal);
                 playerAnimator.SetFloat("Vertical", FixSmallValues(animVertical));
                 playerAnimator.SetFloat("Speed", Mathf.Clamp(retroController.Velocity.magnitude, 1, 3));

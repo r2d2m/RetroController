@@ -11,7 +11,6 @@ namespace vnc.Editor
     {
         SerializedProperty profile;
         SerializedProperty view;
-        SerializedProperty state;
 
         SerializedProperty retroMovements;
         SerializedProperty autoFillMovements;
@@ -26,7 +25,6 @@ namespace vnc.Editor
         {
             profile = serializedObject.FindProperty("Profile");
             view = serializedObject.FindProperty("controllerView");
-            state = serializedObject.FindProperty("_state");
             autoFillMovements = serializedObject.FindProperty("autoFillMovements");
             retroMovements = serializedObject.FindProperty("retroMovements");
             movementsList = new ReorderableList(serializedObject, retroMovements);

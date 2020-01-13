@@ -20,13 +20,7 @@ namespace vnc.Samples
         [Space]
         public Transform m_camera;
         public Animator _animator;
-        Collider _collider;
-
-        void Start()
-        {
-            _collider = GetComponent<Collider>();
-        }
-
+        
         void Update()
         {
             if (Input.GetMouseButton(0) && retroController.updateController)

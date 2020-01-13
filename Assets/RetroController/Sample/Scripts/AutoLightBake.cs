@@ -15,14 +15,30 @@ public class AutoLightBake : MonoBehaviour
                 "bake the lightmap. Do you wanna do this automatically?";
             if (EditorUtility.DisplayDialog("Lightmap Bake", message, "Yes", "No"))
             {
+                LightmapEditorSettings.textureCompression = false;
+#if UNITY_2019_2_OR_NEWER
+                LightmapEditorSettings.lightmapper = LightmapEditorSettings.Lightmapper.ProgressiveCPU;
+                Lightmapping.bakeCompleted += () =>
+                {
+                    EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
+                };
+
+#else
                 Lightmapping.completed = () =>
                 {
                     EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
                 };
 
+#endif
                 Lightmapping.Bake();
             }
         }
     }
+
+    bool Is2019_2Plus(string version)
+    {
+        return version.StartsWith("2019.2") || version.StartsWith("2019.3");
+    }
+
 }
 #endif

@@ -79,7 +79,7 @@ namespace vnc
         public bool OnPlatform { get { return (State & CC_State.OnPlatform) != 0; } }
         public bool OnLadder { get { return (State & CC_State.OnLadder) != 0; } }
         public bool IsDucking { get { return (State & CC_State.Ducking) != 0; } }
-        public bool WalkedOnStep { get { return HasCollisionFlag(CC_Collision.CollisionStep); } }
+        public bool WalkedOnStep { get { return HasCollision(CC_Collision.CollisionStep); } }
         public bool NoClipping
         {
             get { return HasState(CC_State.NoClip); }
@@ -302,7 +302,7 @@ namespace vnc
         protected virtual void GroundMovementUpdate()
         {
             // reset the grounded state
-            if (HasCollisionFlag(CC_Collision.CollisionBelow))
+            if (HasCollision(CC_Collision.CollisionBelow))
                 AddState(CC_State.IsGrounded);
             else
                 RemoveState(CC_State.IsGrounded);
@@ -414,7 +414,7 @@ namespace vnc
         /// </summary>
         protected virtual void LadderMovementUpdate()
         {
-            if (HasCollisionFlag(CC_Collision.CollisionBelow))
+            if (HasCollision(CC_Collision.CollisionBelow))
                 AddState(CC_State.IsGrounded);
             else
                 RemoveState(CC_State.IsGrounded);
@@ -715,7 +715,7 @@ namespace vnc
             SetWaterLevel();
 
             // extra check to detect ground
-            if (!(HasCollisionFlag(CC_Collision.CollisionBelow)))
+            if (!(HasCollision(CC_Collision.CollisionBelow)))
                 DetectGround();
         }
 
@@ -871,7 +871,7 @@ namespace vnc
             horizontalVel.y = 0;
 
             // Check if the player is in the border of the water, give it a little push
-            if (HasCollisionFlag(CC_Collision.CollisionSides)
+            if (HasCollision(CC_Collision.CollisionSides)
                 && Swim > 0
                 && WaterState == CC_Water.Partial
                 && Vector3.Dot(normal, horizontalVel) < -0.8f)
