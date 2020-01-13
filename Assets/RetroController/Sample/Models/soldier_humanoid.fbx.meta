@@ -1471,9 +1471,9 @@ ModelImporter:
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
       name: Land
-      takeName: crouch to stand R
-      firstFrame: 0
-      lastFrame: 75
+      takeName: default rig|Jump
+      firstFrame: 40.2
+      lastFrame: 50
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -1490,7 +1490,7 @@ ModelImporter:
       keepOriginalPositionXZ: 0
       heightFromFeet: 0
       mirror: 0
-      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      bodyMask: 01000000000000000000000001000000010000000000000000000000000000000000000001000000010000000000000000000000
       curves: []
       events: []
       transformMask:
@@ -1588,7 +1588,7 @@ ModelImporter:
         weight: 0
       - path: rocket launcher--
         weight: 0
-      maskType: 3
+      maskType: 1
       maskSource: {fileID: 31900000, guid: 280e1961a19aadd4bbca3655f959d898, type: 2}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
