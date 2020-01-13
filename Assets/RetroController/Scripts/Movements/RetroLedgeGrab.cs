@@ -5,12 +5,12 @@ namespace vnc.Movements
 {
     public class RetroLedgeGrab : RetroMovement
     {
-        public float UpOffset = 0.7f;
-        public float ForwardOffset = 0.7f;
-        public float ClimbSpeed = 3f;
+        public float UpOffset = 0.7f;               // offset for checking 
+        public float ForwardOffset = 0.7f;          // offset for checking 
+        public float ClimbSpeed = 3f;               // how fast it will climb
         public float UnclimbDistance = 0.1f;
-        [HideInInspector] public bool ClimbInput;
-        public Vector3 contactExtension;
+        public float climbDelay = 0.1f;             // delay after grabbing ledge
+        float climbTimer = 0;
 
         private Vector3 projectedCenter;
         private Collider[] overlapingColliders = new Collider[4];
@@ -27,29 +27,25 @@ namespace vnc.Movements
         {
             OnLedge = false;
         }
-
-        private void Update()
-        {
-            ClimbInput = Input.GetKey(KeyCode.Space);
-        }
-
+        
         #region Override
         public override bool DoMovement()
         {
             switch (movementState)
             {
                 case MovementState.None:
-                    if (ClimbInput && OnLedge)
+                    if (OnLedge && retroController.WalkForward > 0) // intention to keep going forward
                     {
                         // grab ledge
                         movementState = MovementState.Grabbing;
                         retroController.AddIgnoredCollider(GrabbingTarget);
                         localEndPoint = GrabbingTarget.transform.InverseTransformPoint(ClimbingTarget());
+                        climbTimer = Time.time + climbDelay;
                         return true;
                     }
                     return false;
                 case MovementState.Grabbing:
-                    if (retroController.JumpInput)
+                    if (Time.time > climbTimer)
                     {
                         // start climbing
                         movementState = MovementState.Climbing;
@@ -63,7 +59,7 @@ namespace vnc.Movements
                 case MovementState.Climbing:
 
                     Vector3 worldEndPoint = GrabbingTarget.transform.TransformPoint(localEndPoint);
-                    Vector3 nextPosition = Vector3.LerpUnclamped(
+                    Vector3 nextPosition = Vector3.MoveTowards(
                         retroController.transform.position,
                         worldEndPoint,
                         ClimbSpeed * Time.fixedDeltaTime);
@@ -90,8 +86,8 @@ namespace vnc.Movements
                 || movementState != MovementState.None)
                 return;
 
-            if (!DetectSurfaceArea())
-                return;
+            //if (!DetectSurfaceArea())
+            //    return;
 
             if (!OnLedge)
                 OnDetectLedge();
@@ -171,12 +167,6 @@ namespace vnc.Movements
             return center;
         }
 
-        public bool DetectSurfaceArea()
-        {
-            return Physics.CheckBox(transform.position + transform.forward, contactExtension, transform.rotation,
-                retroController.Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
-        }
-
         private void OnDrawGizmos()
         {
             if (retroController == null)
@@ -184,7 +174,7 @@ namespace vnc.Movements
             
             if (Application.isPlaying)
             {
-                Gizmos.color = Color.cyan;
+                Gizmos.color = Color.magenta;
                 RetroControllerProfile profile = retroController.Profile;
                 Gizmos.DrawCube(projectedCenter, profile.Size);
 
@@ -200,6 +190,11 @@ namespace vnc.Movements
         }
 
         public enum MovementState { None, Grabbing, Climbing }
+
+        private void OnGUI()
+        {
+            GUI.Label(new Rect(0, 0, 100, 100), movementState.ToString());
+        }
     }
 
 }
