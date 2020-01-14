@@ -11,8 +11,8 @@ public class Teleporter : MonoBehaviour {
     {
         if(other.gameObject.CompareTag("Player"))
         {
-            other.transform.position = destination.position;
             var retrocontroller = other.GetComponent<RetroController>();
+            retrocontroller.TeleportTo(destination.position);
             retrocontroller.Velocity = Vector3.zero;
         }
         

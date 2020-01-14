@@ -7,7 +7,13 @@ namespace vnc
     /// </summary>
     public abstract class RetroMovement : MonoBehaviour
     {
-        public bool isActive = true;
+        [SerializeField]
+        bool isActive = true;
+        public bool IsActive
+        {
+            get { return isActive; }
+            set { isActive = value; }
+        }
 
         protected RetroController retroController;
 

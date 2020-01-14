@@ -12,7 +12,8 @@ namespace vnc.Samples
 
         private void Update()
         {
-            rotatedMesh.localEulerAngles += Vector3.up * rotationSpeed * Time.deltaTime;
+            if(rotatedMesh)
+                rotatedMesh.localEulerAngles += Vector3.up * rotationSpeed * Time.deltaTime;
         }
 
         public void WriteMessage()

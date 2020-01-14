@@ -102,12 +102,15 @@ namespace vnc.Samples
 
         private void OnDrawGizmosSelected()
         {
-            Gizmos.color = Color.green;
-            for (int i = 0; i < points.Length; i++)
+            if (points != null)
             {
-                Gizmos.DrawSphere(points[i], 1f);
-                if (i > 0)
-                    Gizmos.DrawLine(points[i], points[i - 1]);
+                Gizmos.color = Color.green;
+                for (int i = 0; i < points.Length; i++)
+                {
+                    Gizmos.DrawSphere(points[i], 1f);
+                    if (i > 0)
+                        Gizmos.DrawLine(points[i], points[i - 1]);
+                }
             }
         }
     }

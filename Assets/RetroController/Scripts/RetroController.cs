@@ -170,7 +170,7 @@ namespace vnc
                 int index = 0;
                 while (!isDone && index < retroMovements.Length)
                 {
-                    if (retroMovements[index].isActive)
+                    if (retroMovements[index].IsActive)
                         isDone = retroMovements[index].DoMovement();
 
                     index++;
@@ -706,7 +706,7 @@ namespace vnc
             {
                 // execute the necessary checks for custom movements
                 for (int i = 0; i < retroMovements.Length; i++)
-                    if (retroMovements[i].isActive)
+                    if (retroMovements[i].IsActive)
                         retroMovements[i].OnCharacterMove();
             }
 
