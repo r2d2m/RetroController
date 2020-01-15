@@ -113,10 +113,10 @@ namespace vnc.Development
                 gunCamera.enabled = retroLedgeGrab.movementState == RetroLedgeGrab.MovementState.None;
 
 
-            DebugGUI.LogPersistent("velocity", "Velocity: " + retroController.Velocity);
-            Vector2 XZ = new Vector2(retroController.Velocity.x, retroController.Velocity.z);
-            DebugGUI.LogPersistent("velocity_magnitude", "XZ Magnitude: " + XZ.magnitude);
-            DebugGUI.LogPersistent("onground", "Is Grounded: " + retroController.IsGrounded);
+            //DebugGUI.LogPersistent("velocity", "Velocity: " + retroController.Velocity);
+            //Vector2 XZ = new Vector2(retroController.Velocity.x, retroController.Velocity.z);
+            //DebugGUI.LogPersistent("velocity_magnitude", "XZ Magnitude: " + XZ.magnitude);
+            //DebugGUI.LogPersistent("onground", "Is Grounded: " + retroController.IsGrounded);
 
         }
 

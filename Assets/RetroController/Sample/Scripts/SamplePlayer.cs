@@ -35,10 +35,6 @@ namespace vnc.Samples
                 {
                     playerAnimator.SetTrigger("Jump");
                 });
-                //retroController.OnLandingCallback.AddListener(() =>
-                //{
-                //    playerAnimator.SetTrigger("Land");
-                //});
             }
         }
 

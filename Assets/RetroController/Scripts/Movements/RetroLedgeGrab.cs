@@ -113,7 +113,7 @@ namespace vnc.Movements
                 {
                     float dot = Vector3.Dot(hit.normal, Vector3.up);
                     float slopeDot = (profile.SlopeAngleLimit / 90f);
-                    if (dot > slopeDot && dot <= 1)
+                    if (dot > slopeDot)
                     {
                         retroController.CheckPlatform(hit.collider);
                         OnLedge = true;
@@ -190,11 +190,6 @@ namespace vnc.Movements
         }
 
         public enum MovementState { None, Grabbing, Climbing }
-
-        private void OnGUI()
-        {
-            GUI.Label(new Rect(0, 0, 100, 100), movementState.ToString());
-        }
     }
 
 }
