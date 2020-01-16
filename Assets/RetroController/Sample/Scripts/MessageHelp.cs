@@ -9,6 +9,8 @@ namespace vnc.Samples
         [Space]
         public Transform rotatedMesh;
         public float rotationSpeed = 6;
+        public float delay = 10;
+        float timer = 0;
 
         private void Update()
         {
@@ -18,7 +20,11 @@ namespace vnc.Samples
 
         public void WriteMessage()
         {
-            SampleUI.Instance.Write(m_message);
+            if(Time.time > timer)
+            {
+                SampleUI.Instance.Write(m_message);
+                timer = Time.time + delay;
+            }
         }
     }
 }

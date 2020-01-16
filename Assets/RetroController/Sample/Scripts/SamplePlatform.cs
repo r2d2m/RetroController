@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using vnc.Movements;
 //using vnc.Movements;
 
 namespace vnc.Samples
@@ -11,7 +12,7 @@ namespace vnc.Samples
     public class SamplePlatform : MonoBehaviour
     {
         RetroController player;
-        //RetroLedgeGrab retroLedgeGrab;
+        RetroLedgeGrab retroLedgeGrab;
         Rigidbody _rigidbody;
         Collider _collider;
 
@@ -31,6 +32,8 @@ namespace vnc.Samples
 
             if (player == null)
                 Debug.LogWarning("No Retro Controller Player assigned to platform " + name);
+            else
+                retroLedgeGrab = player.GetComponentInChildren<RetroLedgeGrab>();
 
             _rigidbody = GetComponent<Rigidbody>();
             if (_rigidbody == null)
@@ -89,13 +92,13 @@ namespace vnc.Samples
 
                 return player.CurrentPlatform.Equals(_collider);
             }
-            //else if (retroLedgeGrab != null)
-            //{
-            //    if (retroLedgeGrab.OnLedge && retroLedgeGrab != null)
-            //    {
-            //        return retroLedgeGrab.GrabbingTarget.gameObject.Equals(gameObject);
-            //    }
-            //}
+            else if (retroLedgeGrab != null)
+            {
+                if (retroLedgeGrab.OnLedge && retroLedgeGrab != null)
+                {
+                    return retroLedgeGrab.GrabbingTarget.gameObject.Equals(gameObject);
+                }
+            }
 
             return false;
         }

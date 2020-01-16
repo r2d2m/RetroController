@@ -44,7 +44,7 @@ public class ChangelogWindow : EditorWindow
         changelogText = Resources.Load<TextAsset>("retrocontroller_changelog");
         versionText = Resources.Load<TextAsset>("retrocontroller_version");
 
-        minSize = new Vector2(600, 400);
+        minSize = new Vector2(600, 600);
         maxSize = new Vector2(600, 800);
     }
 
