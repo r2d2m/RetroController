@@ -1,4 +1,5 @@
 using UnityEngine;
+using vnc.Utils;
 
 namespace vnc.Samples
 {
@@ -18,19 +19,21 @@ namespace vnc.Samples
         public float cameraKickoffsetWindow;
         public float cameraKickSpeed = 10;
 
-        private Rigidbody characterRigidbody;
+        private RetroController characterController;
         private Transform characterCamera;
 
         private Quaternion m_CharacterTargetRot;
         private Quaternion m_CameraTargetRot;
         private float kick = 0;
 
+        private float yRot = 0;
+
         public void Init(RetroController character, Transform camera)
         {
-            characterRigidbody = character.GetComponent<Rigidbody>();
+            characterController = character;
             characterCamera = camera;
 
-            m_CharacterTargetRot = characterRigidbody.rotation;
+            m_CharacterTargetRot = characterController.transform.localRotation;
             m_CameraTargetRot = camera.localRotation;
         }
 
@@ -42,10 +45,10 @@ namespace vnc.Samples
             kick -= (Time.deltaTime * cameraKickSpeed);
             kick = Mathf.Clamp(kick, 0, cameraKickOffset);
 
-            float yRot = Input.GetAxis("Mouse X") * mouseSensitivity;
+            yRot += Input.GetAxis("Mouse X") * mouseSensitivity;
             float xRot = Input.GetAxis("Mouse Y") * mouseSensitivity;
 
-            m_CharacterTargetRot *= Quaternion.Euler(0f, yRot, 0f);
+            m_CharacterTargetRot = AlignWithAxis() * Quaternion.Euler(0, yRot, 0);
             m_CameraTargetRot *= Quaternion.Euler(-xRot, 0f, 0f);
 
             if (clampVerticalRotation)
@@ -53,14 +56,14 @@ namespace vnc.Samples
 
             if (smooth)
             {
-                characterRigidbody.MoveRotation(Quaternion.Slerp(characterRigidbody.rotation, m_CharacterTargetRot,
-                    smoothTime * Time.deltaTime));
+                characterController.transform.localRotation = Quaternion.Slerp(characterController.transform.rotation, m_CharacterTargetRot,
+                    smoothTime * Time.deltaTime);
                 characterCamera.localRotation = Quaternion.Slerp(characterCamera.localRotation, m_CameraTargetRot,
                     smoothTime * Time.deltaTime);
             }
             else
             {
-                characterRigidbody.MoveRotation(m_CharacterTargetRot);
+                characterController.transform.localRotation = m_CharacterTargetRot;
                 characterCamera.localRotation = m_CameraTargetRot;
 
                 if (cameraKick)
@@ -104,6 +107,14 @@ namespace vnc.Samples
             q.x = Mathf.Tan(0.5f * Mathf.Deg2Rad * angleX);
 
             return q;
+        }
+
+        Quaternion AlignWithAxis()
+        {
+            var s = Mathf.Sin(Mathf.PI / 4);
+            var c = Mathf.Cos(Mathf.PI / 4);
+            var gravity = characterController.currentGravityAxis;
+            return new Quaternion(gravity.z * s, gravity.y * s, -gravity.x * s, c);
         }
     }
 }

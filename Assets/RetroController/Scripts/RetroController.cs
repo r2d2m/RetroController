@@ -90,6 +90,7 @@ namespace vnc
             }
         }
         public SurfaceNormals surfaceNormals = new SurfaceNormals();
+        public Vector3Int currentGravityAxis = Vector3Int.up;
         #endregion
 
         // Water
@@ -340,7 +341,8 @@ namespace vnc
                 // normal jump, it's on the ground
                 if (IsGrounded || jumpGraceTimer > 0)
                 {
-                    Velocity.y += Profile.JumpSpeed;
+                    //Velocity.y += Profile.JumpSpeed;
+                    Velocity += currentGravityAxis.FromInt() * Profile.JumpSpeed;
                     TriedJumping = 0;
                     jumpGraceTimer = 0;
                     sprintJump = Sprint;
@@ -381,7 +383,7 @@ namespace vnc
             // player moved the character
             var walk = inputDir.y * controllerView.forward;
             var strafe = inputDir.x * transform.TransformDirection(Vector3.right);
-            wishDir = (walk + strafe) + (Vector3.up * Swim);
+            wishDir = (walk + strafe) + (currentGravityAxis.FromInt() * Swim);
             wishDir.Normalize();
 
             TriedJumping = 0;   // ignores jumping on water
@@ -399,7 +401,7 @@ namespace vnc
             // player moved the character
             var walk = inputDir.y * controllerView.transform.forward;
             var strafe = inputDir.x * transform.TransformDirection(Vector3.right);
-            wishDir = (walk + strafe) + (Vector3.up * Swim);
+            wishDir = (walk + strafe) + (currentGravityAxis.FromInt() * Swim);
             wishDir.Normalize();
 
             // fall when dead
@@ -448,7 +450,7 @@ namespace vnc
             // Calculate player wish direction
             Vector3 dir = forward + strafe;
 
-            var perp = Vector3.Cross(Vector3.up, surfaceNormals.ladder);
+            var perp = Vector3.Cross(currentGravityAxis, surfaceNormals.ladder);
             perp.Normalize();
             // Perpendicular in the ladder plane
             var climbDirection = Vector3.Cross(surfaceNormals.ladder, perp);
@@ -478,7 +480,7 @@ namespace vnc
         /// <param name="gravityMultiplier"> Use this for different environments, like water. </param>
         public virtual void AddGravity(float multiplier = 1f)
         {
-            Velocity += (Vector3.down * Profile.Gravity * multiplier) * Time.fixedDeltaTime;
+            Velocity += (-currentGravityAxis.FromInt() * Profile.Gravity * multiplier) * Time.fixedDeltaTime;
         }
 
         protected virtual void LimitVerticalSpeed()
@@ -754,7 +756,8 @@ namespace vnc
                 }
                 else
                 {
-                    if (Physics.ComputePenetration(_boxCollider, position, Quaternion.identity,
+                    Quaternion currentAxisRotation = transform.rotation; // AxisAlignedRotation();
+                    if (Physics.ComputePenetration(_boxCollider, position, currentAxisRotation,
                         c, c.transform.position, c.transform.rotation, out penetrationNormal, out dist))
                     {
                         // if this occur, it's a bug in the PhysX engine
@@ -767,13 +770,13 @@ namespace vnc
 
                         dist += Profile.Depenetration;
 
-                        dot = Vector3.Dot(penetrationNormal, Vector3.up);
+                        dot = Vector3.Dot(penetrationNormal, currentGravityAxis);
 
                         // COLLISIONS BELOW
                         if (dot > SlopeDot && dot <= 1)
                         {
                             Collisions |= CC_Collision.CollisionBelow;
-                            position += Vector3.up * dist;
+                            position += currentGravityAxis.FromInt() * dist;
                             surfaceNormals.floor = penetrationNormal;
                             CheckPlatform(c);
                             OnCCHit(penetrationNormal);
@@ -839,7 +842,7 @@ namespace vnc
             IsSwimming = true;
 
             // cast a ray from the sky and detect the topmost point
-            var ray = new Ray(FixedPosition + Vector3.up * 1000f, Vector3.down);
+            var ray = new Ray(FixedPosition + currentGravityAxis.FromInt() * 1000f, Vector3.down);
             RaycastHit hit;
             if (waterCollider.Raycast(ray, out hit, Mathf.Infinity))
             {
@@ -912,16 +915,16 @@ namespace vnc
 
             // cast up
             bool foundUp;
-            foundUp = Physics.BoxCast(center, halfExtends, Vector3.up, out stepHit, Quaternion.identity, Profile.StepOffset,
+            foundUp = Physics.BoxCast(center, halfExtends, currentGravityAxis, out stepHit, Quaternion.identity, Profile.StepOffset,
                 Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
 
             if (foundUp && stepHit.distance > 0)
             {
-                upCenter = center + (Vector3.up * stepHit.distance);
+                upCenter = center + (currentGravityAxis.FromInt() * stepHit.distance);
             }
             else
             {
-                upCenter = center + (Vector3.up * Profile.StepOffset);
+                upCenter = center + (currentGravityAxis.FromInt() * Profile.StepOffset);
             }
 
             // check if it's free
@@ -1024,7 +1027,7 @@ namespace vnc
                 if (Physics.ComputePenetration(_boxCollider, position, transform.rotation,
                         c, c.transform.position, c.transform.rotation, out normal, out distance))
                 {
-                    float dot = Vector3.Dot(normal, Vector3.up);
+                    float dot = Vector3.Dot(normal, currentGravityAxis);
                     float slopeDot = (Profile.SlopeAngleLimit / 90f);
                     if (dot > slopeDot && dot <= 1)
                     {
@@ -1048,7 +1051,7 @@ namespace vnc
             {
                 for (int i = 0; i < n; i++)
                 {
-                    float dot = Vector3.Dot(groundHit[i].normal, Vector3.up);
+                    float dot = Vector3.Dot(groundHit[i].normal, currentGravityAxis);
                     float slopeDot = (Profile.SlopeAngleLimit / 90f);
                     if (dot > slopeDot && dot <= 1)
                     {
@@ -1120,6 +1123,7 @@ namespace vnc
         #endregion
 
         #region Utility
+
         /// <summary>
         /// Prevent Velocity values from losing too
         /// much precision
@@ -1155,7 +1159,7 @@ namespace vnc
             // projects the position of the box collider where the physics 
             // update, taking into account when standing or ducking
             center = FixedPosition + _boxCollider.center + offset;
-            return Physics.OverlapBoxNonAlloc(center, halfExtents, results, Quaternion.identity, layerMask, queryTriggerInteraction);
+            return Physics.OverlapBoxNonAlloc(center, halfExtents, results, orientation, layerMask, queryTriggerInteraction);
         }
 
         /// <summary>
@@ -1313,22 +1317,22 @@ namespace vnc
         #endregion
 
         #region Debug
-        protected virtual void OnDrawGizmos()
-        {
-            if (Profile)
-            {
-                if (Application.isPlaying)
-                {
-                    Gizmos.color = new Color(1f, 0.64f, 0.01f);
-                    Gizmos.DrawWireCube(FixedPosition, Profile.Size);
-                }
-                else
-                {
-                    Gizmos.color = Color.green;
-                    Gizmos.DrawWireCube(transform.position, Profile.Size);
-                }
-            }
-        }
+        //protected virtual void OnDrawGizmos()
+        //{
+        //    if (Profile)
+        //    {
+        //        if (Application.isPlaying)
+        //        {
+        //            Gizmos.color = new Color(1f, 0.64f, 0.01f);
+        //            Gizmos.DrawWireCube(FixedPosition, Profile.Size);
+        //        }
+        //        else
+        //        {
+        //            Gizmos.color = Color.green;
+        //            Gizmos.DrawWireCube(transform.position, Profile.Size);
+        //        }
+        //    }
+        //}
 
         #endregion
     }

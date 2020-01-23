@@ -26,8 +26,15 @@ namespace vnc.Samples
 
         private void Start()
         {
-            mouseLook.Init(retroController, playerView);
-            mouseLook.SetCursorLock(true);
+            if(mouseLook)
+            {
+                mouseLook.Init(retroController, playerView);
+                mouseLook.SetCursorLock(true);
+            }
+            else
+            {
+                Debug.LogWarning("No MouseLook assigned.");
+            }
 
             if (playerAnimator)
             {
@@ -68,15 +75,17 @@ namespace vnc.Samples
             // this is the main entry point for the controller
             retroController.SetInput(fwd, strafe, swim, jump, sprint, duck);
 
-
-            if (Input.GetKeyDown(KeyCode.Escape))
+            if (mouseLook)
             {
-                mouseLook.SetCursorLock(!mouseLook.lockCursor);
-                retroController.updateController = !retroController.updateController;
-            }
+                if (Input.GetKeyDown(KeyCode.Escape))
+                {
+                    mouseLook.SetCursorLock(!mouseLook.lockCursor);
+                    retroController.updateController = !retroController.updateController;
+                }
 
-            mouseLook.LookRotation();
-            mouseLook.UpdateCursorLock();
+                mouseLook.LookRotation();
+                mouseLook.UpdateCursorLock();
+            }
 
             Time.timeScale = retroController.updateController ? 1 : 0;
 

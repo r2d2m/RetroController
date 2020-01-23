@@ -341,5 +341,10 @@ namespace vnc.Utils
         {
             return Mathf.Max(v.x, Mathf.Max(v.y, v.z));
         }
+
+        public static Vector3 FromInt(this Vector3Int v)
+        {
+            return new Vector3(v.x, v.y, v.z);
+        }
     }
 }

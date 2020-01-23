@@ -40,6 +40,13 @@ namespace vnc.Development
 
         public override void Update()
         {
+            if (Input.GetKeyDown(KeyCode.Y))
+                retroController.currentGravityAxis = Vector3Int.up;
+            else if (Input.GetKeyDown(KeyCode.Z))
+                retroController.currentGravityAxis = new Vector3Int(0, 0, 1);
+            if (Input.GetKeyDown(KeyCode.X))
+                retroController.currentGravityAxis = new Vector3Int(1, 0, 0);
+
             if (Input.GetKeyDown(KeyCode.R) && !isPlaying)
             {
                 if (isRecording) StopRecording();
@@ -90,16 +97,18 @@ namespace vnc.Development
                 // this is the main entry point for the controller
                 retroController.SetInput(fwd, strafe, swim, jump, sprint, duck);
 
-
-                if (!(autoInput && ignoreMouse))
+                if (mouseLook)
                 {
-                    // controls mouse look
-                    mouseLook.LookRotation();
-                    mouseLook.UpdateCursorLock();
+                    if (!(autoInput && ignoreMouse))
+                    {
+                        // controls mouse look
+                        mouseLook.LookRotation();
+                        mouseLook.UpdateCursorLock();
+                    }
                 }
             }
 
-            if (Input.GetKeyDown(KeyCode.Escape))
+            if (Input.GetKeyDown(KeyCode.Escape) && mouseLook)
             {
                 mouseLook.SetCursorLock(!mouseLook.lockCursor);
             }
@@ -109,7 +118,7 @@ namespace vnc.Development
 
             Time.timeScale = timeScale;
 
-            if(gunCamera && retroLedgeGrab)
+            if (gunCamera && retroLedgeGrab)
                 gunCamera.enabled = retroLedgeGrab.movementState == RetroLedgeGrab.MovementState.None;
 
 
