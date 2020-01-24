@@ -126,7 +126,6 @@ namespace vnc
         /// Position of the controller after each Fixed Update
         /// </summary>
         public Vector3 FixedPosition { get; private set; }
-        public float FixedUpdateTime { get; private set; }
 
         protected virtual void Awake()
         {
@@ -153,7 +152,6 @@ namespace vnc
                 retroMovements[i].OnAwake(this);
 
             FixedPosition = transform.position;
-            FixedUpdateTime = Time.time;
         }
 
         protected virtual void FixedUpdate()
@@ -209,7 +207,6 @@ namespace vnc
             OnFixedUpdateEndCallback.Invoke();
             wasOnStep = WalkedOnStep;
 
-            FixedUpdateTime = Time.time;
             _rigidbody.MovePosition(FixedPosition);
         }
 
