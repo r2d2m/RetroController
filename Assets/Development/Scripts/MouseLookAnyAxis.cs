@@ -1,13 +1,14 @@
 using UnityEngine;
+using vnc.Utils;
 
 namespace vnc.Samples
 {
-    public class MouseLook : MonoBehaviour
+    public class MouseLookAnyAxis : MonoBehaviour
     {
         public float mouseSensitivity = 2f;
         public bool clampVerticalRotation = true;
-        public float MinimumX = -90F;
-        public float MaximumX = 90F;
+        public float MinimumX = -90f;
+        public float MaximumX = 90f;
         public bool smooth;
         public float smoothTime = 5f;
         public bool lockCursor { get; private set; }
@@ -18,19 +19,22 @@ namespace vnc.Samples
         public float cameraKickoffsetWindow;
         public float cameraKickSpeed = 10;
 
-        private Rigidbody characterRigidbody;
+        private RetroController characterController;
         private Transform characterCamera;
 
         private Quaternion m_CharacterTargetRot;
         private Quaternion m_CameraTargetRot;
         private float kick = 0;
 
+        private float yRot = 0;
+        private float xRot = 0;
+
         public void Init(RetroController character, Transform camera)
         {
-            characterRigidbody = character.GetComponent<Rigidbody>();
+            characterController = character;
             characterCamera = camera;
 
-            m_CharacterTargetRot = characterRigidbody.rotation;
+            m_CharacterTargetRot = characterController.transform.localRotation;
             m_CameraTargetRot = camera.localRotation;
         }
 
@@ -42,31 +46,32 @@ namespace vnc.Samples
             kick -= (Time.deltaTime * cameraKickSpeed);
             kick = Mathf.Clamp(kick, 0, cameraKickOffset);
 
-            float yRot = Input.GetAxis("Mouse X") * mouseSensitivity;
-            float xRot = Input.GetAxis("Mouse Y") * mouseSensitivity;
+            yRot += Input.GetAxis("Mouse X") * mouseSensitivity;
+            xRot += Input.GetAxis("Mouse Y") * mouseSensitivity;
+            xRot = Mathf.Clamp(xRot, MinimumX, MaximumX);
 
-            m_CharacterTargetRot *= Quaternion.Euler(0f, yRot, 0f);
-            m_CameraTargetRot *= Quaternion.Euler(-xRot, 0f, 0f);
+            m_CharacterTargetRot = characterController.AxisAlignedRotation * Quaternion.Euler(0, yRot, 0);
+            m_CameraTargetRot = Quaternion.Euler(-xRot, 0f, 0f);
 
             if (clampVerticalRotation)
                 m_CameraTargetRot = ClampRotationAroundXAxis(m_CameraTargetRot);
 
             if (smooth)
             {
-                characterRigidbody.MoveRotation(Quaternion.Slerp(characterRigidbody.rotation, m_CharacterTargetRot,
-                    smoothTime * Time.deltaTime));
+                characterController.transform.rotation = Quaternion.Slerp(characterController.transform.rotation, m_CharacterTargetRot,
+                    smoothTime * Time.deltaTime);
                 characterCamera.localRotation = Quaternion.Slerp(characterCamera.localRotation, m_CameraTargetRot,
                     smoothTime * Time.deltaTime);
             }
             else
             {
-                characterRigidbody.MoveRotation(m_CharacterTargetRot);
+                characterController.transform.rotation = m_CharacterTargetRot;
                 characterCamera.localRotation = m_CameraTargetRot;
 
                 if (cameraKick)
                 {
                     var x = Mathf.Clamp(kick, 0, cameraKickOffset - cameraKickoffsetWindow);
-                    characterCamera.localRotation *= Quaternion.Euler(-x, 0, 0);
+                    characterCamera.rotation *= Quaternion.Euler(-x, 0, 0);
                 }
             }
         }
@@ -105,6 +110,8 @@ namespace vnc.Samples
 
             return q;
         }
+
+        
     }
 }
 

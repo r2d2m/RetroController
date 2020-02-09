@@ -41,11 +41,11 @@ namespace vnc.Development
         public override void Update()
         {
             if (Input.GetKeyDown(KeyCode.Y))
-                retroController.currentGravityAxis = Vector3Int.up;
+                retroController.gravityDirection = Vector3Int.up;
             else if (Input.GetKeyDown(KeyCode.Z))
-                retroController.currentGravityAxis = new Vector3Int(0, 0, 1);
+                retroController.gravityDirection = new Vector3Int(0, 0, 1);
             if (Input.GetKeyDown(KeyCode.X))
-                retroController.currentGravityAxis = new Vector3Int(1, 0, 0);
+                retroController.gravityDirection = new Vector3Int(1, 0, 0);
 
             if (Input.GetKeyDown(KeyCode.R) && !isPlaying)
             {

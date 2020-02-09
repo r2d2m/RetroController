@@ -17,6 +17,7 @@ namespace vnc.Editor
         SerializedProperty retroMovements;
         SerializedProperty autoFillMovements;
         SerializedProperty fixedPosition;
+        SerializedProperty currentGravityAxis;
         ReorderableList movementsList;
 
         static Dictionary<int, RetroControllerEditorState> callbackEventsFold = new Dictionary<int, RetroControllerEditorState>();
@@ -32,6 +33,8 @@ namespace vnc.Editor
             autoFillMovements = serializedObject.FindProperty("autoFillMovements");
             retroMovements = serializedObject.FindProperty("retroMovements");
             fixedPosition = serializedObject.FindProperty("FixedPosition");
+            currentGravityAxis = serializedObject.FindProperty("currentGravityAxis");
+
             movementsList = new ReorderableList(serializedObject, retroMovements);
             movementsList.drawHeaderCallback = rect =>
             {
