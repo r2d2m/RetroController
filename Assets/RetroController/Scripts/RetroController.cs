@@ -755,7 +755,7 @@ namespace vnc
                 }
                 else
                 {
-                    Quaternion currentAxisRotation = Quaternion.identity;// AlignWithAxis();
+                    Quaternion currentAxisRotation = AlignWithAxis();
                     if (Physics.ComputePenetration(_boxCollider, position, currentAxisRotation,
                         c, c.transform.position, c.transform.rotation, out penetrationNormal, out dist))
                     {
@@ -769,14 +769,14 @@ namespace vnc
 
                         dist += Profile.Depenetration;
 
-                        var normalizedGravity = gravityDirection.normalized;
-                        dot = Vector3.Dot(penetrationNormal, normalizedGravity);
+                        var up = transform.up.normalized;
+                        dot = Vector3.Dot(penetrationNormal, up);
 
                         // COLLISIONS BELOW
                         if (dot > SlopeDot && dot <= 1)
                         {
                             Collisions |= CC_Collision.CollisionBelow;
-                            position += normalizedGravity * dist;
+                            position += up * dist;
                             surfaceNormals.floor = penetrationNormal;
                             CheckPlatform(c);
                             OnCCHit(penetrationNormal);
@@ -1128,8 +1128,8 @@ namespace vnc
         {
             var s = Mathf.Sin(Mathf.PI / 4);
             var c = Mathf.Cos(Mathf.PI / 4);
-            var gravity = gravityDirection;
-            return new Quaternion(gravity.z * s, gravity.y * s, -gravity.x * s, c);
+            var up = transform.up.normalized;
+            return new Quaternion(up.z * s, up.y * s, -up.x * s, c);
         }
 
         /// <summary>
@@ -1167,7 +1167,7 @@ namespace vnc
             // projects the position of the box collider where the physics 
             // update, taking into account when standing or ducking
             center = FixedPosition + _boxCollider.center + offset;
-            return Physics.OverlapBoxNonAlloc(center, halfExtents, results, Quaternion.identity, layerMask, queryTriggerInteraction);
+            return Physics.OverlapBoxNonAlloc(center, halfExtents, results, AlignWithAxis(), layerMask, queryTriggerInteraction);
         }
 
         /// <summary>
@@ -1322,26 +1322,6 @@ namespace vnc
             Partial,    // body on water, face outside
             Underwater  // submerged
         }
-        #endregion
-
-        #region Debug
-        //protected virtual void OnDrawGizmos()
-        //{
-        //    if (Profile)
-        //    {
-        //        if (Application.isPlaying)
-        //        {
-        //            Gizmos.color = new Color(1f, 0.64f, 0.01f);
-        //            Gizmos.DrawWireCube(FixedPosition, Profile.Size);
-        //        }
-        //        else
-        //        {
-        //            Gizmos.color = Color.green;
-        //            Gizmos.DrawWireCube(transform.position, Profile.Size);
-        //        }
-        //    }
-        //}
-
         #endregion
     }
 }

@@ -144,14 +144,14 @@ namespace vnc.Development
         //    }
         //}
 
-        private void OnDrawGizmos()
-        {
-            if (retroController == null)
-                return;
+        //private void OnDrawGizmos()
+        //{
+        //    if (retroController == null)
+        //        return;
 
-            Gizmos.color = Color.red;
-            Gizmos.DrawLine(transform.position, transform.position + (retroController.WishDirection * 3));
-        }
+        //    Gizmos.color = Color.red;
+        //    Gizmos.DrawLine(transform.position, transform.position + (retroController.WishDirection * 3));
+        //}
 
         #region Input Recording
 
