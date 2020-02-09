@@ -17,7 +17,6 @@ namespace vnc.Editor
         SerializedProperty retroMovements;
         SerializedProperty autoFillMovements;
         SerializedProperty fixedPosition;
-        SerializedProperty currentGravityAxis;
         ReorderableList movementsList;
 
         static Dictionary<int, RetroControllerEditorState> callbackEventsFold = new Dictionary<int, RetroControllerEditorState>();
@@ -33,7 +32,6 @@ namespace vnc.Editor
             autoFillMovements = serializedObject.FindProperty("autoFillMovements");
             retroMovements = serializedObject.FindProperty("retroMovements");
             fixedPosition = serializedObject.FindProperty("FixedPosition");
-            currentGravityAxis = serializedObject.FindProperty("currentGravityAxis");
 
             movementsList = new ReorderableList(serializedObject, retroMovements);
             movementsList.drawHeaderCallback = rect =>
@@ -88,8 +86,7 @@ namespace vnc.Editor
                 movementsList.DoLayoutList();
 
             DrawEvents();
-
-            DrawDebugInfo();
+            EditorGUILayout.Space();
         }
 
         public bool DrawDefaultInspectorWithoutScriptField()
@@ -146,16 +143,6 @@ namespace vnc.Editor
             if (GUI.changed)
             {
                 serializedObject.ApplyModifiedProperties();
-            }
-        }
-
-        public void DrawDebugInfo()
-        {
-            EditorGUILayout.Space();
-            showDebugInfo = EditorGUILayout.Foldout(showDebugInfo, "Debug Info", foldBold);
-            if (showDebugInfo)
-            {
-
             }
         }
 

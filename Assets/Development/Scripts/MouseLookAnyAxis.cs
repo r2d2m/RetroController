@@ -50,7 +50,7 @@ namespace vnc.Samples
             xRot += Input.GetAxis("Mouse Y") * mouseSensitivity;
             xRot = Mathf.Clamp(xRot, MinimumX, MaximumX);
 
-            m_CharacterTargetRot = characterController.AxisAlignedRotation * Quaternion.Euler(0, yRot, 0);
+            m_CharacterTargetRot = characterController.GetOnAxisRotation() * Quaternion.Euler(0, yRot, 0);
             m_CameraTargetRot = Quaternion.Euler(-xRot, 0f, 0f);
 
             if (clampVerticalRotation)

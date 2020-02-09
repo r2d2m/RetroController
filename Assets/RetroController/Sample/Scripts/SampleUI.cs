@@ -7,15 +7,13 @@ namespace vnc.Samples
     {
         public static SampleUI Instance { get; private set; }
 
-        [HideInInspector] RetroController player;
-
         public Text m_textMessage;
         public Image m_textBackground;
         public CanvasGroup m_helpPanel;
 
         [Header("Settings")]
         public float m_speed = 4;
-        public float m_delayPerWord = 0.1f;
+        public float m_delayPerWord = 0.06f;
         public float m_additionalDelay = 2f;
 
         float timer;
@@ -25,7 +23,6 @@ namespace vnc.Samples
         public void Awake()
         {
             Instance = this;
-            player = FindObjectOfType<RetroController>();
             m_helpPanel.blocksRaycasts = false;
             m_helpPanel.interactable = false;
             m_helpPanel.alpha = 0f;

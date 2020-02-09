@@ -8,12 +8,6 @@ namespace vnc.Samples
     {
         public LayerMask playerLayer;
         public UnityEvent unityEvent;
-        BoxCollider boxCollider;
-
-        private void OnEnable()
-        {
-            boxCollider = GetComponent<BoxCollider>();
-        }
 
         private void OnTriggerEnter(Collider other)
         {
@@ -29,5 +23,4 @@ namespace vnc.Samples
             return layerMask == (layerMask | (1 << layer));
         }
     }
-
 }

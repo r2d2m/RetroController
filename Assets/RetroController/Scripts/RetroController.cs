@@ -68,7 +68,7 @@ namespace vnc
         protected bool wasDucking;
 
         #region States
-        [Header("States")]
+        [Header("Gameplay")]
         [Tooltip("Use this to stop the controller from automatically updating.")]
         public bool updateController = true;
         [Tooltip("Ignore layers during runtime")]
@@ -126,7 +126,6 @@ namespace vnc
         /// Position of the controller after each Fixed Update
         /// </summary>
         [HideInInspector] public Vector3 FixedPosition;
-        public Quaternion AxisAlignedRotation { get; protected set; }
 
         protected virtual void Awake()
         {
@@ -209,7 +208,6 @@ namespace vnc
             wasOnStep = WalkedOnStep;
 
             _rigidbody.MovePosition(FixedPosition);
-            AxisAlignedRotation = AlignWithAxis();
         }
 
         /// <summary>
@@ -755,7 +753,7 @@ namespace vnc
                 }
                 else
                 {
-                    Quaternion currentAxisRotation = AlignWithAxis();
+                    Quaternion currentAxisRotation = GetOnAxisRotation();
                     if (Physics.ComputePenetration(_boxCollider, position, currentAxisRotation,
                         c, c.transform.position, c.transform.rotation, out penetrationNormal, out dist))
                     {
@@ -1124,7 +1122,7 @@ namespace vnc
 
         #region Utility
 
-        protected Quaternion AlignWithAxis()
+        public Quaternion GetOnAxisRotation()
         {
             var s = Mathf.Sin(Mathf.PI / 4);
             var c = Mathf.Cos(Mathf.PI / 4);
@@ -1167,7 +1165,7 @@ namespace vnc
             // projects the position of the box collider where the physics 
             // update, taking into account when standing or ducking
             center = FixedPosition + _boxCollider.center + offset;
-            return Physics.OverlapBoxNonAlloc(center, halfExtents, results, AlignWithAxis(), layerMask, queryTriggerInteraction);
+            return Physics.OverlapBoxNonAlloc(center, halfExtents, results, GetOnAxisRotation(), layerMask, queryTriggerInteraction);
         }
 
         /// <summary>
