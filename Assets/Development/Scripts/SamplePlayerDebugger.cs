@@ -5,8 +5,11 @@ using vnc.Samples;
 using vnc.Utils;
 namespace vnc.Development
 {
+    [RequireComponent(typeof(RetroController))]
     public class SamplePlayerDebugger : SamplePlayer
     {
+        RetroController retroController;
+
         [Header("Auto Input System")]
         public bool autoInput = false;
         [ConditionalHide("autoInput"), Range(-1, 1)]
@@ -37,6 +40,11 @@ namespace vnc.Development
 
         [Header("Debug GUI Style")]
         public GUIStyle guiStyle;
+
+        private void Awake()
+        {
+            retroController = GetComponent<RetroController>();
+        }
 
         public override void Update()
         {
@@ -181,7 +189,7 @@ namespace vnc.Development
         public void StartRecording()
         {
             isRecording = true;
-            recordOrigin = transform.position;
+            recordOrigin = retroController.FixedPosition;
         }
 
         public void StopRecording()

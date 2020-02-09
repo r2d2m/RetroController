@@ -25,7 +25,7 @@ namespace vnc.Samples
         private Quaternion m_CameraTargetRot;
         private float kick = 0;
 
-        public void Init(RetroController character, Transform camera)
+        public virtual void Init(RetroController character, Transform camera)
         {
             characterRigidbody = character.GetComponent<Rigidbody>();
             characterCamera = camera;
@@ -34,7 +34,7 @@ namespace vnc.Samples
             m_CameraTargetRot = camera.localRotation;
         }
 
-        public void LookRotation()
+        public virtual void LookRotation()
         {
             if (!lockCursor)
                 return;

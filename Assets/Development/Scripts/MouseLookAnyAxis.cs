@@ -3,22 +3,8 @@ using vnc.Utils;
 
 namespace vnc.Samples
 {
-    public class MouseLookAnyAxis : MonoBehaviour
+    public class MouseLookAnyAxis : MouseLook
     {
-        public float mouseSensitivity = 2f;
-        public bool clampVerticalRotation = true;
-        public float MinimumX = -90f;
-        public float MaximumX = 90f;
-        public bool smooth;
-        public float smoothTime = 5f;
-        public bool lockCursor { get; private set; }
-
-        [Space]
-        public bool cameraKick = true;
-        public float cameraKickOffset;
-        public float cameraKickoffsetWindow;
-        public float cameraKickSpeed = 10;
-
         private RetroController characterController;
         private Transform characterCamera;
 
@@ -29,7 +15,7 @@ namespace vnc.Samples
         private float yRot = 0;
         private float xRot = 0;
 
-        public void Init(RetroController character, Transform camera)
+        public override void Init(RetroController character, Transform camera)
         {
             characterController = character;
             characterCamera = camera;
@@ -38,7 +24,7 @@ namespace vnc.Samples
             m_CameraTargetRot = camera.localRotation;
         }
 
-        public void LookRotation()
+        public override void LookRotation()
         {
             if (!lockCursor)
                 return;
@@ -76,24 +62,6 @@ namespace vnc.Samples
             }
         }
 
-        public void SetCursorLock(bool value)
-        {
-            lockCursor = value;
-        }
-
-        public void UpdateCursorLock()
-        {
-            if (lockCursor)
-            {
-                Cursor.lockState = CursorLockMode.Locked;
-                Cursor.visible = false;
-            }
-            else
-            {
-                Cursor.lockState = CursorLockMode.None;
-                Cursor.visible = true;
-            }
-        }
 
         Quaternion ClampRotationAroundXAxis(Quaternion q)
         {
@@ -111,7 +79,7 @@ namespace vnc.Samples
             return q;
         }
 
-        
+
     }
 }
 

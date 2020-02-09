@@ -767,7 +767,7 @@ namespace vnc
 
                         dist += Profile.Depenetration;
 
-                        var up = transform.up.normalized;
+                        var up = VectorFixer(transform.up);
                         dot = Vector3.Dot(penetrationNormal, up);
 
                         // COLLISIONS BELOW
