@@ -90,7 +90,7 @@ namespace vnc
             }
         }
         public SurfaceNormals surfaceNormals = new SurfaceNormals();
-        public Vector3Int gravityDirection = Vector3Int.up;
+        public Vector3 gravityDirection = Vector3.up;
         #endregion
 
         // Water
@@ -341,7 +341,7 @@ namespace vnc
                 if (IsGrounded || jumpGraceTimer > 0)
                 {
                     //Velocity.y += Profile.JumpSpeed;
-                    Velocity += gravityDirection.FromInt() * Profile.JumpSpeed;
+                    Velocity += gravityDirection * Profile.JumpSpeed;
                     TriedJumping = 0;
                     jumpGraceTimer = 0;
                     sprintJump = Sprint;
@@ -382,7 +382,7 @@ namespace vnc
             // player moved the character
             var walk = inputDir.y * controllerView.forward;
             var strafe = inputDir.x * transform.TransformDirection(Vector3.right);
-            wishDir = (walk + strafe) + (gravityDirection.FromInt() * Swim);
+            wishDir = (walk + strafe) + (gravityDirection * Swim);
             wishDir.Normalize();
 
             TriedJumping = 0;   // ignores jumping on water
@@ -400,7 +400,7 @@ namespace vnc
             // player moved the character
             var walk = inputDir.y * controllerView.transform.forward;
             var strafe = inputDir.x * transform.TransformDirection(Vector3.right);
-            wishDir = (walk + strafe) + (gravityDirection.FromInt() * Swim);
+            wishDir = (walk + strafe) + (gravityDirection * Swim);
             wishDir.Normalize();
 
             // fall when dead
@@ -479,7 +479,7 @@ namespace vnc
         /// <param name="gravityMultiplier"> Use this for different environments, like water. </param>
         public virtual void AddGravity(float multiplier = 1f)
         {
-            Velocity += (-gravityDirection.FromInt() * Profile.Gravity * multiplier) * Time.fixedDeltaTime;
+            Velocity += (-gravityDirection * Profile.Gravity * multiplier) * Time.fixedDeltaTime;
         }
 
         protected virtual void LimitVerticalSpeed()
@@ -769,13 +769,14 @@ namespace vnc
 
                         dist += Profile.Depenetration;
 
-                        dot = Vector3.Dot(penetrationNormal, gravityDirection);
+                        var normalizedGravity = gravityDirection.normalized;
+                        dot = Vector3.Dot(penetrationNormal, normalizedGravity);
 
                         // COLLISIONS BELOW
                         if (dot > SlopeDot && dot <= 1)
                         {
                             Collisions |= CC_Collision.CollisionBelow;
-                            position += gravityDirection.FromInt() * dist;
+                            position += normalizedGravity * dist;
                             surfaceNormals.floor = penetrationNormal;
                             CheckPlatform(c);
                             OnCCHit(penetrationNormal);
@@ -841,7 +842,7 @@ namespace vnc
             IsSwimming = true;
 
             // cast a ray from the sky and detect the topmost point
-            var ray = new Ray(FixedPosition + gravityDirection.FromInt() * 1000f, Vector3.down);
+            var ray = new Ray(FixedPosition + gravityDirection * 1000f, Vector3.down);
             RaycastHit hit;
             if (waterCollider.Raycast(ray, out hit, Mathf.Infinity))
             {
@@ -919,11 +920,11 @@ namespace vnc
 
             if (foundUp && stepHit.distance > 0)
             {
-                upCenter = center + (gravityDirection.FromInt() * stepHit.distance);
+                upCenter = center + (gravityDirection * stepHit.distance);
             }
             else
             {
-                upCenter = center + (gravityDirection.FromInt() * Profile.StepOffset);
+                upCenter = center + (gravityDirection * Profile.StepOffset);
             }
 
             // check if it's free

@@ -15,7 +15,7 @@ namespace vnc.Development
         public float autoStrafe = 0f;
         [ConditionalHide("autoInput"), Range(-1, 1)]
         public float autoSwim = 0f;
-        [ConditionalHide("autoInput"), Range(-1, 1)]
+        [ConditionalHide("autoInput"), Range(-10, 10)]
         public float YRotate = 0f;
         [ConditionalHide("autoInput")] public bool autoJump = false;
         [ConditionalHide("autoInput")] public bool autoSprint = false;
