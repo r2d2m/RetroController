@@ -9,11 +9,14 @@ namespace vnc.Editor
     [CustomEditor(typeof(RetroController))]
     public class RetroControllerEditor : UnityEditor.Editor
     {
+        RetroController retroController;
+
         SerializedProperty profile;
         SerializedProperty view;
 
         SerializedProperty retroMovements;
         SerializedProperty autoFillMovements;
+        SerializedProperty fixedPosition;
         ReorderableList movementsList;
 
         static Dictionary<int, RetroControllerEditorState> callbackEventsFold = new Dictionary<int, RetroControllerEditorState>();
@@ -23,10 +26,12 @@ namespace vnc.Editor
 
         private void OnEnable()
         {
+            retroController = (RetroController)target;
             profile = serializedObject.FindProperty("Profile");
             view = serializedObject.FindProperty("controllerView");
             autoFillMovements = serializedObject.FindProperty("autoFillMovements");
             retroMovements = serializedObject.FindProperty("retroMovements");
+            fixedPosition = serializedObject.FindProperty("FixedPosition");
             movementsList = new ReorderableList(serializedObject, retroMovements);
             movementsList.drawHeaderCallback = rect =>
             {
@@ -76,7 +81,7 @@ namespace vnc.Editor
                 " for components that match the RetroMovement and fill the list on runtime.");
             autoFillMovements.boolValue = EditorGUILayout.Toggle(autoFillGUIContent, autoFillMovements.boolValue);
 
-            if(!autoFillMovements.boolValue)
+            if (!autoFillMovements.boolValue)
                 movementsList.DoLayoutList();
 
             DrawEvents();
@@ -148,6 +153,23 @@ namespace vnc.Editor
             if (showDebugInfo)
             {
 
+            }
+        }
+
+        private void OnSceneGUI()
+        {
+            // TODO: minor one-frame glitch during runtime but it works
+            Tools.hidden = Tools.current == Tool.Move;
+            if (Tools.current == Tool.Move)
+            {
+                EditorGUI.BeginChangeCheck();
+                Quaternion rotation = Tools.pivotRotation == PivotRotation.Global ? Quaternion.identity : Quaternion.LookRotation(retroController.transform.forward, retroController.transform.up);
+                Vector3 newTargetPosition = Handles.PositionHandle(retroController.transform.position, rotation);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    fixedPosition.vector3Value = retroController.transform.position = newTargetPosition;
+                    serializedObject.ApplyModifiedProperties();
+                }
             }
         }
 

@@ -125,7 +125,8 @@ namespace vnc
         /// <summary>
         /// Position of the controller after each Fixed Update
         /// </summary>
-        public Vector3 FixedPosition { get; private set; }
+        public Vector3 FixedPosition;
+        public Quaternion AxisAlignedRotation { get; protected set; }
 
         protected virtual void Awake()
         {
@@ -208,6 +209,7 @@ namespace vnc
             wasOnStep = WalkedOnStep;
 
             _rigidbody.MovePosition(FixedPosition);
+            AxisAlignedRotation = AlignWithAxis();
         }
 
         /// <summary>
@@ -615,7 +617,7 @@ namespace vnc
         protected virtual float MidairControl(float wishSpeed)
         {
             if (wishSpeed > Profile.MaxAirControl)
-                return  Profile.MaxAirControl;
+                return Profile.MaxAirControl;
 
             return wishSpeed;
         }
@@ -1120,6 +1122,14 @@ namespace vnc
         #endregion
 
         #region Utility
+
+        protected Quaternion AlignWithAxis()
+        {
+            var s = Mathf.Sin(Mathf.PI / 4);
+            var c = Mathf.Cos(Mathf.PI / 4);
+            var gravity = currentGravityAxis;
+            return new Quaternion(gravity.z * s, gravity.y * s, -gravity.x * s, c);
+        }
 
         /// <summary>
         /// Prevent Velocity values from losing too

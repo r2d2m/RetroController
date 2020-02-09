@@ -7,8 +7,8 @@ namespace vnc.Samples
     {
         public float mouseSensitivity = 2f;
         public bool clampVerticalRotation = true;
-        public float MinimumX = -90F;
-        public float MaximumX = 90F;
+        public float MinimumX = -90f;
+        public float MaximumX = 90f;
         public bool smooth;
         public float smoothTime = 5f;
         public bool lockCursor { get; private set; }
@@ -27,6 +27,7 @@ namespace vnc.Samples
         private float kick = 0;
 
         private float yRot = 0;
+        private float xRot = 0;
 
         public void Init(RetroController character, Transform camera)
         {
@@ -46,30 +47,31 @@ namespace vnc.Samples
             kick = Mathf.Clamp(kick, 0, cameraKickOffset);
 
             yRot += Input.GetAxis("Mouse X") * mouseSensitivity;
-            float xRot = Input.GetAxis("Mouse Y") * mouseSensitivity;
+            xRot += Input.GetAxis("Mouse Y") * mouseSensitivity;
+            xRot = Mathf.Clamp(xRot, MinimumX, MaximumX);
 
-            m_CharacterTargetRot = AlignWithAxis() * Quaternion.Euler(0, yRot, 0);
-            m_CameraTargetRot *= Quaternion.Euler(-xRot, 0f, 0f);
+            m_CharacterTargetRot = characterController.AxisAlignedRotation * Quaternion.Euler(0, yRot, 0);
+            m_CameraTargetRot = Quaternion.Euler(-xRot, 0f, 0f);
 
             if (clampVerticalRotation)
                 m_CameraTargetRot = ClampRotationAroundXAxis(m_CameraTargetRot);
 
             if (smooth)
             {
-                characterController.transform.localRotation = Quaternion.Slerp(characterController.transform.rotation, m_CharacterTargetRot,
+                characterController.transform.rotation = Quaternion.Slerp(characterController.transform.rotation, m_CharacterTargetRot,
                     smoothTime * Time.deltaTime);
                 characterCamera.localRotation = Quaternion.Slerp(characterCamera.localRotation, m_CameraTargetRot,
                     smoothTime * Time.deltaTime);
             }
             else
             {
-                characterController.transform.localRotation = m_CharacterTargetRot;
+                characterController.transform.rotation = m_CharacterTargetRot;
                 characterCamera.localRotation = m_CameraTargetRot;
 
                 if (cameraKick)
                 {
                     var x = Mathf.Clamp(kick, 0, cameraKickOffset - cameraKickoffsetWindow);
-                    characterCamera.localRotation *= Quaternion.Euler(-x, 0, 0);
+                    characterCamera.rotation *= Quaternion.Euler(-x, 0, 0);
                 }
             }
         }
@@ -109,13 +111,7 @@ namespace vnc.Samples
             return q;
         }
 
-        Quaternion AlignWithAxis()
-        {
-            var s = Mathf.Sin(Mathf.PI / 4);
-            var c = Mathf.Cos(Mathf.PI / 4);
-            var gravity = characterController.currentGravityAxis;
-            return new Quaternion(gravity.z * s, gravity.y * s, -gravity.x * s, c);
-        }
+        
     }
 }
 
