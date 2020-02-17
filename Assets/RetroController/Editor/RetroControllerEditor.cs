@@ -20,7 +20,7 @@ namespace vnc.Editor
         ReorderableList movementsList;
 
         static Dictionary<int, RetroControllerEditorState> callbackEventsFold = new Dictionary<int, RetroControllerEditorState>();
-        SerializedProperty jumpCallback, landingCallback, fixedUpdateEndCalback;
+        SerializedProperty jumpCallback, landingCallback, fixedUpdateEndCalback, landingColliderCallback;
         GUIStyle foldBold;
         bool showDebugInfo = false;
 
@@ -121,13 +121,18 @@ namespace vnc.Editor
 
             jumpCallback = serializedObject.FindProperty("OnJumpCallback");
             landingCallback = serializedObject.FindProperty("OnLandingCallback");
+            landingColliderCallback = serializedObject.FindProperty("OnLanding"); 
             fixedUpdateEndCalback = serializedObject.FindProperty("OnFixedUpdateEndCallback");
 
             if (state.fold)
             {
                 EditorGUILayout.PropertyField(jumpCallback);
-                EditorGUILayout.PropertyField(landingCallback);
+                EditorGUILayout.PropertyField(landingColliderCallback);
                 EditorGUILayout.PropertyField(fixedUpdateEndCalback);
+
+                EditorGUILayout.Space();
+                EditorGUILayout.LabelField("DEPRECATED (use On Landing with Collider parameter)", EditorStyles.boldLabel);
+                EditorGUILayout.PropertyField(landingCallback);
             }
 
             // store folding state

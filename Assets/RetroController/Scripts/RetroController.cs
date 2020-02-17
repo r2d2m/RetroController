@@ -33,6 +33,7 @@ namespace vnc
         // cache
         private Collider[] overlapingColliders = new Collider[8];
         private Collider[] overlapOnSteps = new Collider[4];
+        private Collider lastGround = null;
         RaycastHit[] groundHit = new RaycastHit[4];
 
         [HideInInspector] public CC_Collision Collisions { get; private set; }
@@ -117,10 +118,12 @@ namespace vnc
         [HideInInspector] public RetroMovement[] retroMovements;
 
         // CALLBACK EVENTS
+        [HideInInspector, Obsolete("")] public UnityEvent OnLandingCallback;
         [HideInInspector]
         public UnityEvent OnJumpCallback,
-            OnLandingCallback,
             OnFixedUpdateEndCallback;
+
+        public RetroEventCollider OnLanding;
 
         /// <summary>
         /// Position of the controller after each Fixed Update
@@ -498,6 +501,7 @@ namespace vnc
                 jumpGraceTimer = 0;
                 sprintJump = false;
                 OnLandingCallback.Invoke(); // notify when player reaches the ground
+                OnLanding.Invoke(lastGround);
             }
         }
         #endregion
@@ -777,6 +781,7 @@ namespace vnc
                             position += up * dist;
                             surfaceNormals.floor = penetrationNormal;
                             CheckPlatform(c);
+                            lastGround = c;
                             OnCCHit(penetrationNormal);
                         }
 
