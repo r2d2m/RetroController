@@ -22,7 +22,6 @@ namespace vnc.Editor
         static Dictionary<int, RetroControllerEditorState> callbackEventsFold = new Dictionary<int, RetroControllerEditorState>();
         SerializedProperty jumpCallback, landingCallback, fixedUpdateEndCalback, landingColliderCallback;
         GUIStyle foldBold;
-        bool showDebugInfo = false;
 
         private void OnEnable()
         {

@@ -119,11 +119,10 @@ namespace vnc
 
         // CALLBACK EVENTS
         [HideInInspector, Obsolete("")] public UnityEvent OnLandingCallback;
+        [HideInInspector] public RetroEventCollider OnLanding;
         [HideInInspector]
         public UnityEvent OnJumpCallback,
             OnFixedUpdateEndCallback;
-
-        public RetroEventCollider OnLanding;
 
         /// <summary>
         /// Position of the controller after each Fixed Update
@@ -500,7 +499,10 @@ namespace vnc
 
                 jumpGraceTimer = 0;
                 sprintJump = false;
-                OnLandingCallback.Invoke(); // notify when player reaches the ground
+                // notify when player reaches the ground
+#pragma warning disable CS0618 
+                OnLandingCallback.Invoke(); // Callback is deprecated
+#pragma warning restore CS0618 
                 OnLanding.Invoke(lastGround);
             }
         }
