@@ -495,7 +495,6 @@ namespace vnc
                 Vector3 vel = Friction(Velocity, Profile.GroundFriction);
                 Velocity.x = vel.x;
                 Velocity.z = vel.z;
-                //Velocity.y = 0.001f * Math.Abs(Velocity.y);
 
                 jumpGraceTimer = 0;
                 sprintJump = false;
@@ -687,8 +686,6 @@ namespace vnc
                 FixedPosition += movement;
                 return;
             }
-
-            //StepDelta = Mathf.Clamp(StepDelta - Time.fixedDeltaTime, 0, Mathf.Infinity);
 
             const float step = 0.01f;
             if (distance > 0)

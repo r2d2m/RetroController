@@ -27,7 +27,7 @@ namespace vnc.Movements
         {
             OnLedge = false;
         }
-        
+
         #region Override
         public override bool DoMovement()
         {
@@ -86,9 +86,6 @@ namespace vnc.Movements
                 || movementState != MovementState.None)
                 return;
 
-            //if (!DetectSurfaceArea())
-            //    return;
-
             if (!OnLedge)
                 OnDetectLedge();
         }
@@ -133,9 +130,9 @@ namespace vnc.Movements
             Vector3 direction = (worldGrabPoint - retroController.transform.position).normalized;
 
             int n_hits = Physics.BoxCastNonAlloc(retroController.transform.position, retroController.controllerCollider.size / 2f,
-                direction, raycastHits, retroController.transform.rotation, distance, 
+                direction, raycastHits, retroController.transform.rotation, distance,
                 retroController.Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
-            
+
             for (int i = 0; i < n_hits; i++)
             {
                 if (raycastHits[i].collider == GrabbingTarget)
@@ -171,7 +168,7 @@ namespace vnc.Movements
         {
             if (retroController == null)
                 return;
-            
+
             if (Application.isPlaying)
             {
                 Gizmos.color = Color.magenta;
