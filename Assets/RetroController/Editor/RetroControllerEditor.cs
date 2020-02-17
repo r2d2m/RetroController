@@ -43,6 +43,7 @@ namespace vnc.Editor
                 var element = movementsList.serializedProperty.GetArrayElementAtIndex(index);
                 EditorGUI.ObjectField(new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight), element, GUIContent.none);
             };
+            Tools.hidden = Tools.current == Tool.Move;
         }
 
         public override void OnInspectorGUI()
@@ -165,6 +166,11 @@ namespace vnc.Editor
                     serializedObject.ApplyModifiedProperties();
                 }
             }
+        }
+
+        private void OnDisable()
+        {
+            Tools.hidden = false;
         }
 
         [System.Serializable]
