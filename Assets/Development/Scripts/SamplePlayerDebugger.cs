@@ -39,6 +39,7 @@ namespace vnc.Development
         public Camera gunCamera;
 
         [Header("Debug GUI Style")]
+        public Vector2 guiSize;
         public GUIStyle guiStyle;
 
         private void Awake()
@@ -135,6 +136,16 @@ namespace vnc.Development
             //DebugGUI.LogPersistent("velocity_magnitude", "XZ Magnitude: " + XZ.magnitude);
             //DebugGUI.LogPersistent("onground", "Is Grounded: " + retroController.IsGrounded);
 
+        }
+
+        private void OnGUI()
+        {
+            var r = new Rect(Vector2.zero, guiSize);
+            string name = "None";
+            if(retroController.currentMovement)
+                name = retroController.currentMovement.name;
+
+            GUI.Label(r, name, guiStyle);
         }
 
         //protected virtual void OnGUI()

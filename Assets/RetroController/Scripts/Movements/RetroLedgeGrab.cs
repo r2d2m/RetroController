@@ -45,6 +45,7 @@ namespace vnc.Movements
                     }
                     return false;
                 case MovementState.Grabbing:
+                    retroController.RemoveState(RetroController.CC_State.Ducking);
                     if (Time.time > climbTimer)
                     {
                         // start climbing
@@ -60,14 +61,14 @@ namespace vnc.Movements
 
                     Vector3 worldEndPoint = GrabbingTarget.transform.TransformPoint(localEndPoint);
                     Vector3 nextPosition = Vector3.MoveTowards(
-                        retroController.transform.position,
+                        retroController.FixedPosition,
                         worldEndPoint,
                         ClimbSpeed * Time.fixedDeltaTime);
 
-                    Vector3 diff = nextPosition - retroController.transform.position;
+                    Vector3 diff = nextPosition - retroController.FixedPosition;
                     retroController.CharacterMove(diff);
 
-                    if (Vector3.Distance(transform.position, worldEndPoint) < UnclimbDistance)
+                    if (Vector3.Distance(retroController.FixedPosition, worldEndPoint) < UnclimbDistance)
                     {
                         // finished climbing
                         Detach();
@@ -126,10 +127,10 @@ namespace vnc.Movements
         {
             Vector3 worldGrabPoint = GrabbingTarget.transform.TransformPoint(localGrabPoint);
 
-            float distance = Vector3.Distance(retroController.transform.position, worldGrabPoint);
-            Vector3 direction = (worldGrabPoint - retroController.transform.position).normalized;
+            float distance = Vector3.Distance(retroController.FixedPosition, worldGrabPoint);
+            Vector3 direction = (worldGrabPoint - retroController.FixedPosition).normalized;
 
-            int n_hits = Physics.BoxCastNonAlloc(retroController.transform.position, retroController.controllerCollider.size / 2f,
+            int n_hits = Physics.BoxCastNonAlloc(retroController.FixedPosition, retroController.controllerCollider.size / 2f,
                 direction, raycastHits, retroController.transform.rotation, distance,
                 retroController.Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
 

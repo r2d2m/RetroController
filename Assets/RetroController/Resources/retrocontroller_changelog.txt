@@ -1,4 +1,9 @@
 <b>
+2.2 (Feb 24, 2020)
+- Added support for multiple gravity directions
+- Added new OnLanding callback
+- Fixed Ledge Grab clipping bug
+
 2.1 (Jan 18, 2020)
 - Added Crouch Slide, Double Jump and Ledge Grab custom movements.
 - New tutorial scene showing the custom movements.

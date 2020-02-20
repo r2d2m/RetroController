@@ -116,6 +116,7 @@ namespace vnc
         // Custom movements
         [HideInInspector] public bool autoFillMovements;
         [HideInInspector] public RetroMovement[] retroMovements;
+        [HideInInspector] public RetroMovement currentMovement; // movement executed in the last fixed update
 
         // CALLBACK EVENTS
         [HideInInspector, Obsolete("")] public UnityEvent OnLandingCallback;
@@ -172,7 +173,10 @@ namespace vnc
                 while (!isDone && index < retroMovements.Length)
                 {
                     if (retroMovements[index].IsActive)
-                        isDone = retroMovements[index].DoMovement();
+                    {
+                        currentMovement = retroMovements[index];
+                        isDone = currentMovement.DoMovement();
+                    }
 
                     index++;
                 }
@@ -204,6 +208,8 @@ namespace vnc
                         OnDuckState();
                     }
                 }
+
+                currentMovement = null;
             }
 
             OnFixedUpdateEndCallback.Invoke();
