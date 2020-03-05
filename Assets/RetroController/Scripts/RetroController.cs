@@ -60,9 +60,9 @@ namespace vnc
         public bool WasGrounded { get { return wasGrounded; } }
 
         // Jumping
-        public int TriedJumping { get; protected set; }       // jumping timer i.e. bunnyhopping
-        protected float jumpGraceTimer;       // time window for jumping just before reaching the ground
-        protected bool sprintJump;            // jump while sprinting
+        public int TriedJumping { get; protected set; }    // jumping timer i.e. bunnyhopping
+        public float JumpGraceTimer { get; private set; }  // time window for jumping just before reaching the ground
+        protected bool sprintJump;                         // jump while sprinting
 
         // Ducking
         protected float duckingTimer;
@@ -135,7 +135,7 @@ namespace vnc
             State = CC_State.None;
             WaterState = CC_Water.None;
             Collisions = CC_Collision.None;
-            jumpGraceTimer = Profile.JumpGraceTime;
+            JumpGraceTimer = Profile.JumpGraceTime;
             TriedJumping = 0;
             ignoredColliders = new UnorderedList<Collider>();
 
@@ -307,17 +307,11 @@ namespace vnc
         /// </summary>
         protected virtual void GroundMovementUpdate()
         {
-            // reset the grounded state
-            if (HasCollision(CC_Collision.CollisionBelow))
-                AddState(CC_State.IsGrounded);
-            else
-                RemoveState(CC_State.IsGrounded);
-
             // check platform
             if (!IsGrounded)
                 RemoveState(CC_State.OnPlatform);
 
-            jumpGraceTimer = Mathf.Clamp(jumpGraceTimer - 1, 0, Profile.JumpGraceTime);
+            JumpGraceTimer = Mathf.Clamp(JumpGraceTimer - 1, 0, Profile.JumpGraceTime);
 
             var walk = inputDir.y * transform.TransformDirection(Vector3.forward);
             var strafe = inputDir.x * transform.TransformDirection(Vector3.right);
@@ -338,18 +332,25 @@ namespace vnc
                 MoveAir();
             }
 
-            CheckLanding();
+            
+            // LEDGE FORGIVENESS
+            if (wasGrounded && !IsGrounded) // if player just got off ground
+            {
+                // about to fall
+                if (Velocity.normalized.y <= 0)
+                    JumpGraceTimer = Profile.JumpGraceTime;
+            }
 
-            // bunnyhopping
+            // BUNNYHOPPING
             if (TriedJumping > 0)
             {
                 // normal jump, it's on the ground
-                if (IsGrounded || jumpGraceTimer > 0)
+                if (IsGrounded || JumpGraceTimer > 0)
                 {
                     //Velocity.y += Profile.JumpSpeed;
                     Velocity += gravityDirection * Profile.JumpSpeed;
                     TriedJumping = 0;
-                    jumpGraceTimer = 0;
+                    JumpGraceTimer = 0;
                     sprintJump = Sprint;
                     RemoveState(CC_State.IsGrounded);
                     OnJumpCallback.Invoke();
@@ -365,19 +366,15 @@ namespace vnc
             if (wasOnPlatform && !OnPlatform)
                 CurrentPlatform = null;
 
-            CharacterMove(Velocity);
 
-            // player just got off ground
-            if (wasGrounded && !IsGrounded)
-            {
-                // falling
-                if (Velocity.normalized.y < 0)
-                    jumpGraceTimer = Profile.JumpGraceTime;
-            }
+            CheckLanding();
+
+            wasGrounded = IsGrounded;
+
+            CharacterMove(Velocity);
 
             TriedJumping = Mathf.Clamp(TriedJumping - 1, 0, 100);
 
-            wasGrounded = IsGrounded;
             wasOnPlatform = OnPlatform;
         }
         /// <summary>
@@ -502,7 +499,7 @@ namespace vnc
                 Velocity.x = vel.x;
                 Velocity.z = vel.z;
 
-                jumpGraceTimer = 0;
+                JumpGraceTimer = 0;
                 sprintJump = false;
                 // notify when player reaches the ground
 #pragma warning disable CS0618 
@@ -723,8 +720,7 @@ namespace vnc
             SetWaterLevel();
 
             // extra check to detect ground
-            if (!(HasCollision(CC_Collision.CollisionBelow)))
-                DetectGround();
+            DetectGround();
         }
 
         Vector3 penetrationNormal;
@@ -786,7 +782,6 @@ namespace vnc
                             position += up * dist;
                             surfaceNormals.floor = penetrationNormal;
                             CheckPlatform(c);
-                            lastGround = c;
                             OnCCHit(penetrationNormal);
                         }
 
@@ -1013,7 +1008,7 @@ namespace vnc
             Vector3 center = FixedPosition + Profile.Center;
             duckingCenter = transform.TransformPoint(Profile.DuckingCenter);
             _boxCollider.ToWorldSpaceBox(out duckingCenter, out halfExtends, out rotation);
-            bool isBlocking = Physics.CheckBox(center, halfExtends, Quaternion.identity, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
+            bool isBlocking = Physics.CheckBox(duckingCenter, halfExtends, Quaternion.identity, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
             return !isBlocking;
         }
 
@@ -1022,28 +1017,27 @@ namespace vnc
         /// </summary>
         public virtual void DetectGround()
         {
-            Vector3 normal;
-            float distance;
+            RemoveState(CC_State.IsGrounded);
+            Vector3 center, halfExtents;
+            Quaternion orientation;
+            RaycastHit[] results = new RaycastHit[4];
+            _boxCollider.ToWorldSpaceBox(out center, out halfExtents, out orientation);
+            center = FixedPosition + _boxCollider.center;
+            int n = Physics.BoxCastNonAlloc(center, halfExtents - Vector3.one * 0.01f, -gravityDirection, results, GetOnAxisRotation(), Profile.GroundCheck, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
 
-            var offset = (Vector3.down * Profile.GroundCheck);
-
-            int nColls = fixedOverlapBoxNonAlloc(offset, overlapingColliders, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
-            for (int i = 0; i < nColls; i++)
+            for (int i = 0; i < n; i++)
             {
-                Collider c = overlapingColliders[i];
-                var position = FixedPosition + offset;
-                if (Physics.ComputePenetration(_boxCollider, position, transform.rotation,
-                        c, c.transform.position, c.transform.rotation, out normal, out distance))
+                Collider c = results[i].collider;
+                float dot = Vector3.Dot(results[i].normal, gravityDirection);
+                float slopeDot = (Profile.SlopeAngleLimit / 90f);
+                if (dot > slopeDot && dot <= 1)
                 {
-                    float dot = Vector3.Dot(normal, gravityDirection);
-                    float slopeDot = (Profile.SlopeAngleLimit / 90f);
-                    if (dot > slopeDot && dot <= 1)
-                    {
-                        Collisions |= CC_Collision.CollisionBelow;
-                        surfaceNormals.floor = normal;
-                        CheckPlatform(c);
-                        OnCCHit(normal);
-                    }
+                    //Collisions |= CC_Collision.CollisionBelow;
+                    surfaceNormals.floor = results[i].normal;
+                    CheckPlatform(c);
+                    lastGround = c;
+                    OnCCHit(results[i].normal);
+                    AddState(CC_State.IsGrounded);
                 }
             }
         }
@@ -1232,7 +1226,7 @@ namespace vnc
         public void ResetJumping()
         {
             TriedJumping = 0;
-            jumpGraceTimer = 0;
+            JumpGraceTimer = 0;
         }
 
         protected virtual void SetupCollider()
