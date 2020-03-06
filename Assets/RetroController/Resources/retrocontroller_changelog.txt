@@ -1,15 +1,19 @@
-<b>
-2.2 (Feb 24, 2020)
+<b><color="orange">2.3 (March 7, 2020)</color></b>
+- Fixed ground detection for Unity 2018.3+
+- Added <color="#AADBFF">MaxSpeedScale</color> for the Profile
+- New <color="#AADBFF">Bunnyhop Playground</color> scene
+
+<b><color="#C67D00">2.2 (Feb 24, 2020)</color></b>
 - Added support for multiple gravity directions
-- Added new OnLanding callback
+- Added new <color="#AADBFF">OnLanding</color> callback
 - Fixed Ledge Grab clipping bug
 
-2.1 (Jan 18, 2020)
-- Added Crouch Slide, Double Jump and Ledge Grab custom movements.
+<b><color="#C67D00">2.1 (Jan 18, 2020)</color></b>
+- Added <color="#AADBFF">Crouch Slide, Double Jump and Ledge Grab</color> custom movements.
 - New tutorial scene showing the custom movements.
 - New sample character animations.
 
-2.0 (Sep 18, 2019)
+<b><color="#C67D00">2.0 (Sep 18, 2019)</color></b>
 - Support for custom movement, samples coming soon.
 - Controller now uses rigidbody with interpolation.
 - Option to reimport necessary tags.
@@ -18,13 +22,12 @@
 - Changed property accessibility on scripts.
 - New Tutorial scene
 
-1.1.6 (May 24, 2019)
+<b><color="#C67D00">1.1.6 (May 24, 2019)</color></b>
 - Improved controller collision.
 
-1.1.4 (May 14, 2019)
+<b><color="#C67D00">1.1.4 (May 14, 2019)</color></b>
 - Fixed glitch on stairs.
 - Changed sample layers.
 
-1.1.2 (April 5, 2019)
+<b><color="#C67D00">1.1.2 (April 5, 2019)</color></b>
 - Fixed adding event callback on the inspector.
-</b>

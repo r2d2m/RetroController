@@ -4,7 +4,7 @@ using vnc.Utils;
 namespace vnc
 {
     [CreateAssetMenu(fileName = "My Controller Profile", menuName = "Retro Controller/New Controller Profile")]
-    public class RetroControllerProfile : ScriptableObject
+    public class RetroControllerProfile : ScriptableObject, ISerializationCallbackReceiver
     {
         #region Gravity
         /// <summary>
@@ -112,7 +112,14 @@ namespace vnc
         /// <summary>
         /// Max absolute speed on the Y axis (limits postive and negative values)
         /// </summary>
+        [System.Obsolete]
         public float MaxVerticalSpeedScale;
+
+        /// <summary>
+        /// Max absolute speed on the axis (limits postive and negative values)
+        /// </summary>
+        public Vector3 MaxSpeedScale = new Vector3(9, 9, 9);
+
         /// <summary>
         /// Speed when on a ladder.
         /// </summary>
@@ -222,6 +229,27 @@ namespace vnc
         /// Hidden property, used in <code>RetroControllerProfileEditor</code>
         /// </summary>
         [HideInInspector] public string LadderTag;
+
+        #region Serialization
+        [System.NonSerialized]
+        private readonly System.Version LATEST_VERSION = new System.Version(2, 3);
+
+        [HideInInspector, SerializeField]
+        private System.Version version = new System.Version(0, 0, 0);
+
+        public void OnAfterDeserialize()
+        {
+            if (version < LATEST_VERSION)
+            {
+                MaxSpeedScale.y = MaxVerticalSpeedScale;
+                version = LATEST_VERSION;
+            }
+        }
+
+        public void OnBeforeSerialize()
+        {
+        }
+        #endregion
     }
 
     public enum ControllerDirection { X, Y, Z };

@@ -332,7 +332,7 @@ namespace vnc
                 MoveAir();
             }
 
-            
+
             // LEDGE FORGIVENESS
             if (wasGrounded && !IsGrounded) // if player just got off ground
             {
@@ -366,12 +366,12 @@ namespace vnc
             if (wasOnPlatform && !OnPlatform)
                 CurrentPlatform = null;
 
-
-            CheckLanding();
+            LandingFriction();
 
             wasGrounded = IsGrounded;
 
             CharacterMove(Velocity);
+            CheckLanding();
 
             TriedJumping = Mathf.Clamp(TriedJumping - 1, 0, 100);
 
@@ -485,22 +485,32 @@ namespace vnc
             Velocity += (-gravityDirection * Profile.Gravity * multiplier) * Time.fixedDeltaTime;
         }
 
+
+        [Obsolete("Use LimitFallingSpeed instead.")]
         protected virtual void LimitVerticalSpeed()
         {
-            Velocity.y = Mathf.Clamp(Velocity.y, -Profile.MaxVerticalSpeedScale, Profile.MaxVerticalSpeedScale);
+            LimitSpeed();
+            //Velocity.y = Mathf.Clamp(Velocity.y, -Profile.MaxVerticalSpeedScale, Profile.MaxVerticalSpeedScale);
         }
 
+        /// <summary>
+        /// Prevents player from achievent massive amount of velocity while falling
+        /// </summary>
+        protected virtual void LimitSpeed()
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                Velocity[i] = Mathf.Clamp(Velocity[i], -Profile.MaxSpeedScale[i], Profile.MaxSpeedScale[i]);
+            }
+        }
+
+        /// <summary>
+        /// Send an event when the player hits the ground
+        /// </summary>
         protected virtual void CheckLanding()
         {
-            // Apply friction when player hits the ground
             if (!wasGrounded && IsGrounded)
             {
-                Vector3 vel = Friction(Velocity, Profile.GroundFriction);
-                Velocity.x = vel.x;
-                Velocity.z = vel.z;
-
-                JumpGraceTimer = 0;
-                sprintJump = false;
                 // notify when player reaches the ground
 #pragma warning disable CS0618 
                 OnLandingCallback.Invoke(); // Callback is deprecated
@@ -661,6 +671,22 @@ namespace vnc
                 wishspeed *= Mathf.Max(speed - drop, 0) / speed; // Scale the Velocity based on friction.
             }
             return wishspeed;
+        }
+
+        /// <summary>
+        /// Apply friction when player hits the ground
+        /// </summary>
+        protected virtual void LandingFriction()
+        {
+            if (!wasGrounded && IsGrounded)
+            {
+                Vector3 vel = Friction(Velocity, Profile.GroundFriction);
+                Velocity.x = vel.x;
+                Velocity.z = vel.z;
+
+                JumpGraceTimer = 0;
+                sprintJump = false;
+            }
         }
         #endregion
 
