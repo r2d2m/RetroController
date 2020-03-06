@@ -141,11 +141,8 @@ namespace vnc.Development
         private void OnGUI()
         {
             var r = new Rect(Vector2.zero, guiSize);
-            string name = "None";
-            if(retroController.currentMovement)
-                name = retroController.currentMovement.name;
-
-            GUI.Label(r, name, guiStyle);
+            string debug = "Is Grounded: " + retroController.IsGrounded;
+            GUI.Label(r, debug, guiStyle);
         }
 
         //protected virtual void OnGUI()
