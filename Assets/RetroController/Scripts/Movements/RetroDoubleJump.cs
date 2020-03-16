@@ -37,7 +37,7 @@ namespace vnc.Movements
         }
         public override void OnCharacterMove()
         {
-            if (retroController.IsGrounded && !retroController.WasGrounded)
+            if (retroController.IsGrounded)
                 doubleJumped = false;
         }
     }
