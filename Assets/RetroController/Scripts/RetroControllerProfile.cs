@@ -4,7 +4,7 @@ using vnc.Utils;
 namespace vnc
 {
     [CreateAssetMenu(fileName = "My Controller Profile", menuName = "Retro Controller/New Controller Profile")]
-    public class RetroControllerProfile : ScriptableObject, ISerializationCallbackReceiver
+    public class RetroControllerProfile : ScriptableObject
     {
         #region Gravity
         /// <summary>
@@ -232,22 +232,18 @@ namespace vnc
 
         #region Serialization
         [System.NonSerialized]
-        private readonly System.Version LATEST_VERSION = new System.Version(2, 3);
+        private readonly System.Version LATEST_VERSION = new System.Version(2, 3, 1);
 
         [HideInInspector, SerializeField]
         private System.Version version = new System.Version(0, 0, 0);
 
-        public void OnAfterDeserialize()
+        private void OnEnable()
         {
-            if (version < LATEST_VERSION)
+            if (version < new System.Version(2, 3))
             {
                 MaxSpeedScale.y = MaxVerticalSpeedScale;
                 version = LATEST_VERSION;
             }
-        }
-
-        public void OnBeforeSerialize()
-        {
         }
         #endregion
     }

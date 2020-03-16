@@ -1,4 +1,7 @@
-<b><color="orange">2.3 (March 7, 2020)</color></b>
+<b><color="orange">2.3.1 (???, 2020)</color></b>
+- Fixed Retro Double Jump bug.
+
+<b><color="#C67D00">2.3 (March 7, 2020)</color></b>
 - Fixed ground detection for Unity 2018.3+
 - Added <color="#AADBFF">MaxSpeedScale</color> for the Profile
 - New <color="#AADBFF">Bunnyhop Playground</color> scene
