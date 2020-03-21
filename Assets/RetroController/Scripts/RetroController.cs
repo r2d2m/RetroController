@@ -38,6 +38,7 @@ namespace vnc
 
         [HideInInspector] public CC_Collision Collisions { get; private set; }
         private Rigidbody _rigidbody;
+        public Rigidbody ControllerRigidbody { get { return _rigidbody; } }
         private BoxCollider _boxCollider;
         public BoxCollider controllerCollider { get { return _boxCollider; } }
 

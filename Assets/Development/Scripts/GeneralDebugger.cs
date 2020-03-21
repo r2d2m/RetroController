@@ -15,7 +15,9 @@ namespace vnc.Development
 
         private void OnGUI()
         {
-            GUI.Label(GuiSize, "Velocity: " + retroController.Velocity);
+            string text = "RC Velocity: " + retroController.Velocity +
+                "\nRb Velocity: " + retroController.ControllerRigidbody.velocity;
+            GUI.Label(GuiSize, text);
         }
     }
 
