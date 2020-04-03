@@ -100,8 +100,8 @@ namespace vnc.Samples
                 angle = (angle > 180) ? angle - 360 : angle;
                 playerAnimator.SetFloat("Angle", angle);
 
-                animHorizontal = Mathf.Lerp(animHorizontal, retroController.inputDir.x, Time.deltaTime * animDelta);
-                animVertical = Mathf.Lerp(animVertical, retroController.inputDir.y, Time.deltaTime * animDelta);
+                animHorizontal = Mathf.MoveTowards(animHorizontal, retroController.inputDir.x, Time.deltaTime * animDelta);
+                animVertical = Mathf.MoveTowards(animVertical, retroController.inputDir.y, Time.deltaTime * animDelta);
 
                 playerAnimator.SetFloat("Horizontal", animHorizontal);
                 playerAnimator.SetFloat("Vertical", FixSmallValues(animVertical));

@@ -960,12 +960,106 @@ ModelImporter:
       keepOriginalPositionXZ: 0
       heightFromFeet: 0
       mirror: 0
-      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      bodyMask: 01000000000000000000000001000000010000000000000000000000000000000000000001000000010000000000000000000000
       curves: []
       events: []
-      transformMask: []
-      maskType: 3
-      maskSource: {instanceID: 0}
+      transformMask:
+      - path: 
+        weight: 1
+      - path: armor
+        weight: 0
+      - path: body
+        weight: 0
+      - path: default rig
+        weight: 0
+      - path: default rig/Hand hold.L
+        weight: 0
+      - path: default rig/Hand hold.R
+        weight: 0
+      - path: default rig/Hips
+        weight: 0
+      - path: default rig/Hips/Back
+        weight: 0
+      - path: default rig/Hips/Back/Torso
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Arm IK.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Arm IK.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Arm Pole.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Arm Pole.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Neck
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Neck/Head
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L/Finger
+          1 Joint 1.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L/Finger
+          1 Joint 1.L/Finger 1 Joint 2.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L/Thumb.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.L/Arm 1.L/Arm 2.L/Hand.L/Thumb.L/Thumb
+          2.L
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R/Finger
+          1 Joint 1.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R/Finger
+          1 Joint 1.R/Finger 1 Joint 2.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R/Thumb.R
+        weight: 0
+      - path: default rig/Hips/Back/Torso/Shoulder.R/Arm 1.R/Arm 2.R/Hand.R/Thumb.R/Thumb
+          2.R
+        weight: 0
+      - path: default rig/Hips/Leg 1.L
+        weight: 1
+      - path: default rig/Hips/Leg 1.L/Leg 2.L
+        weight: 1
+      - path: default rig/Hips/Leg 1.L/Leg 2.L/Foot.L
+        weight: 1
+      - path: default rig/Hips/Leg 1.R
+        weight: 1
+      - path: default rig/Hips/Leg 1.R/Leg 2.R
+        weight: 1
+      - path: default rig/Hips/Leg 1.R/Leg 2.R/Foot.R
+        weight: 1
+      - path: default rig/Leg IK.L
+        weight: 1
+      - path: default rig/Leg IK.L/Leg Pole.L
+        weight: 1
+      - path: default rig/Leg IK.R
+        weight: 1
+      - path: default rig/Leg IK.R/Leg Pole.R
+        weight: 1
+      - path: head
+        weight: 0
+      - path: helmet
+        weight: 0
+      - path: rocket launcher--
+        weight: 0
+      maskType: 0
+      maskSource: {fileID: 31900000, guid: 280e1961a19aadd4bbca3655f959d898, type: 2}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
       name: default rig|Idle upper body only
