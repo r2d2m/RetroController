@@ -1030,7 +1030,7 @@ namespace vnc
         {
             // TODO: fix for gravity direction
             const float errorMargin = 0.1f;
-            Vector3 center = FixedPosition + Profile.Center + Vector3.up * errorMargin;
+            Vector3 center = FixedPosition + Profile.Center + gravityDirection * errorMargin;
             bool isBlocking = Physics.CheckBox(center, Profile.Size / 2, Quaternion.identity, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
             return !isBlocking;
         }
@@ -1323,16 +1323,25 @@ namespace vnc
         {
             if (Profile)
             {
+                Gizmos.color = Color.blue;
+
+                Matrix4x4 previousMatrix = Gizmos.matrix;
+                Vector3 position, size;
                 if (Application.isPlaying)
                 {
-                    Gizmos.color = Color.green;
-                    Gizmos.DrawWireCube(FixedPosition + _boxCollider.center, _boxCollider.size);
+                    position = FixedPosition + _boxCollider.center;
+                    size = _boxCollider.size;
                 }
                 else
                 {
-                    Gizmos.color = Color.green;
-                    Gizmos.DrawWireCube(FixedPosition + Profile.Center, Profile.Size);
+                    position = transform.position + Profile.Center;
+                    size = Profile.Size;
                 }
+
+                Gizmos.matrix = Matrix4x4.Translate(position) * Matrix4x4.Rotate(transform.rotation);
+                Gizmos.DrawWireCube(Vector3.zero, size);
+
+                Gizmos.matrix = previousMatrix;
             }
         }
 
