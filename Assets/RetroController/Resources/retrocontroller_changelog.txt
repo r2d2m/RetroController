@@ -1,5 +1,7 @@
 <b><color="orange">2.3.2 (April ?, 2020)</color></b>
+- New Controller Rigidbody property
 - Fixed soldier animation
+- Fixed Controller Gizmos
 
 <b><color="orange">2.3.1 (March 23, 2020)</color></b>
 - Fixed Retro Double Jump bug.
