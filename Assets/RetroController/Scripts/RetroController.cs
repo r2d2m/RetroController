@@ -1028,14 +1028,10 @@ namespace vnc
         /// <returns>If the collider in standing mode is free.</returns>
         protected virtual bool CanStand()
         {
-            // calculate if the standing capsule won't collider with anything
-            Vector3 halfExtends, duckingCenter;
-            Quaternion rotation;
-            //var center = transform.TransformPoint(Profile.Center);
-            Vector3 center = FixedPosition + Profile.Center;
-            duckingCenter = transform.TransformPoint(Profile.DuckingCenter);
-            _boxCollider.ToWorldSpaceBox(out duckingCenter, out halfExtends, out rotation);
-            bool isBlocking = Physics.CheckBox(duckingCenter, halfExtends, Quaternion.identity, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
+            // TODO: fix for gravity direction
+            const float errorMargin = 0.1f;
+            Vector3 center = FixedPosition + Profile.Center + Vector3.up * errorMargin;
+            bool isBlocking = Physics.CheckBox(center, Profile.Size / 2, Quaternion.identity, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
             return !isBlocking;
         }
 
@@ -1076,7 +1072,7 @@ namespace vnc
         public virtual bool OnStairGroundDetect()
         {
             int n = 0;
-            if (BoxEdgesRaycast(out n))
+            if (BoxEdgesRaycast(out n, Vector3.down))
             {
                 for (int i = 0; i < n; i++)
                 {
@@ -1111,7 +1107,7 @@ namespace vnc
         /// </summary>
         /// <param name="n">Number of hits</param>
         /// <returns>Return true for the first raycast that found a hit</returns>
-        public virtual bool BoxEdgesRaycast(out int n)
+        public virtual bool BoxEdgesRaycast(out int n, Vector3 direction)
         {
             float distance = Profile.Gravity + _boxCollider.bounds.extents.y;
 
@@ -1124,7 +1120,7 @@ namespace vnc
             };
             for (int i = 0; i < origins.Length; i++)
             {
-                n = Physics.RaycastNonAlloc(origins[i], Vector3.down, groundHit, distance, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
+                n = Physics.RaycastNonAlloc(origins[i], direction, groundHit, distance, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
                 if (n > 0)
                     return true;
             }
@@ -1327,8 +1323,16 @@ namespace vnc
         {
             if (Profile)
             {
-                Gizmos.color = Color.green;
-                Gizmos.DrawWireCube(FixedPosition + Profile.Center, Profile.Size);
+                if (Application.isPlaying)
+                {
+                    Gizmos.color = Color.green;
+                    Gizmos.DrawWireCube(FixedPosition + _boxCollider.center, _boxCollider.size);
+                }
+                else
+                {
+                    Gizmos.color = Color.green;
+                    Gizmos.DrawWireCube(FixedPosition + Profile.Center, Profile.Size);
+                }
             }
         }
 
