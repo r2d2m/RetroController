@@ -1323,6 +1323,15 @@ namespace vnc
 
         #endregion
 
+        private void OnDrawGizmosSelected()
+        {
+            if (Profile)
+            {
+                Gizmos.color = Color.green;
+                Gizmos.DrawWireCube(FixedPosition + Profile.Center, Profile.Size);
+            }
+        }
+
         #region Enums
         [Flags]
         public enum CC_State
