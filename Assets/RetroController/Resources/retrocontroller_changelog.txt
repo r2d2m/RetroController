@@ -1,4 +1,4 @@
-<b><color="orange">2.3.2 Hotfix (April 8, 2020)</color></b>
+<b><color="orange">2.3.2 Hotfix (May 7, 2020)</color></b>
 - New <color="#AADBFF">Controller Rigidbody</color> Property
 - Fixed <color="#AADBFF">Ducking</color> in all gravity orientations
 - Fixed <color="#AADBFF">Soldier Animation</color> positioning
