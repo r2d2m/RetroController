@@ -872,7 +872,7 @@ namespace vnc
             IsSwimming = true;
 
             // cast a ray from the sky and detect the topmost point
-            var ray = new Ray(FixedPosition + gravityDirection * 1000f, Vector3.down);
+            var ray = new Ray(FixedPosition + gravityDirection * 1000f, -gravityDirection);
             RaycastHit hit;
             if (waterCollider.Raycast(ray, out hit, Mathf.Infinity))
             {
@@ -943,9 +943,11 @@ namespace vnc
             center = position + _boxCollider.center + (direction * 0.01f);
             // increase hull size
 
+            Quaternion currentAxisRotation = GetOnAxisRotation();
+
             // cast up
             bool foundUp;
-            foundUp = Physics.BoxCast(center, halfExtends, gravityDirection, out stepHit, Quaternion.identity, Profile.StepOffset,
+            foundUp = Physics.BoxCast(center, halfExtends, gravityDirection, out stepHit, currentAxisRotation, Profile.StepOffset,
                 Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
 
             if (foundUp && stepHit.distance > 0)
@@ -959,7 +961,7 @@ namespace vnc
 
             // check if it's free
             halfExtends -= Vector3.one * Profile.HullExtends;
-            int nColls = Physics.OverlapBoxNonAlloc(upCenter, halfExtends, overlapOnSteps, Quaternion.identity,
+            int nColls = Physics.OverlapBoxNonAlloc(upCenter, halfExtends, overlapOnSteps, currentAxisRotation,
                 Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
             if (nColls > 0)
             {
@@ -970,12 +972,12 @@ namespace vnc
 
             // cast down
             bool foundDown;
-            foundDown = Physics.BoxCast(upCenter, halfExtends, Vector3.down, out stepHit, Quaternion.identity, Profile.StepOffset,
+            foundDown = Physics.BoxCast(upCenter, halfExtends, -gravityDirection, out stepHit, currentAxisRotation, Profile.StepOffset,
                 Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
             if (foundDown && stepHit.distance > 0)
             {
-                downCenter = upCenter + (Vector3.down * stepHit.distance);
-                DebugExtension.DrawBox(downCenter, halfExtends, Quaternion.identity, Color.yellow);
+                downCenter = upCenter + (-gravityDirection * stepHit.distance);
+                DebugExtension.DrawBox(downCenter, halfExtends, currentAxisRotation, Color.yellow);
                 if (downCenter.y > center.y)
                 {
                     foundStep = true;
@@ -1004,9 +1006,8 @@ namespace vnc
 
             if (IsDucking)
             {
-
                 _boxCollider.size = Vector3.Lerp(_boxCollider.size, Profile.DuckingSize, t);
-                _boxCollider.center = Vector3.Lerp(_boxCollider.center, Profile.DuckingCenter, t);
+                _boxCollider.center = Vector3.Lerp(_boxCollider.center, transform.rotation * Profile.DuckingCenter, t);
 
                 localViewPosition = Vector3.Lerp(localViewPosition,
                     originalViewPosition + (Vector3.down * Profile.DuckingViewOffset), t);
@@ -1028,11 +1029,11 @@ namespace vnc
         /// <returns>If the collider in standing mode is free.</returns>
         protected virtual bool CanStand()
         {
-            // TODO: fix for gravity direction
-            const float errorMargin = 0.1f;
-            Vector3 center = FixedPosition + Profile.Center + gravityDirection * errorMargin;
-            bool isBlocking = Physics.CheckBox(center, Profile.Size / 2, Quaternion.identity, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
-            return !isBlocking;
+            Vector3 center = FixedPosition + Profile.Center;
+            var size = (Profile.Size / 2f) - Vector3.one * EPSILON;
+            DebugExtension.DrawBox(center, size, transform.rotation, Color.yellow);
+            int n = Physics.OverlapBoxNonAlloc(center, size, overlapingColliders, transform.rotation, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
+            return n == 0;
         }
 
         /// <summary>
@@ -1072,7 +1073,7 @@ namespace vnc
         public virtual bool OnStairGroundDetect()
         {
             int n = 0;
-            if (BoxEdgesRaycast(out n, Vector3.down))
+            if (BoxEdgesRaycast(out n, -gravityDirection))
             {
                 for (int i = 0; i < n; i++)
                 {
@@ -1109,17 +1110,19 @@ namespace vnc
         /// <returns>Return true for the first raycast that found a hit</returns>
         public virtual bool BoxEdgesRaycast(out int n, Vector3 direction)
         {
-            float distance = Profile.Gravity + _boxCollider.bounds.extents.y;
-
+            float distance = Profile.Gravity + _boxCollider.bounds.extents.y + EPSILON;
+            
             Vector3[] origins = new[]
             {
-                FixedPosition + (Vector3.forward * _boxCollider.bounds.extents.z) + (Vector3.right * _boxCollider.bounds.extents.x),
-                FixedPosition + (Vector3.forward * _boxCollider.bounds.extents.z) + (Vector3.left * _boxCollider.bounds.extents.x),
-                FixedPosition + (Vector3.back * _boxCollider.bounds.extents.z) + (Vector3.right * _boxCollider.bounds.extents.x),
-                FixedPosition + (Vector3.back * _boxCollider.bounds.extents.z) + (Vector3.left * _boxCollider.bounds.extents.x)
+                FixedPosition + (transform.forward * _boxCollider.bounds.extents.z) + (transform.right * _boxCollider.bounds.extents.x),
+                FixedPosition + (transform.forward * _boxCollider.bounds.extents.z) + (-transform.right * _boxCollider.bounds.extents.x),
+                FixedPosition + (-transform.forward * _boxCollider.bounds.extents.z) + (transform.right * _boxCollider.bounds.extents.x),
+                FixedPosition + (-transform.forward * _boxCollider.bounds.extents.z) + (-transform.right * _boxCollider.bounds.extents.x)
             };
+
             for (int i = 0; i < origins.Length; i++)
             {
+                Debug.DrawLine(origins[i], origins[i] + (direction * distance), Color.yellow, Time.fixedDeltaTime);
                 n = Physics.RaycastNonAlloc(origins[i], direction, groundHit, distance, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
                 if (n > 0)
                     return true;

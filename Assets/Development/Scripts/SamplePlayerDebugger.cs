@@ -8,8 +8,6 @@ namespace vnc.Development
     [RequireComponent(typeof(RetroController))]
     public class SamplePlayerDebugger : SamplePlayer
     {
-        RetroController retroController;
-
         [Header("Auto Input System")]
         public bool autoInput = false;
         [ConditionalHide("autoInput"), Range(-1, 1)]
@@ -33,11 +31,7 @@ namespace vnc.Development
         [HideInInspector] public bool isPlaying = false;
         int playIndex = 0;
         float timeScale = 1f;
-
-        [Header("Custom Movement")]
-        public RetroLedgeGrab retroLedgeGrab;
-        public Camera gunCamera;
-
+        
         [Header("Debug GUI Style")]
         public Vector2 guiSize;
         public GUIStyle guiStyle;
@@ -49,19 +43,6 @@ namespace vnc.Development
 
         public override void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Y))
-                retroController.gravityDirection = Vector3Int.up;
-            else if (Input.GetKeyDown(KeyCode.Z))
-                retroController.gravityDirection = new Vector3Int(0, 0, 1);
-            if (Input.GetKeyDown(KeyCode.X))
-                retroController.gravityDirection = new Vector3Int(1, 0, 0);
-
-            if (Input.GetKeyDown(KeyCode.R) && !isPlaying)
-            {
-                if (isRecording) StopRecording();
-                else StartRecording();
-            }
-
             if (isPlaying)
             {
                 if (playIndex < logCount)
@@ -121,21 +102,6 @@ namespace vnc.Development
             {
                 mouseLook.SetCursorLock(!mouseLook.lockCursor);
             }
-
-            if (isRecording)
-                Record();
-
-            Time.timeScale = timeScale;
-
-            if (gunCamera && retroLedgeGrab)
-                gunCamera.enabled = retroLedgeGrab.movementState == RetroLedgeGrab.MovementState.None;
-
-
-            //DebugGUI.LogPersistent("velocity", "Velocity: " + retroController.Velocity);
-            //Vector2 XZ = new Vector2(retroController.Velocity.x, retroController.Velocity.z);
-            //DebugGUI.LogPersistent("velocity_magnitude", "XZ Magnitude: " + XZ.magnitude);
-            //DebugGUI.LogPersistent("onground", "Is Grounded: " + retroController.IsGrounded);
-
         }
 
         private void OnGUI()
@@ -144,84 +110,6 @@ namespace vnc.Development
             string debug = "Is Grounded: " + retroController.IsGrounded;
             GUI.Label(r, debug, guiStyle);
         }
-
-        //protected virtual void OnGUI()
-        //{
-        //    if (Application.isEditor)
-        //    {
-        //        Rect rect = new Rect(0, 0, 250, 100);
-        //        Vector3 planeVel = retroController.Velocity; planeVel.y = 0;
-        //        string debugText = "States: " + retroController.State;
-
-        //        if (guiStyle != null)
-        //            GUI.Label(rect, debugText, guiStyle);
-        //        else
-        //            GUI.Label(rect, debugText);
-        //    }
-        //}
-
-        //private void OnDrawGizmos()
-        //{
-        //    if (retroController == null)
-        //        return;
-
-        //    Gizmos.color = Color.red;
-        //    Gizmos.DrawLine(transform.position, transform.position + (retroController.WishDirection * 3));
-        //}
-
-        #region Input Recording
-
-        public void Record()
-        {
-            if (index < inputLog.Length - 1)
-            {
-                inputLog[index] = new InputLog
-                {
-                    forward = fwd,
-                    strafe = strafe,
-                    swim = swim,
-                    sprint = sprint,
-                    duck = duck,
-                    jump = jump,
-                    rotation = transform.rotation
-                };
-                index++;
-            }
-            else
-            {
-                Debug.Log("Input log array is full");
-                StopRecording();
-            }
-        }
-
-        public void StartRecording()
-        {
-            isRecording = true;
-            recordOrigin = retroController.FixedPosition;
-        }
-
-        public void StopRecording()
-        {
-            isRecording = false;
-            logCount = index + 1;
-            index = 0;
-        }
-
-        public void StartPlaying()
-        {
-            isPlaying = true;
-            playIndex = 0;
-            transform.position = recordOrigin;
-            retroController.Velocity = Vector3.zero;
-        }
-
-        public void StopPlaying()
-        {
-            isPlaying = false;
-            playIndex = 0;
-        }
-
-        #endregion
     }
 
     public struct InputLog

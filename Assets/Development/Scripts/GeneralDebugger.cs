@@ -15,9 +15,18 @@ namespace vnc.Development
 
         private void OnGUI()
         {
-            string text = "RC Velocity: " + retroController.Velocity +
-                "\nRb Velocity: " + retroController.ControllerRigidbody.velocity;
+            string text = "Collisions: " + retroController.Collisions;
             GUI.Label(GuiSize, text);
+        }
+
+        private void OnDrawGizmos()
+        {
+            if (Application.isPlaying)
+            {
+                Gizmos.color = Color.red;
+                Vector3 center = retroController.FixedPosition + retroController.Profile.Center;
+                Gizmos.DrawWireCube(center, retroController.Profile.Size);
+            }
         }
     }
 
