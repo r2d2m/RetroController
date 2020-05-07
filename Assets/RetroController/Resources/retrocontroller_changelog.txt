@@ -1,4 +1,13 @@
-<b><color="orange">2.3.1 (March 20, 2020)</color></b>
+<b><color="orange">2.3.2 Hotfix (April 8, 2020)</color></b>
+- New <color="#AADBFF">Controller Rigidbody</color> Property
+- Fixed <color="#AADBFF">Ducking</color> in all gravity orientations
+- Fixed <color="#AADBFF">Soldier Animation</color> positioning
+- Fixed <color="#AADBFF">Controller Gizmos</color>
+- <color="#FFAAAA">Known issues:</color>
+  > walking on stairs in non Y-axis oriented gravity
+  > proper animation in non Y-axis oriented gravity (doesn't affect gameplay)
+
+<b><color="orange">2.3.1 (March 23, 2020)</color></b>
 - Fixed Retro Double Jump bug.
 
 <b><color="#C67D00">2.3 (March 7, 2020)</color></b>
@@ -24,13 +33,3 @@
 - Support for moving platforms.
 - Changed property accessibility on scripts.
 - New Tutorial scene
-
-<b><color="#C67D00">1.1.6 (May 24, 2019)</color></b>
-- Improved controller collision.
-
-<b><color="#C67D00">1.1.4 (May 14, 2019)</color></b>
-- Fixed glitch on stairs.
-- Changed sample layers.
-
-<b><color="#C67D00">1.1.2 (April 5, 2019)</color></b>
-- Fixed adding event callback on the inspector.
