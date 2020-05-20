@@ -977,7 +977,6 @@ namespace vnc
             if (foundDown && stepHit.distance > 0)
             {
                 downCenter = upCenter + (-gravityDirection * stepHit.distance);
-                DebugExtension.DrawBox(downCenter, halfExtends, currentAxisRotation, Color.yellow);
                 if (downCenter.y > center.y)
                 {
                     foundStep = true;
@@ -1031,7 +1030,7 @@ namespace vnc
         {
             Vector3 center = FixedPosition + Profile.Center;
             var size = (Profile.Size / 2f) - Vector3.one * EPSILON;
-            DebugExtension.DrawBox(center, size, transform.rotation, Color.yellow);
+            //DebugExtension.DrawBox(center, size, transform.rotation, Color.yellow);
             int n = Physics.OverlapBoxNonAlloc(center, size, overlapingColliders, transform.rotation, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
             return n == 0;
         }
@@ -1047,7 +1046,10 @@ namespace vnc
             RaycastHit[] results = new RaycastHit[4];
             _boxCollider.ToWorldSpaceBox(out center, out halfExtents, out orientation);
             center = FixedPosition + _boxCollider.center;
-            int n = Physics.BoxCastNonAlloc(center, halfExtents - Vector3.one * 0.01f, -gravityDirection, results, GetOnAxisRotation(), Profile.GroundCheck, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
+            halfExtents = halfExtents - Vector3.one * 0.01f;
+
+            //DebugExtension.DrawBoxCastBox(center, halfExtents, orientation, -gravityDirection, Profile.GroundCheck, new Color(1f, 0.45f, 0f));
+            int n = Physics.BoxCastNonAlloc(center, halfExtents, -gravityDirection, results, GetOnAxisRotation(), Profile.GroundCheck, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
 
             for (int i = 0; i < n; i++)
             {
@@ -1073,7 +1075,7 @@ namespace vnc
         public virtual bool OnStairGroundDetect()
         {
             int n = 0;
-            if (BoxEdgesRaycast(out n, -gravityDirection))
+            if (BoxEdgesRaycast(out n, -transform.up))
             {
                 for (int i = 0; i < n; i++)
                 {
@@ -1111,13 +1113,15 @@ namespace vnc
         public virtual bool BoxEdgesRaycast(out int n, Vector3 direction)
         {
             float distance = Profile.Gravity + _boxCollider.bounds.extents.y + EPSILON;
-            
+
+            Vector3 halfSize = _boxCollider.size / 2f;
+
             Vector3[] origins = new[]
             {
-                FixedPosition + (transform.forward * _boxCollider.bounds.extents.z) + (transform.right * _boxCollider.bounds.extents.x),
-                FixedPosition + (transform.forward * _boxCollider.bounds.extents.z) + (-transform.right * _boxCollider.bounds.extents.x),
-                FixedPosition + (-transform.forward * _boxCollider.bounds.extents.z) + (transform.right * _boxCollider.bounds.extents.x),
-                FixedPosition + (-transform.forward * _boxCollider.bounds.extents.z) + (-transform.right * _boxCollider.bounds.extents.x)
+                FixedPosition + (transform.forward * halfSize.z) + (transform.right * halfSize.x),
+                FixedPosition + (transform.forward * halfSize.z) + (-transform.right * halfSize.x),
+                FixedPosition + (-transform.forward * halfSize.z) + (transform.right * halfSize.x),
+                FixedPosition + (-transform.forward * halfSize.z) + (-transform.right * halfSize.x)
             };
 
             for (int i = 0; i < origins.Length; i++)

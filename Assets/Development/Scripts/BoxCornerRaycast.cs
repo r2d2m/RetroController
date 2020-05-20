@@ -1,45 +1,40 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using vnc;
 
-public class BoxCornerRaycast : MonoBehaviour {
+public class BoxCornerRaycast : MonoBehaviour
+{
 
-    public BoxCollider boxCollider;
+    public BoxCollider _boxCollider;
+    public RetroControllerProfile Profile;
     public float gravity = 3f;
+    const float EPSILON = 0.001f;
     RaycastHit[] stairGroundHit = new RaycastHit[4];
 
-    public virtual bool BoxEdgesRaycast(out int n)
+    private void FixedUpdate()
     {
-        Vector3[] origins = new[]
-        {
-            transform.position + (Vector3.forward * boxCollider.bounds.extents.z) + (Vector3.right * boxCollider.bounds.extents.x),
-            transform.position + (Vector3.forward * boxCollider.bounds.extents.z) + (Vector3.left * boxCollider.bounds.extents.x),
-            transform.position + (Vector3.back * boxCollider.bounds.extents.z) + (Vector3.right * boxCollider.bounds.extents.x),
-            transform.position + (Vector3.back * boxCollider.bounds.extents.z) + (Vector3.left * boxCollider.bounds.extents.x)
-        };
-        for (int i = 0; i < origins.Length; i++)
-        {
-            n = Physics.RaycastNonAlloc(origins[i], Vector3.down, stairGroundHit, gravity, 0, QueryTriggerInteraction.Ignore);
-            if (n > 0)
-                return true;
-        }
-
-        n = 0;
-        return false;
+        BoxEdgesRaycast(-transform.up);
     }
 
-    private void OnDrawGizmosSelected()
+    public void BoxEdgesRaycast(Vector3 direction)
     {
-        Vector3[] origins = new []
+        float distance = Profile.Gravity + _boxCollider.bounds.extents.y + EPSILON;
+        DebugExtension.DebugArrow(transform.position, transform.forward, Color.blue);
+        DebugExtension.DebugArrow(transform.position, transform.right, Color.red);
+
+        Vector3 halfSize = _boxCollider.size / 2f;
+
+        Vector3[] origins = new[]
         {
-            transform.position + (Vector3.forward * boxCollider.bounds.extents.z) + (Vector3.right * boxCollider.bounds.extents.x),
-            transform.position + (Vector3.forward * boxCollider.bounds.extents.z) + (Vector3.left * boxCollider.bounds.extents.x),
-            transform.position + (Vector3.back * boxCollider.bounds.extents.z) + (Vector3.right * boxCollider.bounds.extents.x),
-            transform.position + (Vector3.back * boxCollider.bounds.extents.z) + (Vector3.left * boxCollider.bounds.extents.x)
+            transform.position + (transform.forward * halfSize.z) + (transform.right * halfSize.x),
+            transform.position + (transform.forward * halfSize.z) + (-transform.right * halfSize.x),
+            transform.position + (-transform.forward * halfSize.z) + (transform.right * halfSize.x),
+            transform.position + (-transform.forward * halfSize.z) + (-transform.right * halfSize.x)
         };
+
         for (int i = 0; i < origins.Length; i++)
         {
-            Gizmos.DrawRay(origins[i], Vector3.down * gravity);
+            Debug.DrawLine(origins[i], origins[i] + (direction * distance), Color.yellow, Time.fixedDeltaTime);
         }
+
     }
 }
