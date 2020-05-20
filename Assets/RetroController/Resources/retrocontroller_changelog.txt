@@ -1,4 +1,7 @@
-<b><color="orange">2.3.2 Hotfix (April 8, 2020)</color></b>
+<b><color="orange">2.3.3 (?, 2020)</color></b>
+- Fixed ground step detection on multiple orientations
+
+<b><color="#C67D00">2.3.2 Hotfix (April 8, 2020)</color></b>
 - New <color="#AADBFF">Controller Rigidbody</color> Property
 - Fixed <color="#AADBFF">Ducking</color> in all gravity orientations
 - Fixed <color="#AADBFF">Soldier Animation</color> positioning
@@ -7,7 +10,7 @@
   > walking on stairs in non Y-axis oriented gravity
   > proper animation in non Y-axis oriented gravity (doesn't affect gameplay)
 
-<b><color="orange">2.3.1 (March 23, 2020)</color></b>
+<b><color="#C67D00">2.3.1 (March 23, 2020)</color></b>
 - Fixed Retro Double Jump bug.
 
 <b><color="#C67D00">2.3 (March 7, 2020)</color></b>
