@@ -1,5 +1,6 @@
-<b><color="orange">2.3.3 (?, 2020)</color></b>
+<b><color="orange">2.3.4 (May 21, 2020)</color></b>
 - Fixed ground step detection on multiple orientations
+- Fixed not returning to standing state after ducking on slopes
 
 <b><color="#C67D00">2.3.2 Hotfix (April 8, 2020)</color></b>
 - New <color="#AADBFF">Controller Rigidbody</color> Property

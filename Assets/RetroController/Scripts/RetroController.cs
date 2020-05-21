@@ -1028,10 +1028,13 @@ namespace vnc
         /// <returns>If the collider in standing mode is free.</returns>
         protected virtual bool CanStand()
         {
-            Vector3 center = FixedPosition + Profile.Center;
+            float boxColliderBottom = _boxCollider.center.y - _boxCollider.size.y / 2f;
+            float colliderProfileButtom = Profile.Center.y - Profile.Size.y / 2f;
+            float diff = Mathf.Abs(boxColliderBottom - colliderProfileButtom) + EPSILON;
+
+            Vector3 center = FixedPosition + Profile.Center + (transform.up * diff);
             var size = (Profile.Size / 2f) - Vector3.one * EPSILON;
-            //DebugExtension.DrawBox(center, size, transform.rotation, Color.yellow);
-            int n = Physics.OverlapBoxNonAlloc(center, size, overlapingColliders, transform.rotation, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
+            int n = Physics.OverlapBoxNonAlloc(center, size, overlapingColliders, GetOnAxisRotation(), Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
             return n == 0;
         }
 
@@ -1048,7 +1051,6 @@ namespace vnc
             center = FixedPosition + _boxCollider.center;
             halfExtents = halfExtents - Vector3.one * 0.01f;
 
-            //DebugExtension.DrawBoxCastBox(center, halfExtents, orientation, -gravityDirection, Profile.GroundCheck, new Color(1f, 0.45f, 0f));
             int n = Physics.BoxCastNonAlloc(center, halfExtents, -gravityDirection, results, GetOnAxisRotation(), Profile.GroundCheck, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
 
             for (int i = 0; i < n; i++)
@@ -1058,7 +1060,6 @@ namespace vnc
                 float slopeDot = (Profile.SlopeAngleLimit / 90f);
                 if (dot > slopeDot && dot <= 1)
                 {
-                    //Collisions |= CC_Collision.CollisionBelow;
                     surfaceNormals.floor = results[i].normal;
                     CheckPlatform(c);
                     lastGround = c;

@@ -1164,9 +1164,6 @@ public static class DebugExtension
         Vector3 _lastPoint = position + matrix.MultiplyPoint3x4(new Vector3(Mathf.Cos(0), 0, Mathf.Sin(0)));
         Vector3 _nextPoint = Vector3.zero;
 
-        Color oldColor = Gizmos.color;
-        Gizmos.color = (color == default(Color)) ? Color.white : color;
-
         for (var i = 0; i < 91; i++)
         {
             _nextPoint.x = Mathf.Cos((i * 4) * Mathf.Deg2Rad);
@@ -1175,11 +1172,9 @@ public static class DebugExtension
 
             _nextPoint = position + matrix.MultiplyPoint3x4(_nextPoint);
 
-            Gizmos.DrawLine(_lastPoint, _nextPoint);
+            Debug.DrawLine(_lastPoint, _nextPoint, color);
             _lastPoint = _nextPoint;
         }
-
-        Gizmos.color = oldColor;
     }
 
     /// <summary>
@@ -1448,10 +1443,7 @@ public static class DebugExtension
         Vector3 up = (end - start).normalized * radius;
         Vector3 forward = Vector3.Slerp(up, -up, 0.5f);
         Vector3 right = Vector3.Cross(up, forward).normalized * radius;
-
-        Color oldColor = Gizmos.color;
-        Gizmos.color = color;
-
+        
         float height = (start - end).magnitude;
         float sideLength = Mathf.Max(0, (height * 0.5f) - radius);
         Vector3 middle = (end + start) * 0.5f;
@@ -1460,33 +1452,31 @@ public static class DebugExtension
         end = middle + ((end - middle).normalized * sideLength);
 
         //Radial circles
-        DebugExtension.DrawCircle(start, up, color, radius);
-        DebugExtension.DrawCircle(end, -up, color, radius);
+        DrawCircle(start, up, color, radius);
+        DrawCircle(end, -up, color, radius);
 
         //Side lines
-        Gizmos.DrawLine(start + right, end + right);
-        Gizmos.DrawLine(start - right, end - right);
+        Debug.DrawLine(start + right, end + right, color);
+        Debug.DrawLine(start - right, end - right, color);
 
-        Gizmos.DrawLine(start + forward, end + forward);
-        Gizmos.DrawLine(start - forward, end - forward);
+        Debug.DrawLine(start + forward, end + forward, color);
+        Debug.DrawLine(start - forward, end - forward, color);
 
         for (int i = 1; i < 26; i++)
         {
 
             //Start endcap
-            Gizmos.DrawLine(Vector3.Slerp(right, -up, i / 25.0f) + start, Vector3.Slerp(right, -up, (i - 1) / 25.0f) + start);
-            Gizmos.DrawLine(Vector3.Slerp(-right, -up, i / 25.0f) + start, Vector3.Slerp(-right, -up, (i - 1) / 25.0f) + start);
-            Gizmos.DrawLine(Vector3.Slerp(forward, -up, i / 25.0f) + start, Vector3.Slerp(forward, -up, (i - 1) / 25.0f) + start);
-            Gizmos.DrawLine(Vector3.Slerp(-forward, -up, i / 25.0f) + start, Vector3.Slerp(-forward, -up, (i - 1) / 25.0f) + start);
+            Debug.DrawLine(Vector3.Slerp(right, -up, i / 25.0f) + start, Vector3.Slerp(right, -up, (i - 1) / 25.0f) + start, color);
+            Debug.DrawLine(Vector3.Slerp(-right, -up, i / 25.0f) + start, Vector3.Slerp(-right, -up, (i - 1) / 25.0f) + start, color);
+            Debug.DrawLine(Vector3.Slerp(forward, -up, i / 25.0f) + start, Vector3.Slerp(forward, -up, (i - 1) / 25.0f) + start, color);
+            Debug.DrawLine(Vector3.Slerp(-forward, -up, i / 25.0f) + start, Vector3.Slerp(-forward, -up, (i - 1) / 25.0f) + start, color);
 
             //End endcap
-            Gizmos.DrawLine(Vector3.Slerp(right, up, i / 25.0f) + end, Vector3.Slerp(right, up, (i - 1) / 25.0f) + end);
-            Gizmos.DrawLine(Vector3.Slerp(-right, up, i / 25.0f) + end, Vector3.Slerp(-right, up, (i - 1) / 25.0f) + end);
-            Gizmos.DrawLine(Vector3.Slerp(forward, up, i / 25.0f) + end, Vector3.Slerp(forward, up, (i - 1) / 25.0f) + end);
-            Gizmos.DrawLine(Vector3.Slerp(-forward, up, i / 25.0f) + end, Vector3.Slerp(-forward, up, (i - 1) / 25.0f) + end);
+            Debug.DrawLine(Vector3.Slerp(right, up, i / 25.0f) + end, Vector3.Slerp(right, up, (i - 1) / 25.0f) + end, color);
+            Debug.DrawLine(Vector3.Slerp(-right, up, i / 25.0f) + end, Vector3.Slerp(-right, up, (i - 1) / 25.0f) + end, color);
+            Debug.DrawLine(Vector3.Slerp(forward, up, i / 25.0f) + end, Vector3.Slerp(forward, up, (i - 1) / 25.0f) + end, color);
+            Debug.DrawLine(Vector3.Slerp(-forward, up, i / 25.0f) + end, Vector3.Slerp(-forward, up, (i - 1) / 25.0f) + end, color);
         }
-
-        Gizmos.color = oldColor;
     }
 
     /// <summary>
