@@ -977,7 +977,6 @@ namespace vnc
             if (foundDown && stepHit.distance > 0)
             {
                 downCenter = upCenter + (-gravityDirection * stepHit.distance);
-                DebugExtension.DrawBox(downCenter, halfExtends, currentAxisRotation, Color.yellow);
                 if (downCenter.y > center.y)
                 {
                     foundStep = true;
@@ -1029,10 +1028,13 @@ namespace vnc
         /// <returns>If the collider in standing mode is free.</returns>
         protected virtual bool CanStand()
         {
-            Vector3 center = FixedPosition + Profile.Center;
+            float boxColliderBottom = _boxCollider.center.y - _boxCollider.size.y / 2f;
+            float colliderProfileButtom = Profile.Center.y - Profile.Size.y / 2f;
+            float diff = Mathf.Abs(boxColliderBottom - colliderProfileButtom) + EPSILON;
+
+            Vector3 center = FixedPosition + Profile.Center + (transform.up * diff);
             var size = (Profile.Size / 2f) - Vector3.one * EPSILON;
-            DebugExtension.DrawBox(center, size, transform.rotation, Color.yellow);
-            int n = Physics.OverlapBoxNonAlloc(center, size, overlapingColliders, transform.rotation, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
+            int n = Physics.OverlapBoxNonAlloc(center, size, overlapingColliders, GetOnAxisRotation(), Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
             return n == 0;
         }
 
@@ -1047,7 +1049,9 @@ namespace vnc
             RaycastHit[] results = new RaycastHit[4];
             _boxCollider.ToWorldSpaceBox(out center, out halfExtents, out orientation);
             center = FixedPosition + _boxCollider.center;
-            int n = Physics.BoxCastNonAlloc(center, halfExtents - Vector3.one * 0.01f, -gravityDirection, results, GetOnAxisRotation(), Profile.GroundCheck, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
+            halfExtents = halfExtents - Vector3.one * 0.01f;
+
+            int n = Physics.BoxCastNonAlloc(center, halfExtents, -gravityDirection, results, GetOnAxisRotation(), Profile.GroundCheck, Profile.SurfaceLayers, QueryTriggerInteraction.Ignore);
 
             for (int i = 0; i < n; i++)
             {
@@ -1056,7 +1060,6 @@ namespace vnc
                 float slopeDot = (Profile.SlopeAngleLimit / 90f);
                 if (dot > slopeDot && dot <= 1)
                 {
-                    //Collisions |= CC_Collision.CollisionBelow;
                     surfaceNormals.floor = results[i].normal;
                     CheckPlatform(c);
                     lastGround = c;
@@ -1073,7 +1076,7 @@ namespace vnc
         public virtual bool OnStairGroundDetect()
         {
             int n = 0;
-            if (BoxEdgesRaycast(out n, -gravityDirection))
+            if (BoxEdgesRaycast(out n, -transform.up))
             {
                 for (int i = 0; i < n; i++)
                 {
@@ -1111,13 +1114,15 @@ namespace vnc
         public virtual bool BoxEdgesRaycast(out int n, Vector3 direction)
         {
             float distance = Profile.Gravity + _boxCollider.bounds.extents.y + EPSILON;
-            
+
+            Vector3 halfSize = _boxCollider.size / 2f;
+
             Vector3[] origins = new[]
             {
-                FixedPosition + (transform.forward * _boxCollider.bounds.extents.z) + (transform.right * _boxCollider.bounds.extents.x),
-                FixedPosition + (transform.forward * _boxCollider.bounds.extents.z) + (-transform.right * _boxCollider.bounds.extents.x),
-                FixedPosition + (-transform.forward * _boxCollider.bounds.extents.z) + (transform.right * _boxCollider.bounds.extents.x),
-                FixedPosition + (-transform.forward * _boxCollider.bounds.extents.z) + (-transform.right * _boxCollider.bounds.extents.x)
+                FixedPosition + (transform.forward * halfSize.z) + (transform.right * halfSize.x),
+                FixedPosition + (transform.forward * halfSize.z) + (-transform.right * halfSize.x),
+                FixedPosition + (-transform.forward * halfSize.z) + (transform.right * halfSize.x),
+                FixedPosition + (-transform.forward * halfSize.z) + (-transform.right * halfSize.x)
             };
 
             for (int i = 0; i < origins.Length; i++)

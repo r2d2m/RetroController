@@ -103,13 +103,6 @@ namespace vnc.Development
                 mouseLook.SetCursorLock(!mouseLook.lockCursor);
             }
         }
-
-        private void OnGUI()
-        {
-            var r = new Rect(Vector2.zero, guiSize);
-            string debug = "Is Grounded: " + retroController.IsGrounded;
-            GUI.Label(r, debug, guiStyle);
-        }
     }
 
     public struct InputLog
