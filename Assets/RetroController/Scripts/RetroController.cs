@@ -157,13 +157,12 @@ namespace vnc
 
             FixedPosition = transform.position;
         }
-
-        protected virtual void FixedUpdate()
+        /// <summary>
+        /// Main update method
+        /// </summary>
+        public virtual void UpdateController()
         {
             if (Profile == null || controllerView == null)
-                return;
-
-            if (!updateController)
                 return;
 
             // loop through all custom movements
@@ -217,6 +216,17 @@ namespace vnc
             wasOnStep = WalkedOnStep;
 
             _rigidbody.MovePosition(FixedPosition);
+        }
+
+        /// <summary>
+        /// Automatically updates the controller in physics steps
+        /// </summary>
+        protected virtual void FixedUpdate()
+        {
+            if (!updateController)
+                return;
+
+            UpdateController();
         }
 
         /// <summary>
