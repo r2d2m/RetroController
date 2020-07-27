@@ -788,7 +788,7 @@ namespace vnc
 
                 if (c.isTrigger)
                 {
-                    if (c.tag == Profile.WaterTag)
+                    if (c.CompareTag(Profile.WaterTag))
                     {
                         CheckWater(c);
                     }
@@ -1048,6 +1048,8 @@ namespace vnc
             return n == 0;
         }
 
+        static RaycastHit[] results = new RaycastHit[4];
+
         /// <summary>
         /// Test overlapping with a ground and set the collision state
         /// </summary>
@@ -1056,7 +1058,6 @@ namespace vnc
             RemoveState(CC_State.IsGrounded);
             Vector3 center, halfExtents;
             Quaternion orientation;
-            RaycastHit[] results = new RaycastHit[4];
             _boxCollider.ToWorldSpaceBox(out center, out halfExtents, out orientation);
             center = FixedPosition + _boxCollider.center;
             halfExtents = halfExtents - Vector3.one * 0.01f;
@@ -1107,7 +1108,7 @@ namespace vnc
         /// <param name="c">Collider to be checked</param>
         public virtual void CheckPlatform(Collider c)
         {
-            if (c.tag == Profile.PlatformTag)
+            if (c.CompareTag(Profile.PlatformTag))
             {
                 // on a platform
                 // send the platform message that the player collided
@@ -1115,6 +1116,8 @@ namespace vnc
                 CurrentPlatform = c;
             }
         }
+
+        static Vector3[] origins = new Vector3[4];
 
         /// <summary>
         /// Detect collision casting down from the sides of a box
@@ -1127,13 +1130,10 @@ namespace vnc
 
             Vector3 halfSize = _boxCollider.size / 2f;
 
-            Vector3[] origins = new[]
-            {
-                FixedPosition + (transform.forward * halfSize.z) + (transform.right * halfSize.x),
-                FixedPosition + (transform.forward * halfSize.z) + (-transform.right * halfSize.x),
-                FixedPosition + (-transform.forward * halfSize.z) + (transform.right * halfSize.x),
-                FixedPosition + (-transform.forward * halfSize.z) + (-transform.right * halfSize.x)
-            };
+            origins[0] = FixedPosition + (transform.forward * halfSize.z) + (transform.right * halfSize.x);
+            origins[1] = FixedPosition + (transform.forward * halfSize.z) + (-transform.right * halfSize.x);
+            origins[2] = FixedPosition + (-transform.forward * halfSize.z) + (transform.right * halfSize.x);
+            origins[3] = FixedPosition + (-transform.forward * halfSize.z) + (-transform.right * halfSize.x);
 
             for (int i = 0; i < origins.Length; i++)
             {
