@@ -31,9 +31,7 @@ namespace vnc.Development
         private void OnGUI()
         {
             string[] debug = new string[] {
-                "Collisions: " + retroController.Collisions,
-                "Is Grounded: " + retroController.IsGrounded,
-                "Is Colliding? " + isColliding
+                "Velocity: " + retroController.Velocity 
             };
 
             overlapingColliders.ToString();
