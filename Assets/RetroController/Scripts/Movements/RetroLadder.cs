@@ -13,6 +13,7 @@ namespace vnc.Movements
         {
             if (onLadder)
             {
+                retroController.RemoveState(RetroController.CC_State.Ducking);
                 if (retroController.HasCollision(RetroController.CC_Collision.CollisionBelow))
                     retroController.AddState(RetroController.CC_State.IsGrounded);
                 else

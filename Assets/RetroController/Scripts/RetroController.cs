@@ -108,10 +108,6 @@ namespace vnc
         public Collider CurrentPlatform { get; protected set; }
         protected bool wasOnPlatform;
 
-        // Ladders
-        protected bool foundLadder = false;   // when one of the collisions found is a ladder
-        protected bool detachLadder = false;  // detach from previous ladder
-
         // Helps camera smoothing on step.
         public ushort StepCount { get; set; }    // how much the controller went up
         [HideInInspector] public bool wasOnStep;
@@ -122,8 +118,7 @@ namespace vnc
         [HideInInspector] public RetroMovement[] retroMovements;
         [HideInInspector] public RetroMovement currentMovement; // movement executed in the last fixed update
 
-        [HideInInspector] public bool legacyLadderMovement = true;
-        [HideInInspector] public bool legacyWaterMovement = true;
+        [HideInInspector] public bool legacyLadderMovement, legacyWaterMovement = true;
 
         // CALLBACK EVENTS
         [HideInInspector, Obsolete("")] public UnityEvent OnLandingCallback;
@@ -203,8 +198,10 @@ namespace vnc
                 {
                     if (legacyLadderMovement && OnLadder && !detachLadder)
                     {
+#pragma warning disable 612, 618
                         LadderMovementUpdate();
                         RemoveState(CC_State.Ducking);
+#pragma warning restore 612, 618
                     }
                     else if (IsSwimming && WaterState == CC_Water.Underwater)
                     {
@@ -698,8 +695,6 @@ namespace vnc
 
             if (runCustomMovements)
             {
-                // only run the custom movement selected
-
                 //execute the necessary checks for custom movements
                 for (int m = 0; m < retroMovements.Length; m++)
                     if (retroMovements[m].IsActive)
@@ -1295,6 +1290,8 @@ namespace vnc
 
         #region Legacy
         public bool OnLadder { get { return (State & CC_State.OnLadder) != 0; } }
+        protected bool foundLadder, detachLadder = false;
+
         /// <summary>
         /// Align the input direction alongside the ladder plane
         /// </summary>
@@ -1332,6 +1329,7 @@ namespace vnc
         /// to a ladder
         /// </summary>
 #pragma warning disable 612, 618
+        [Obsolete("This will be replaced with Retro Ladder Custom Movement in the next versions.")]
         protected virtual void LadderMovementUpdate()
         {
             if (HasCollision(CC_Collision.CollisionBelow))
