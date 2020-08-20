@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace vnc
 {
@@ -37,6 +38,11 @@ namespace vnc
         /// </returns>
         public abstract bool DoMovement();
 
+        /// <summary>
+        /// Executes in CharacterMove function after collisions are solved.
+        /// </summary>
         public abstract void OnCharacterMove();
+
+        public virtual void OnCollisionSide(Collider collider) { }
     }
 }

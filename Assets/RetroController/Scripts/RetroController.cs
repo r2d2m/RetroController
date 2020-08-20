@@ -58,7 +58,11 @@ namespace vnc
         protected float wishSpeed;
 
         protected bool wasGrounded = false;   // if player was on ground on previous update
-        public bool WasGrounded { get { return wasGrounded; } }
+        public bool WasGrounded
+        {
+            get { return wasGrounded; }
+            set { wasGrounded = value; }
+        }
 
         // Jumping
         public int TriedJumping { get; protected set; }    // jumping timer i.e. bunnyhopping
@@ -79,7 +83,6 @@ namespace vnc
         public CC_State State { get; protected set; }
         public bool IsGrounded { get { return (State & CC_State.IsGrounded) != 0; } }
         public bool OnPlatform { get { return (State & CC_State.OnPlatform) != 0; } }
-        public bool OnLadder { get { return (State & CC_State.OnLadder) != 0; } }
         public bool IsDucking { get { return (State & CC_State.Ducking) != 0; } }
         public bool WalkedOnStep { get { return HasCollision(CC_Collision.CollisionStep); } }
         public bool NoClipping
@@ -119,6 +122,9 @@ namespace vnc
         [HideInInspector] public RetroMovement[] retroMovements;
         [HideInInspector] public RetroMovement currentMovement; // movement executed in the last fixed update
 
+        [HideInInspector] public bool legacyLadderMovement = true;
+        [HideInInspector] public bool legacyWaterMovement = true;
+
         // CALLBACK EVENTS
         [HideInInspector, Obsolete("")] public UnityEvent OnLandingCallback;
         [HideInInspector] public RetroEventCollider OnLanding;
@@ -153,10 +159,13 @@ namespace vnc
                 retroMovements = GetComponentsInChildren<RetroMovement>();
 
             for (int i = 0; i < retroMovements.Length; i++)
+            {
                 retroMovements[i].OnAwake(this);
+            }
 
             FixedPosition = transform.position;
         }
+
         /// <summary>
         /// Main update method
         /// </summary>
@@ -192,7 +201,7 @@ namespace vnc
                 }
                 else
                 {
-                    if (OnLadder && !detachLadder)
+                    if (legacyLadderMovement && OnLadder && !detachLadder)
                     {
                         LadderMovementUpdate();
                         RemoveState(CC_State.Ducking);
@@ -422,65 +431,6 @@ namespace vnc
 
             CharacterMove(Velocity);
         }
-
-        /// <summary>
-        /// Update loop for when the controller is attached
-        /// to a ladder
-        /// </summary>
-        protected virtual void LadderMovementUpdate()
-        {
-            if (HasCollision(CC_Collision.CollisionBelow))
-                AddState(CC_State.IsGrounded);
-            else
-                RemoveState(CC_State.IsGrounded);
-
-            wishDir = AlignOnLadder();
-            Velocity = MoveLadder(wishDir, Velocity);
-
-            if (TriedJumping > 0)
-            {
-                // detach and jump away from ladder
-                Velocity = surfaceNormals.ladder * Profile.LadderDetachJumpSpeed;
-                TriedJumping = 0;
-                detachLadder = true;
-            }
-
-            CharacterMove(Velocity);
-
-            wasGrounded = IsGrounded;
-        }
-
-        /// <summary>
-        /// Align the input direction alongside the ladder plane
-        /// </summary>
-        /// <param name="direction">The input direction</param>
-        /// <returns>Vector aligned with the ladder</returns>
-        protected virtual Vector3 AlignOnLadder()
-        {
-            var forward = inputDir.y * controllerView.forward;
-            var strafe = inputDir.x * transform.TransformDirection(Vector3.right);
-
-            // Calculate player wish direction
-            Vector3 dir = forward + strafe;
-
-            var perp = Vector3.Cross(gravityDirection, surfaceNormals.ladder);
-            perp.Normalize();
-            // Perpendicular in the ladder plane
-            var climbDirection = Vector3.Cross(surfaceNormals.ladder, perp);
-
-            var dNormal = Vector3.Dot(dir, surfaceNormals.ladder);
-            var cross = surfaceNormals.ladder * dNormal;
-            var lateral = dir - cross;
-
-            var newDir = lateral + -dNormal * climbDirection;
-            if (IsGrounded && dNormal > 0)
-            {
-                newDir = surfaceNormals.ladder;
-            }
-
-            return newDir;
-        }
-
         [Obsolete("Use 'AddGravity' instead.")]
         protected virtual void CalculateGravity(float gravityMultiplier = 1f)
         {
@@ -708,7 +658,9 @@ namespace vnc
         /// <param name="movement">Final movement</param>
         public virtual void CharacterMove(Vector3 movement, bool runCustomMovements = true)
         {
+#pragma warning disable 612, 618
             LimitVerticalSpeed();
+#pragma warning restore 612, 618
             SetDuckHull();
 
             movement = VectorFixer(movement);
@@ -746,10 +698,12 @@ namespace vnc
 
             if (runCustomMovements)
             {
-                // execute the necessary checks for custom movements
-                for (int i = 0; i < retroMovements.Length; i++)
-                    if (retroMovements[i].IsActive)
-                        retroMovements[i].OnCharacterMove();
+                // only run the custom movement selected
+
+                //execute the necessary checks for custom movements
+                for (int m = 0; m < retroMovements.Length; m++)
+                    if (retroMovements[m].IsActive)
+                        retroMovements[m].OnCharacterMove();
             }
 
             //DetectLedge();
@@ -826,28 +780,27 @@ namespace vnc
                         if (dot >= 0 && dot < SlopeDot)
                         {
                             Collisions |= CC_Collision.CollisionSides;
+                            surfaceNormals.sides = penetrationNormal;
 
-                            if (c.tag == Profile.LadderTag)
+                            for (int m = 0; m < retroMovements.Length; m++)
+                                if (retroMovements[m].IsActive)
+                                    retroMovements[m].OnCollisionSide(c);
+
+                            // LEGACY
+                            if (legacyLadderMovement && c.tag == Profile.LadderTag)
                             {
                                 foundLadder = true;
-
-                                // pick the first normal on contact
-                                if (!OnLadder)
-                                    surfaceNormals.ladder = penetrationNormal;
-
                             }
-                            else
-                            {
-                                bool foundStep = false;
-                                position = MoveOnSteps(position, direction, out foundStep);
-                                if (!foundStep)
-                                {
-                                    position += penetrationNormal * dist;
-                                    surfaceNormals.wall = penetrationNormal;
-                                    OnCCHit(penetrationNormal);
-                                    WaterEdgePush(penetrationNormal);
-                                }
 
+                            // check for steps
+                            bool foundStep = false;
+                            position = MoveOnSteps(position, direction, out foundStep);
+                            if (!foundStep)
+                            {
+                                // run normal collision solving against a wall
+                                position += penetrationNormal * dist;
+                                OnCCHit(penetrationNormal);
+                                WaterEdgePush(penetrationNormal);
                             }
                         }
 
@@ -863,11 +816,14 @@ namespace vnc
 
             }
 
-            if (foundLadder) State |= CC_State.OnLadder;
-            else
+            if (legacyLadderMovement)
             {
-                State &= ~CC_State.OnLadder;
-                detachLadder = false;
+                if (foundLadder) State |= CC_State.OnLadder;
+                else
+                {
+                    State &= ~CC_State.OnLadder;
+                    detachLadder = false;
+                }
             }
 
             return position;
@@ -1337,6 +1293,75 @@ namespace vnc
 
         #endregion
 
+        #region Legacy
+        public bool OnLadder { get { return (State & CC_State.OnLadder) != 0; } }
+        /// <summary>
+        /// Align the input direction alongside the ladder plane
+        /// </summary>
+        /// <param name="direction">The input direction</param>
+        /// <returns>Vector aligned with the ladder</returns>
+        [Obsolete("This will be replaced with Retro Ladder Custom Movement in the next versions.")]
+        public virtual Vector3 AlignOnLadder()
+        {
+            var forward = inputDir.y * controllerView.forward;
+            var strafe = inputDir.x * transform.TransformDirection(Vector3.right);
+
+            // Calculate player wish direction
+            Vector3 dir = forward + strafe;
+
+            var perp = Vector3.Cross(gravityDirection, surfaceNormals.sides);
+            perp.Normalize();
+            // Perpendicular in the ladder plane
+            var climbDirection = Vector3.Cross(surfaceNormals.sides, perp);
+
+            var dNormal = Vector3.Dot(dir, surfaceNormals.sides);
+            var cross = surfaceNormals.sides * dNormal;
+            var lateral = dir - cross;
+
+            var newDir = lateral + -dNormal * climbDirection;
+            if (IsGrounded && dNormal > 0)
+            {
+                newDir = surfaceNormals.sides;
+            }
+
+            return newDir;
+        }
+
+        /// <summary>
+        /// Update loop for when the controller is attached
+        /// to a ladder
+        /// </summary>
+#pragma warning disable 612, 618
+        protected virtual void LadderMovementUpdate()
+        {
+            if (HasCollision(CC_Collision.CollisionBelow))
+                AddState(CC_State.IsGrounded);
+            else
+                RemoveState(CC_State.IsGrounded);
+
+            wishDir = AlignOnLadder();
+            Velocity = MoveLadder(wishDir, Velocity);
+
+            if (TriedJumping > 0)
+            {
+                // detach and jump away from ladder
+                Velocity = surfaceNormals.sides * Profile.LadderDetachJumpSpeed;
+                TriedJumping = 0;
+                detachLadder = true;
+            }
+
+            CharacterMove(Velocity);
+
+            wasGrounded = IsGrounded;
+        }
+#pragma warning restore 612, 618
+
+        // These methods are only used to support previous versions 
+        // of the controller and will be removed in the future
+
+
+        #endregion
+
         private void OnDrawGizmosSelected()
         {
             if (Profile)
@@ -1393,11 +1418,12 @@ namespace vnc
         }
         #endregion
     }
+
+    public class RetroColliderEvent : UnityEvent<Collider> { }
 }
 
 public struct SurfaceNormals
 {
     public Vector3 floor;
-    public Vector3 ladder;
-    public Vector3 wall;
+    public Vector3 sides;
 }

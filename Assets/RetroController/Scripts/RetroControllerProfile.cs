@@ -239,11 +239,13 @@ namespace vnc
 
         private void OnEnable()
         {
+#pragma warning disable 612, 618
             if (version < new System.Version(2, 3))
             {
                 MaxSpeedScale.y = MaxVerticalSpeedScale;
                 version = LATEST_VERSION;
             }
+#pragma warning restore 612, 618
         }
         #endregion
     }

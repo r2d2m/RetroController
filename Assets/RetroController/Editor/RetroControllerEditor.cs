@@ -15,6 +15,8 @@ namespace vnc.Editor
         SerializedProperty view;
 
         SerializedProperty retroMovements;
+        SerializedProperty legacyLadderMovement;
+        SerializedProperty legacyWaterMovement;
         SerializedProperty autoFillMovements;
         SerializedProperty fixedPosition;
         ReorderableList movementsList;
@@ -30,6 +32,8 @@ namespace vnc.Editor
             view = serializedObject.FindProperty("controllerView");
             autoFillMovements = serializedObject.FindProperty("autoFillMovements");
             retroMovements = serializedObject.FindProperty("retroMovements");
+            legacyLadderMovement = serializedObject.FindProperty("legacyLadderMovement");
+            legacyWaterMovement = serializedObject.FindProperty("legacyWaterMovement");
             fixedPosition = serializedObject.FindProperty("FixedPosition");
 
             movementsList = new ReorderableList(serializedObject, retroMovements);
@@ -75,6 +79,11 @@ namespace vnc.Editor
             EditorUtils.SetIcon(serializedObject.targetObject, "retro_controller");
 
             DrawDefaultInspectorWithoutScriptField();
+
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Legacy Movements", EditorStyles.boldLabel);
+            legacyLadderMovement.boolValue = EditorGUILayout.Toggle("Ladder", legacyLadderMovement.boolValue);
+            legacyWaterMovement.boolValue = EditorGUILayout.Toggle("Water", legacyWaterMovement.boolValue);
 
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Retro Movements", EditorStyles.boldLabel);
