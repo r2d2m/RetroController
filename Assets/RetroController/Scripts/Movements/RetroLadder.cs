@@ -4,10 +4,11 @@ namespace vnc.Movements
 {
     public class RetroLadder : RetroMovement
     {
+        // small attach force for continuous ladder detection
         public float attachForce = 0.1f;
-        bool foundLadder;
-        bool onLadder;
-        bool detach;    // ignored immediate collision with ladder on detaching
+
+        bool foundLadder, onLadder;
+        bool detach;    
 
         public override bool DoMovement()
         {
@@ -19,7 +20,7 @@ namespace vnc.Movements
                 else
                     retroController.RemoveState(RetroController.CC_State.IsGrounded);
 
-                var wishDir = AlignOnLadder();
+                var wishDir = MoveOnLadder();
                 retroController.Velocity = wishDir * retroController.Profile.LadderSpeed;
 
                 if (retroController.TriedJumping > 0)
@@ -40,7 +41,7 @@ namespace vnc.Movements
             return false;
         }
 
-        Vector3 AlignOnLadder()
+        Vector3 MoveOnLadder()
         {
             var inputDir = retroController.inputDir;
             var controllerView = retroController.controllerView;
@@ -83,6 +84,7 @@ namespace vnc.Movements
 
         public override void OnCharacterMove()
         {
+            // ignores immediate collision with ladder on detaching
             if (detach)
             {
                 detach = false;

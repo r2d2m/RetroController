@@ -17,10 +17,12 @@ namespace vnc
         }
 
         protected RetroController retroController;
+        protected RetroControllerProfile RetroProfile { get; private set; }
 
         public virtual void OnAwake(RetroController retroController)
         {
             this.retroController = retroController;
+            RetroProfile = retroController.Profile;
         }
 
         /// <summary>

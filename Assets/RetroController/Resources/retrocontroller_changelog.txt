@@ -1,7 +1,8 @@
 <b><color="orange">2.5 (??, 2020)</color></b>
 - Reduced GC for RetroController.
-[TODO] - New Custom Movement added: RetroSwing!
-- 
+- New <color="#AADBFF">RetroLadder</color> as Custom Movement; built-in marked as legacy.
+- New <color="#AADBFF">RetroWater</color> as Custom Movement; built-in marked as legacy.!
+[TODO] - <color="#AADBFF">New</color> Custom Movement: <color="#AADBFF">RetroSwing</color>!
 
 <b><color="#C67D00">2.4 (July 6, 2020)</color></b>
 - New <color="#AADBFF">UpdateController</color> method

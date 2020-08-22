@@ -97,13 +97,6 @@ namespace vnc
         public SurfaceNormals surfaceNormals = new SurfaceNormals();
         public Vector3 gravityDirection = Vector3.up;
         #endregion
-
-        // Water
-        [HideInInspector] public CC_Water WaterState { get; private set; }
-        public bool IsSwimming { get; private set; }
-        private float waterSurfacePosY;
-        private float WaterThreshold { get { return transform.position.y + Profile.SwimmingOffset; } }
-
         // Platforms
         public Collider CurrentPlatform { get; protected set; }
         protected bool wasOnPlatform;
@@ -196,14 +189,13 @@ namespace vnc
                 }
                 else
                 {
+#pragma warning disable 612, 618
                     if (legacyLadderMovement && OnLadder && !detachLadder)
                     {
-#pragma warning disable 612, 618
                         LadderMovementUpdate();
                         RemoveState(CC_State.Ducking);
-#pragma warning restore 612, 618
                     }
-                    else if (IsSwimming && WaterState == CC_Water.Underwater)
+                    else if (legacyWaterMovement && IsSwimming && WaterState == CC_Water.Underwater)
                     {
                         WaterMovementUpdate();
                         OnDuckState();
@@ -213,6 +205,7 @@ namespace vnc
                         GroundMovementUpdate();
                         OnDuckState();
                     }
+#pragma warning restore 612, 618
                 }
 
                 currentMovement = null;
@@ -394,25 +387,6 @@ namespace vnc
 
             wasOnPlatform = OnPlatform;
         }
-        /// <summary>
-        /// Update loop for when the controller is underwater
-        /// </summary>
-        protected virtual void WaterMovementUpdate()
-        {
-            // player moved the character
-            var walk = inputDir.y * controllerView.forward;
-            var strafe = inputDir.x * transform.TransformDirection(Vector3.right);
-            wishDir = (walk + strafe) + (gravityDirection * Swim);
-            wishDir.Normalize();
-
-            TriedJumping = 0;   // ignores jumping on water
-
-            Velocity = MoveWater(wishDir, Velocity);
-            AddGravity(Profile.WaterGravityScale);
-
-            CharacterMove(Velocity);
-        }
-
         protected virtual void FlyMovementUpdate()
         {
             RemoveState(CC_State.IsGrounded);
@@ -499,13 +473,6 @@ namespace vnc
             prevVelocity = Accelerate(this.wishDir, prevVelocity, Profile.DuckingAcceleration, Profile.MaxDuckingSpeed);
             return prevVelocity;
         }
-
-        protected virtual Vector3 MoveLadder(Vector3 wishdir, Vector3 prevVelocity)
-        {
-            prevVelocity = wishdir * Profile.LadderSpeed;
-            return prevVelocity;
-        }
-
         /// <summary>
         /// Movement on the air.
         /// </summary>
@@ -513,14 +480,6 @@ namespace vnc
         {
             AccelerateAir(wishDir, wishSpeed, Profile.AirAcceleration, Profile.MaxAirSpeed);
         }
-
-        // move with water friction
-        protected virtual Vector3 MoveWater(Vector3 accelDir, Vector3 prevVelocity)
-        {
-            prevVelocity = WaterFriction(prevVelocity);
-            return Accelerate(accelDir, prevVelocity, Profile.WaterAcceleration, Profile.MaxWaterSpeed);
-        }
-
         /// <summary>
         /// Default movement for flying controllers. To not confuse with "MoveAir".
         /// </summary>
@@ -534,7 +493,7 @@ namespace vnc
 
         #region Acceleration
         // TODO: why it uses this formula instead of the same of the Air strafing?
-        protected virtual Vector3 Accelerate(Vector3 wishdir, Vector3 prevVelocity, float accelerate, float max_velocity)
+        public virtual Vector3 Accelerate(Vector3 wishdir, Vector3 prevVelocity, float accelerate, float max_velocity)
         {
             var projVel = Vector3.Dot(prevVelocity, wishdir);
             float accelSpeed = accelerate;
@@ -616,21 +575,6 @@ namespace vnc
             }
             return wishspeed;
         }
-
-        protected virtual Vector3 WaterFriction(Vector3 prevVelocity)
-        {
-            var wishspeed = prevVelocity;
-
-            float speed = wishspeed.magnitude;
-
-            if (speed != 0) // To avoid divide by zero errors
-            {
-                float drop = speed * Profile.WaterFriction * Time.fixedDeltaTime;
-                wishspeed *= Mathf.Max(speed - drop, 0) / speed; // Scale the Velocity based on friction.
-            }
-            return wishspeed;
-        }
-
         /// <summary>
         /// Apply friction when player hits the ground
         /// </summary>
@@ -657,7 +601,6 @@ namespace vnc
         {
 #pragma warning disable 612, 618
             LimitVerticalSpeed();
-#pragma warning restore 612, 618
             SetDuckHull();
 
             movement = VectorFixer(movement);
@@ -666,6 +609,7 @@ namespace vnc
             Collisions = CC_Collision.None;
             State &= ~CC_State.OnPlatform;
             IsSwimming = false;
+#pragma warning restore 612, 618
 
             Vector3 direction = movement.normalized;
             float distance = FloatFixer(movement.magnitude);
@@ -721,8 +665,9 @@ namespace vnc
 
             float dist, dot;
             dist = dot = 0f;
-
+#pragma warning disable 612, 618
             foundLadder = false;
+#pragma warning restore 612, 618
 
             LayerMask overlapMask = Profile.SurfaceLayers & ~ignoredLayers;
             int nColls = fixedOverlapBoxNonAlloc(movement, overlapingColliders, overlapMask, QueryTriggerInteraction.Collide);
@@ -781,11 +726,11 @@ namespace vnc
                                 if (retroMovements[m].IsActive)
                                     retroMovements[m].OnCollisionSide(c);
 
+#pragma warning disable 612, 618
                             // LEGACY
                             if (legacyLadderMovement && c.tag == Profile.LadderTag)
-                            {
                                 foundLadder = true;
-                            }
+#pragma warning restore 612, 618
 
                             // check for steps
                             bool foundStep = false;
@@ -811,6 +756,7 @@ namespace vnc
 
             }
 
+#pragma warning disable 612, 618
             if (legacyLadderMovement)
             {
                 if (foundLadder) State |= CC_State.OnLadder;
@@ -820,6 +766,7 @@ namespace vnc
                     detachLadder = false;
                 }
             }
+#pragma warning restore 612, 618
 
             return position;
         }
@@ -830,6 +777,7 @@ namespace vnc
         /// </summary>
         protected virtual void CheckWater(Collider waterCollider)
         {
+#pragma warning disable 612, 618
             IsSwimming = true;
 
             // cast a ray from the sky and detect the topmost point
@@ -839,6 +787,7 @@ namespace vnc
             {
                 waterSurfacePosY = hit.point.y;
             }
+#pragma warning restore 612, 618
         }
 
         /// <summary>
@@ -846,6 +795,7 @@ namespace vnc
         /// </summary>
         protected virtual void SetWaterLevel()
         {
+#pragma warning disable 612, 618
             if (IsSwimming)
             {
                 if (WaterThreshold > waterSurfacePosY)
@@ -857,6 +807,7 @@ namespace vnc
             {
                 WaterState = CC_Water.None;
             }
+#pragma warning restore 612, 618
         }
 
         protected virtual void WaterEdgePush(Vector3 normal)
@@ -864,6 +815,7 @@ namespace vnc
             Vector3 horizontalVel = wishDir;
             horizontalVel.y = 0;
 
+#pragma warning disable 612, 618
             // Check if the player is in the border of the water, give it a little push
             if (HasCollision(CC_Collision.CollisionSides)
                 && Swim > 0
@@ -875,6 +827,7 @@ namespace vnc
                     Velocity.y = Profile.WaterEdgeJumpSpeed;
                 }
             }
+#pragma warning restore 612, 618
         }
         #endregion
 
@@ -1289,8 +1242,10 @@ namespace vnc
         #endregion
 
         #region Legacy
-        public bool OnLadder { get { return (State & CC_State.OnLadder) != 0; } }
-        protected bool foundLadder, detachLadder = false;
+
+        #region Ladder
+        [Obsolete] public bool OnLadder { get { return (State & CC_State.OnLadder) != 0; } }
+        [Obsolete] protected bool foundLadder, detachLadder = false;
 
         /// <summary>
         /// Align the input direction alongside the ladder plane
@@ -1352,11 +1307,69 @@ namespace vnc
 
             wasGrounded = IsGrounded;
         }
+
+        protected virtual Vector3 MoveLadder(Vector3 wishdir, Vector3 prevVelocity)
+        {
+            prevVelocity = wishdir * Profile.LadderSpeed;
+            return prevVelocity;
+        }
 #pragma warning restore 612, 618
 
         // These methods are only used to support previous versions 
         // of the controller and will be removed in the future
 
+        #endregion
+
+        #region Water
+        [Obsolete] private float WaterThreshold { get { return transform.position.y + Profile.SwimmingOffset; } }
+        [Obsolete] private float waterSurfacePosY;
+        [Obsolete] public bool IsSwimming { get; private set; }
+        // Water
+        [HideInInspector, Obsolete] public CC_Water WaterState { get; private set; }
+
+        /// <summary>
+        /// Update loop for when the controller is underwater
+        /// </summary>
+        [Obsolete("This will be replaced with RetroWaver Custom Movement in the near future.")]
+        protected virtual void WaterMovementUpdate()
+        {
+            // player moved the character
+            var walk = inputDir.y * controllerView.forward;
+            var strafe = inputDir.x * transform.TransformDirection(Vector3.right);
+            wishDir = (walk + strafe) + (gravityDirection * Swim);
+            wishDir.Normalize();
+
+            TriedJumping = 0;   // ignores jumping on water
+
+            Velocity = MoveWater(wishDir, Velocity);
+            AddGravity(Profile.WaterGravityScale);
+
+            CharacterMove(Velocity);
+        }
+
+        // move with water friction
+        protected virtual Vector3 MoveWater(Vector3 accelDir, Vector3 prevVelocity)
+        {
+            prevVelocity = WaterFriction(prevVelocity);
+            return Accelerate(accelDir, prevVelocity, Profile.WaterAcceleration, Profile.MaxWaterSpeed);
+        }
+
+        protected virtual Vector3 WaterFriction(Vector3 prevVelocity)
+        {
+            var wishspeed = prevVelocity;
+
+            float speed = wishspeed.magnitude;
+
+            if (speed != 0) // To avoid divide by zero errors
+            {
+                float drop = speed * Profile.WaterFriction * Time.fixedDeltaTime;
+                wishspeed *= Mathf.Max(speed - drop, 0) / speed; // Scale the Velocity based on friction.
+            }
+            return wishspeed;
+        }
+
+
+        #endregion
 
         #endregion
 
