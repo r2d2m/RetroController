@@ -4,10 +4,12 @@ using UnityEngine;
 
 namespace vnc.Movements
 {
+    // TODO: currently using states inside the controller
     public class RetroWater : RetroMovement
     {
         public override bool DoMovement()
         {
+#pragma warning disable 612, 618
             if (retroController.IsSwimming && retroController.WaterState == RetroController.CC_Water.Underwater)
             {
                 var inputDir = retroController.inputDir;
@@ -29,6 +31,7 @@ namespace vnc.Movements
                 retroController.OnDuckState();
                 return true;
             }
+#pragma warning restore 612, 618
 
             return false;
         }

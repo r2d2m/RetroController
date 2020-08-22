@@ -128,7 +128,9 @@ namespace vnc
         protected virtual void Awake()
         {
             State = CC_State.None;
+#pragma warning disable 612, 618
             WaterState = CC_Water.None;
+#pragma warning restore 612, 618
             Collisions = CC_Collision.None;
             JumpGraceTimer = Profile.JumpGraceTime;
             TriedJumping = 0;
@@ -338,7 +340,6 @@ namespace vnc
             }
             else
             {
-                // TODO: no wishDir normalization?
                 MoveAir();
             }
 
@@ -444,9 +445,9 @@ namespace vnc
             if (!wasGrounded && IsGrounded)
             {
                 // notify when player reaches the ground
-#pragma warning disable CS0618 
+#pragma warning disable 612, 618
                 OnLandingCallback.Invoke(); // Callback is deprecated
-#pragma warning restore CS0618 
+#pragma warning restore 612, 618 
                 OnLanding.Invoke(lastGround);
             }
         }
