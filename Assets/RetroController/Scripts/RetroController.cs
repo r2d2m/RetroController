@@ -487,7 +487,6 @@ namespace vnc
         protected virtual Vector3 MoveFly(Vector3 accelDir, Vector3 prevVelocity)
         {
             prevVelocity = Friction(prevVelocity, Profile.FlyFriction);
-            //prevVelocity = AccelerateAir(accelDir, Profile.AirAcceleration, Profile.MaxAirSpeed);
             return prevVelocity;
         }
         #endregion Acceleration
