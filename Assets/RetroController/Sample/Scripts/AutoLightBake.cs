@@ -17,10 +17,10 @@ public class AutoLightBake : MonoBehaviour
             if (EditorUtility.DisplayDialog("Lightmap Bake", message, "Yes", "No"))
             {
 #if UNITY_2020_1_OR_NEWER
+                Lightmapping.lightingSettings.lightmapMaxSize = 128;
+                Lightmapping.lightingSettings.lightmapper = LightingSettings.Lightmapper.ProgressiveCPU;
+                Lightmapping.lightingSettings.prioritizeView = false;
                 Lightmapping.lightingSettings.compressLightmaps = true;
-                LightingSettings lightingSettings = new LightingSettings();
-                lightingSettings.lightmapper = LightingSettings.Lightmapper.ProgressiveCPU;
-                Lightmapping.lightingSettings = lightingSettings;
                 Lightmapping.bakeCompleted += () =>
                 {
                     EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
@@ -41,7 +41,7 @@ public class AutoLightBake : MonoBehaviour
                 };
 
 #endif
-                Lightmapping.Bake();
+                Lightmapping.BakeAsync();
             }
         }
     }
