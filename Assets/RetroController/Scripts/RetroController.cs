@@ -731,16 +731,18 @@ namespace vnc
                             if (legacyLadderMovement && c.tag == Profile.LadderTag)
                                 foundLadder = true;
 #pragma warning restore 612, 618
-
-                            // check for steps
-                            bool foundStep = false;
-                            position = MoveOnSteps(position, direction, out foundStep);
-                            if (!foundStep)
+                            else
                             {
-                                // run normal collision solving against a wall
-                                position += penetrationNormal * dist;
-                                OnCCHit(penetrationNormal);
-                                WaterEdgePush(penetrationNormal);
+                                // check for steps
+                                bool foundStep = false;
+                                position = MoveOnSteps(position, direction, out foundStep);
+                                if (!foundStep)
+                                {
+                                    // run normal collision solving against a wall
+                                    position += penetrationNormal * dist;
+                                    OnCCHit(penetrationNormal);
+                                    WaterEdgePush(penetrationNormal);
+                                }
                             }
                         }
 

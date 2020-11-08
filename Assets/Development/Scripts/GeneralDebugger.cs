@@ -31,8 +31,7 @@ namespace vnc.Development
         private void OnGUI()
         {
             string[] debug = new string[] {
-                "Velocity: " + retroController.Velocity,
-                "Speed: " + retroController.Velocity.magnitude
+                "On Ladder: " + retroController.OnLadder,
             };
 
             overlapingColliders.ToString();
