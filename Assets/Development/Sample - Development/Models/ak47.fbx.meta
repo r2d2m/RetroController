@@ -1,0 +1,173 @@
+fileFormatVersion: 2
+guid: 9efd835d9b5f41448973126dea515375
+ModelImporter:
+  serializedVersion: 22
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: AK47 Aim
+    100004: AK47 Barrel
+    100006: AK47 Cube.002
+    100008: AK47 Cylinder
+    100010: AK47 Cylinder.001
+    100012: AK47 Cylinder.002
+    100014: AK47 Handle
+    100016: AK47 Shell
+    100018: AK47 Shoulder Support
+    100020: AK47 Small Support
+    100022: AK47 Something
+    100024: AK47 Trigger
+    100026: Cube
+    100028: Cube.001
+    400000: //RootNode
+    400002: AK47 Aim
+    400004: AK47 Barrel
+    400006: AK47 Cube.002
+    400008: AK47 Cylinder
+    400010: AK47 Cylinder.001
+    400012: AK47 Cylinder.002
+    400014: AK47 Handle
+    400016: AK47 Shell
+    400018: AK47 Shoulder Support
+    400020: AK47 Small Support
+    400022: AK47 Something
+    400024: AK47 Trigger
+    400026: Cube
+    400028: Cube.001
+    2100000: AK47 Black
+    2100002: AK47 Orange
+    2100004: No Name
+    2300000: //RootNode
+    2300002: AK47 Aim
+    2300004: AK47 Barrel
+    2300006: AK47 Cube.002
+    2300008: AK47 Cylinder
+    2300010: AK47 Cylinder.001
+    2300012: AK47 Cylinder.002
+    2300014: AK47 Handle
+    2300016: AK47 Shell
+    2300018: AK47 Shoulder Support
+    2300020: AK47 Small Support
+    2300022: AK47 Something
+    2300024: AK47 Trigger
+    2300026: Cube
+    2300028: Cube.001
+    3300000: //RootNode
+    3300002: AK47 Aim
+    3300004: AK47 Barrel
+    3300006: AK47 Cube.002
+    3300008: AK47 Cylinder
+    3300010: AK47 Cylinder.001
+    3300012: AK47 Cylinder.002
+    3300014: AK47 Handle
+    3300016: AK47 Shell
+    3300018: AK47 Shoulder Support
+    3300020: AK47 Small Support
+    3300022: AK47 Something
+    3300024: AK47 Trigger
+    3300026: Cube
+    3300028: Cube.001
+    4300000: AK47 Stock
+    4300002: AK47 Shoulder Support
+    4300004: AK47 Handle
+    4300006: Cube
+    4300008: AK47 Shell
+    4300010: AK47 Cylinder
+    4300012: Cube.001
+    4300014: AK47 Barrel
+    4300016: AK47 Aim
+    4300018: AK47 Something
+    4300020: AK47 Trigger
+    4300022: AK47 Small Support
+    4300024: AK47 Cube.002
+    4300026: AK47 Cylinder.001
+    4300028: AK47 Cylinder.002
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: AK47 Black
+    second: {fileID: 2100000, guid: f1146213facd3914f851f948c7f4fe9e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: AK47 Orange
+    second: {fileID: 2100000, guid: 3afd69efee2ea9748a6bd835c1067704, type: 2}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -1,10 +1,11 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.Events;
+using vnc.Utils;
 
 namespace vnc.Movements
 {
-    public class RetroGrapple : RetroMovement
+    public class RetroGrapple : ExperimentalRetroMovement
     {
         GrappleState grappleState = GrappleState.None;
         Vector3 grapplePoint;

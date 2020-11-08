@@ -12,7 +12,7 @@ namespace vnc.Editor
         TextAsset changelogText;
         TextAsset versionText;
         Vector2 scrollPos;
-        const int WIDTH = 680;
+        const int WIDTH = 700;
         const int HEIGHT = 800;
 
         [MenuItem("Window/Retro Controller/Changelog")]
