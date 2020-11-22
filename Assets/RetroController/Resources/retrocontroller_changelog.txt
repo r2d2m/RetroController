@@ -1,4 +1,7 @@
-<b><color="orange">2.5 (November, 2020)</color></b>
+<b><color="orange">2.6 (??, 2020)</color></b>
+- Minimum Unity version required is <b>2018.4</b> now .
+
+<b><color="#C67D00">2.5 (November, 2020)</color></b>
 - Reduced GC for RetroController.
 - New <color="#AADBFF">RetroLadder</color> as Custom Movement; built-in marked as legacy.
 - New <color="#AADBFF">RetroWater</color> as Custom Movement; built-in marked as legacy.!

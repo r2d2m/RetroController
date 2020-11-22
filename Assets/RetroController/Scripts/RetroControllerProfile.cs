@@ -232,7 +232,7 @@ namespace vnc
 
         #region Serialization
         [System.NonSerialized]
-        private readonly System.Version LATEST_VERSION = new System.Version(2, 5, 0);
+        private readonly System.Version LATEST_VERSION = new System.Version(2, 6, 0);
 
         [HideInInspector, SerializeField]
         private System.Version version = new System.Version(0, 0, 0);
