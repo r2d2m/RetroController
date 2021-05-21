@@ -664,7 +664,6 @@ namespace vnc
             Vector3 movement = VectorFixer(direction * distance);
 
             float dist, dot;
-            dist = dot = 0f;
 #pragma warning disable 612, 618
             foundLadder = false;
 #pragma warning restore 612, 618
