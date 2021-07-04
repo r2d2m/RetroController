@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Runtime.CompilerServices;
+using UnityEngine;
 using vnc.Utils;
 
 namespace vnc.Development
@@ -15,9 +16,11 @@ namespace vnc.Development
 
         public float gizmoHitSize = 0.1f;
 
+
         private void FixedUpdate()
         {
-            DebugExtension.DebugArrow(transform.position, direction * distance, Color.yellow);
+            var originalPosition = _rigidbody.position;
+            DebugExtension.DebugArrow(originalPosition, direction * distance, Color.yellow);
 
             if (_rigidbody.SweepTest(direction, out RaycastHit hit, distance, QueryTriggerInteraction.UseGlobal))
             {
@@ -27,7 +30,7 @@ namespace vnc.Development
                 var vec = hit.point - _rigidbody.position;
                 var projection = Vector3.Project(vec, direction);
                 // projection
-                DebugExtension.DebugArrow(transform.position, projection, Color.white, duration: Time.deltaTime);
+                DebugExtension.DebugArrow(originalPosition, projection, Color.white, duration: Time.deltaTime);
                 var closestPoint = _rigidbody.ClosestPointOnBounds(_rigidbody.position + projection);
                 closestPoint -= _rigidbody.position;
                 finalPosition = _rigidbody.position + projection - closestPoint;
@@ -39,46 +42,43 @@ namespace vnc.Development
                 finalPosition = _rigidbody.position + (direction * distance);
             }
 
-        }
-
-        void CalculateOnStepPosition()
-        {
-            var originalPosition = _rigidbody.position;
-
-            // step up
-            _rigidbody.position += transform.up * step;
-            if (_rigidbody.SweepTest(direction, out RaycastHit hit, distance))
-            {
-                var vec = hit.point - _rigidbody.position;
-                var projection = Vector3.Project(vec, direction);
-                var closestPoint = _rigidbody.ClosestPointOnBounds(_rigidbody.position + projection);
-                closestPoint -= _rigidbody.position;
-                finalPosition = _rigidbody.position + projection - closestPoint;
-            }
-            else
-            {
-                finalPosition = _rigidbody.position + (direction * distance);
-            }
-
-            // step down
-            _rigidbody.position = finalPosition;
-            var down = -transform.up;
-            if (_rigidbody.SweepTest(down, out hit, step))
-            {
-                var vec = hit.point - _rigidbody.position;
-                var projection = Vector3.Project(vec, down);
-                var closestPoint = _rigidbody.ClosestPointOnBounds(_rigidbody.position + projection);
-                closestPoint -= _rigidbody.position;
-                finalPosition = _rigidbody.position + projection - closestPoint;
-            }
-            else
-            {
-                finalPosition = _rigidbody.position + (down * step);
-            }
-
-
             // return rigidbody to original position because we are testing
             _rigidbody.position = originalPosition;
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        void CalculateOnStepPosition()
+        {
+            bool hitUp = Sweep(transform.up, step);
+            if(!hitUp)
+                _rigidbody.position += transform.up * step;
+
+            bool hitDirection = Sweep(direction, distance);
+            if(!hitDirection)
+                _rigidbody.position += (direction * distance);
+
+            bool hitDown = Sweep(-transform.up, step);
+            if(!hitDown)
+                _rigidbody.position += (-transform.up * step);
+
+            finalPosition = _rigidbody.position;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        bool Sweep(Vector3 dir, float dist)
+        {
+            if (_rigidbody.SweepTest(dir, out RaycastHit hit, dist))
+            {
+                var vec = hit.point - _rigidbody.position;
+                var projection = Vector3.Project(vec, dir);
+                var closestPoint = _rigidbody.ClosestPointOnBounds(_rigidbody.position + projection);
+                closestPoint -= _rigidbody.position;
+                _rigidbody.position += projection - closestPoint;
+                return true;
+            }
+
+            return false;
         }
 
         private void OnDrawGizmos()

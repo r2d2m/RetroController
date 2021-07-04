@@ -66,3 +66,11 @@ The following packages were updated:
   com.unity.textmeshpro from version 1.4.1 to 2.1.4
 The following packages were removed:
   com.unity.package-manager-ui@2.0.13
+
+=== Sun Jul  4 12:40:11 2021
+
+Packages were changed.
+Update Mode: updateDependencies
+
+The following packages were updated:
+  com.unity.purchasing from version 3.0.2 to 3.1.0
