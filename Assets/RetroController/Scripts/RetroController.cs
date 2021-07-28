@@ -603,7 +603,10 @@ namespace vnc
             LimitVerticalSpeed();
             SetDuckHull();
 
-            movement = VectorFixer(movement);
+            //movement = VectorFixer(movement);
+            Vector3 direction = movement.normalized;
+            float distance = movement.magnitude;
+            //float distance = FloatFixer(movement.magnitude);
 
             // reset flags
             Collisions = CC_Collision.None;
@@ -611,16 +614,13 @@ namespace vnc
             IsSwimming = false;
 #pragma warning restore 612, 618
 
-            Vector3 direction = movement.normalized;
-            float distance = FloatFixer(movement.magnitude);
-
             if (NoClipping)
             {
                 FixedPosition += movement;
                 return;
             }
 
-            const float step = 0.01f;
+            const float step = 0.1f;
             if (distance > 0)
             {
                 float solved = 0;
@@ -661,7 +661,8 @@ namespace vnc
         /// <returns>Final position</returns>
         protected virtual Vector3 FixOverlaps(Vector3 position, Vector3 direction, float distance)
         {
-            Vector3 movement = VectorFixer(direction * distance);
+            //Vector3 movement = VectorFixer(direction * distance);
+            Vector3 movement = direction * distance;
 
             float dist, dot;
 #pragma warning disable 612, 618

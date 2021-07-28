@@ -26,7 +26,16 @@ namespace vnc.Movements
                 doubleJumped = true;
 
                 if(allowSpeedThreshold || retroController.Velocity.y > threshold)
+                {
+                    // Jump
+                    var walk = retroController.inputDir.y * transform.TransformDirection(Vector3.forward);
+                    var strafe = retroController.inputDir.x * transform.TransformDirection(Vector3.right);
+                    var wishDir = (walk + strafe).normalized;
+
+                    var nextSpeed = Mathf.Max(retroController.Velocity.magnitude, retroController.Profile.JumpSpeed);
+                    retroController.Velocity = wishDir * nextSpeed;
                     retroController.Velocity.y = customJumpSpeed ? customSpeed : retroController.Profile.JumpSpeed;
+                }
 
                 retroController.ResetJumping();
 
