@@ -1,7 +1,7 @@
 using UnityEngine;
-using vnc.Utils;
+using epiplon.Utils;
 
-namespace vnc.Movements
+namespace epiplon.Movements
 {
     public class RetroDoubleJump : RetroMovement
     {

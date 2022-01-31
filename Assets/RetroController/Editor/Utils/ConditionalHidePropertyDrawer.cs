@@ -1,12 +1,12 @@
 ﻿#if UNITY_EDITOR
-using UnityEngine;
+using epiplon.Utils;
 using UnityEditor;
-using vnc.Utils;
+using UnityEngine;
 
 //Original version of the ConditionalHideAttribute created by Brecht Lecluyse (www.brechtos.com)
 //Modified by: Vinícius Castanheira
 
-namespace vnc.Editor.Utils
+namespace epiplon.Editor.Utils
 {
     [CustomPropertyDrawer(typeof(ConditionalHideAttribute))]
     public class ConditionalHidePropertyDrawer : PropertyDrawer

@@ -1,10 +1,8 @@
 ﻿#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
-using vnc.Development;
-using vnc.Samples;
 
-namespace vnc.Development
+namespace epiplon.Development
 {
     [CustomEditor(typeof(SamplePlayerDebugger))]
     public class SamplePlayerEditor : UnityEditor.Editor
@@ -17,8 +15,6 @@ namespace vnc.Development
             GUILayout.Space(10);
             base.OnInspectorGUI();
         }
-
     }
-
 }
 #endif

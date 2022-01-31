@@ -1,9 +1,9 @@
-﻿using System;
+﻿using epiplon.Utils;
+using System;
 using UnityEngine;
 using UnityEngine.Events;
-using vnc.Utils;
 
-namespace vnc.Movements
+namespace epiplon.Movements
 {
     public class RetroGrapple : ExperimentalRetroMovement
     {

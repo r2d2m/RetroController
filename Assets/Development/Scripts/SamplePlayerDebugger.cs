@@ -1,9 +1,9 @@
 ﻿#if UNITY_EDITOR
+using epiplon.Samples;
+using epiplon.Utils;
 using UnityEngine;
-using vnc.Movements;
-using vnc.Samples;
-using vnc.Utils;
-namespace vnc.Development
+
+namespace epiplon.Development
 {
     [RequireComponent(typeof(RetroController))]
     public class SamplePlayerDebugger : SamplePlayer

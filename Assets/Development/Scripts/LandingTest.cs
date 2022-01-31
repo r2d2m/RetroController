@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace vnc.Development
+namespace epiplon.Development
 {
     [RequireComponent(typeof(RetroController))]
     public class LandingTest : MonoBehaviour

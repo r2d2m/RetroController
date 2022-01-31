@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace vnc.Development
+namespace epiplon.Development
 {
     public class TacticalController : RetroController
     {

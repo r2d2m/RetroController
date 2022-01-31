@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-namespace vnc.Editor
+namespace epiplon.Editor
 {
     public class ChangelogWindow : EditorWindow
     {

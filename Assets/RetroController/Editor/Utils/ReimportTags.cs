@@ -1,6 +1,6 @@
 ﻿using UnityEditor;
 
-namespace vnc.Editor.Utils
+namespace epiplon.Editor.Utils
 {
     // Reimport the necessary tags
     public class ReimportTags : EditorWindow

@@ -1,8 +1,7 @@
-﻿#pragma warning disable 0649
+﻿using epiplon.Utils;
 using UnityEngine;
-using vnc.Utils;
 
-namespace vnc
+namespace epiplon
 {
     /// <summary>
     /// The controller view.

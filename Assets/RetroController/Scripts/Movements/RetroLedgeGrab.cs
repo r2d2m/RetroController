@@ -1,7 +1,7 @@
-﻿using UnityEngine;
-using vnc.Utils;
+﻿using epiplon.Utils;
+using UnityEngine;
 
-namespace vnc.Movements
+namespace epiplon.Movements
 {
     public class RetroLedgeGrab : RetroMovement
     {

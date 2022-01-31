@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using epiplon.Editor.Utils;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
-using vnc.Editor.Utils;
 
-namespace vnc.Editor
+namespace epiplon.Editor
 {
     [CustomEditor(typeof(RetroController))]
     public class RetroControllerEditor : UnityEditor.Editor

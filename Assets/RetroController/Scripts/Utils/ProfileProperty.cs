@@ -7,18 +7,26 @@ namespace epiplon.Utils
     public abstract class ProfileProperty<T> where T : new()
     {
         [SerializeField]
-        private T Value = new T();
-        public T Runtime { get; protected set; }
-        private bool isChanged = false;
+        protected T Value = new T();
+        public T Runtime
+        {
+            get => runtime;
+            protected set => runtime = value;
+        }
+        [NonSerialized] T runtime;
+        [NonSerialized] private bool isChanged = false;
 
-        public void SetRuntime(T value) 
-        { 
+        public ProfileProperty() => Value = default;
+        public ProfileProperty(T val) => Value = val;
+
+        public void SetRuntime(T value)
+        {
             Runtime = value;
             isChanged = true;
         }
 
-        public void Reset() 
-        { 
+        public void Reset()
+        {
             Runtime = Value;
             isChanged = false;
         }

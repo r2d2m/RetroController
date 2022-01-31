@@ -1,7 +1,6 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace vnc.Samples
+namespace epiplon.Samples
 {
     /// <summary>
     /// This is a sample class to illustrate how you 

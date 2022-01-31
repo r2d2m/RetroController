@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace vnc.Samples
+namespace epiplon.Samples
 {
     /// <summary>
     /// This is a sample script for a rocket launcher type of weapon.

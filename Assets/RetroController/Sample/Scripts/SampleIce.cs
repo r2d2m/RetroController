@@ -1,7 +1,6 @@
-﻿using System.Reflection;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace vnc.Samples
+namespace epiplon.Samples
 {
     public class SampleIce : MonoBehaviour
     {
