@@ -1,11 +1,11 @@
 ﻿using AshNet.Util.Collections;
+using epiplon.Utils;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using vnc.Utils;
 
-namespace vnc
+namespace epiplon
 {
     /// <summary>
     /// The main component, here goes all the controller functionality.
@@ -603,7 +603,10 @@ namespace vnc
             LimitVerticalSpeed();
             SetDuckHull();
 
-            movement = VectorFixer(movement);
+            //movement = VectorFixer(movement);
+            Vector3 direction = movement.normalized;
+            float distance = movement.magnitude;
+            //float distance = FloatFixer(movement.magnitude);
 
             // reset flags
             Collisions = CC_Collision.None;
@@ -611,16 +614,13 @@ namespace vnc
             IsSwimming = false;
 #pragma warning restore 612, 618
 
-            Vector3 direction = movement.normalized;
-            float distance = FloatFixer(movement.magnitude);
-
             if (NoClipping)
             {
                 FixedPosition += movement;
                 return;
             }
 
-            const float step = 0.01f;
+            const float step = 0.1f;
             if (distance > 0)
             {
                 float solved = 0;
@@ -661,10 +661,10 @@ namespace vnc
         /// <returns>Final position</returns>
         protected virtual Vector3 FixOverlaps(Vector3 position, Vector3 direction, float distance)
         {
-            Vector3 movement = VectorFixer(direction * distance);
+            //Vector3 movement = VectorFixer(direction * distance);
+            Vector3 movement = direction * distance;
 
             float dist, dot;
-            dist = dot = 0f;
 #pragma warning disable 612, 618
             foundLadder = false;
 #pragma warning restore 612, 618
@@ -1014,7 +1014,7 @@ namespace vnc
         /// <param name="c">Collider to be checked</param>
         public virtual void CheckPlatform(Collider c)
         {
-            if (c.CompareTag(Profile.PlatformTag))
+            if (c.gameObject.layer == Profile.PlatformLayer)
             {
                 // on a platform
                 // send the platform message that the player collided

@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-namespace vnc.Editor.Utils
+namespace epiplon.Editor.Utils
 {
     public class OnImport : AssetPostprocessor
     {

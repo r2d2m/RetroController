@@ -1,7 +1,7 @@
-﻿using UnityEngine;
-using vnc.Utils;
+﻿using epiplon.Utils;
+using UnityEngine;
 
-namespace vnc.Movements
+namespace epiplon.Movements
 {
     public class RetroLedgeGrab : RetroMovement
     {
@@ -81,14 +81,11 @@ namespace vnc.Movements
 
         public override void OnCharacterMove()
         {
-#pragma warning disable 612, 618
-            // TODO: uses legacy code for water
             if (retroController.HasState(RetroController.CC_State.OnLadder)
                 || retroController.WaterState != RetroController.CC_Water.None
                 || retroController.IsGrounded
                 || movementState != MovementState.None)
                 return;
-#pragma warning restore 612, 618
 
             if (!OnLedge)
                 OnDetectLedge();

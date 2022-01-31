@@ -1,8 +1,8 @@
-﻿using UnityEditor;
+﻿using epiplon.Utils;
+using UnityEditor;
 using UnityEngine;
-using vnc.Utils;
 
-namespace vnc.Editor.Utils
+namespace epiplon.Editor.Utils
 {
     [CustomPropertyDrawer(typeof(EnumFlagsAttribute))]
     public class EnumFlagsAttributeDrawer : PropertyDrawer

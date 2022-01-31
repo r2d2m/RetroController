@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace vnc
+namespace epiplon
 {
     /// <summary>
     /// Physics functions for the controller

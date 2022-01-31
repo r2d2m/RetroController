@@ -1,7 +1,7 @@
-﻿using UnityEngine;
-using vnc.Utils;
+﻿using epiplon.Utils;
+using UnityEngine;
 
-namespace vnc
+namespace epiplon
 {
     [CreateAssetMenu(fileName = "My Controller Profile", menuName = "Retro Controller/New Controller Profile")]
     public class RetroControllerProfile : ScriptableObject
@@ -11,7 +11,7 @@ namespace vnc
         /// Default base gravity value
         /// </summary>
         [FancyHeader("Gravity")]
-        public float Gravity;
+        public FloatProfileProperty Gravity;
         /// <summary>
         /// Gravity scale when underwater, relative to the Gravity value
         /// </summary>
@@ -96,7 +96,7 @@ namespace vnc
         /// <summary>
         /// Max speed while on air.
         /// </summary>
-        public float MaxAirSpeed;
+        public FloatProfileProperty MaxAirSpeed;
 
         [System.Obsolete("Not used on the RetroController anymore.")]
         [HideInInspector] public float MaxAirSprintSpeed;
@@ -130,7 +130,7 @@ namespace vnc
         /// Don't set this value to lower than 0;
         /// </summary>
         [RangeNoSlider(0f, Mathf.Infinity)]
-        public float MaxAirControl = 0.1f;
+        public float MaxAirControl;
         #endregion
 
         #region Acceleration
@@ -180,7 +180,7 @@ namespace vnc
         /// Defines if a character naturally flies.
         /// These are not affected by gravity. 
         /// </summary>
-        public bool FlyingController = false;        // flying characters are not affected by gravity
+        public BoolProfileProperty FlyingController;        // flying characters are not affected by gravity
         /// <summary>
         /// Tolerance angle for slopes. If the angle is bigger than
         /// this value, the controller will slide
@@ -202,6 +202,7 @@ namespace vnc
         /// This include solid surfaces, platforms and water.
         /// </summary>
         public LayerMask SurfaceLayers;
+        public LayerMask WaterLayerMask;
 
         /// <summary>
         /// Distance in the Y axis to check if there is a ground
@@ -213,6 +214,7 @@ namespace vnc
         /// when experiencing collision imprecision.
         /// </summary>
         [FancyHeader("Advanced Settings")]
+        public FloatProfileProperty CollisionSteps = new FloatProfileProperty(0.1f);
         public float Depenetration = 0.001f;
         public float HullExtends = 0.01f;       // simulate bigger hull for stairs
 
@@ -220,7 +222,7 @@ namespace vnc
         /// <summary>
         /// Hidden property, used in <code>RetroControllerProfileEditor</code>
         /// </summary>
-        [HideInInspector] public string PlatformTag;
+        [HideInInspector] public int PlatformLayer;
         /// <summary>
         /// Hidden property, used in <code>RetroControllerProfileEditor</code>
         /// </summary>
@@ -231,22 +233,8 @@ namespace vnc
         [HideInInspector] public string LadderTag;
 
         #region Serialization
-        [System.NonSerialized]
-        private readonly System.Version LATEST_VERSION = new System.Version(2, 5, 0);
-
         [HideInInspector, SerializeField]
-        private System.Version version = new System.Version(0, 0, 0);
-
-        private void OnEnable()
-        {
-#pragma warning disable 612, 618
-            if (version < new System.Version(2, 3))
-            {
-                MaxSpeedScale.y = MaxVerticalSpeedScale;
-                version = LATEST_VERSION;
-            }
-#pragma warning restore 612, 618
-        }
+        private System.Version VERSION = new System.Version(3, 0, 0);
         #endregion
     }
 

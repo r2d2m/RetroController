@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace vnc.Utils
+namespace epiplon.Utils
 {
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, Inherited = true)]
     public class FancyHeaderAttribute : PropertyAttribute

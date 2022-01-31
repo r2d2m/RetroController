@@ -1,7 +1,7 @@
 using UnityEngine;
-using vnc.Utils;
+using epiplon.Utils;
 
-namespace vnc.Samples
+namespace epiplon.Samples
 {
     public class MouseLookAnyAxis : MouseLook
     {

@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace vnc.Editor.Utils
+namespace epiplon.Editor.Utils
 {
     public static class EditorUtils {
 

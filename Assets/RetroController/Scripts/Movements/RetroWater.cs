@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace vnc.Movements
+namespace epiplon.Movements
 {
     // TODO: currently using states inside the controller
     public class RetroWater : RetroMovement

@@ -1,10 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
-using UnityEngine;
-using vnc;
+﻿using UnityEditor;
 
-namespace vnc.Editor
+namespace epiplon.Editor
 {
     [CustomEditor(typeof(RetroControllerView))]
     public class RetroControllverViewEditor : UnityEditor.Editor
@@ -13,7 +9,6 @@ namespace vnc.Editor
         {
             RetroControllerView retroControllerView = (RetroControllerView)target;
 
-            //var rect = EditorGUILayout.GetControlRect();
             if(retroControllerView.playerView == null)
                 EditorGUILayout.HelpBox("Player View field is empty, the View won't work.", MessageType.Error);
 

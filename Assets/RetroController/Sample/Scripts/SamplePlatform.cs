@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
-using vnc.Movements;
-//using vnc.Movements;
+using epiplon.Movements;
 
-namespace vnc.Samples
+namespace epiplon.Samples
 {
     /// <summary>
     /// This sample script shows how can you implement a platform

@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace vnc
+namespace epiplon
 {
     /// <summary>
     /// Base class for implementing custom movement for the Retro Controller

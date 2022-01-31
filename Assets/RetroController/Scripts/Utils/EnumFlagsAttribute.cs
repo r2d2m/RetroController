@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace vnc.Utils
+namespace epiplon.Utils
 {
     public class EnumFlagsAttribute : PropertyAttribute
     {

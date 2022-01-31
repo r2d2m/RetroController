@@ -1,7 +1,7 @@
-﻿using UnityEditor;
-using vnc.Movements;
+﻿using epiplon.Movements;
+using UnityEditor;
 
-namespace vnc.Editor
+namespace epiplon.Editor
 {
     [CustomEditor(typeof(RetroGrapple))]
 	public class RetroGrappleEditor : UnityEditor.Editor

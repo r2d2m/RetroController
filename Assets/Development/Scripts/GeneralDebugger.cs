@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace vnc.Development
+namespace epiplon.Development
 {
     [RequireComponent(typeof(RetroController))]
     public class GeneralDebugger : MonoBehaviour
@@ -31,7 +31,7 @@ namespace vnc.Development
         private void OnGUI()
         {
             string[] debug = new string[] {
-                "On Ladder: " + retroController.OnLadder,
+                "Velocity: " + retroController.Velocity,
             };
 
             overlapingColliders.ToString();
