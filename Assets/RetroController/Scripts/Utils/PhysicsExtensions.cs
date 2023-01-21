@@ -25,7 +25,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace vnc.Utils
+namespace epiplon.Utils
 {
     public static class PhysicsExtensions
     {

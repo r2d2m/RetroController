@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace vnc.Samples
+namespace epiplon.Samples
 {
     public class NPCCollision : MonoBehaviour
     {

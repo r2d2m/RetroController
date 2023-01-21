@@ -1,8 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using UnityEngine;
-using vnc.Utils;
 
-namespace vnc.Development
+namespace epiplon.Development
 {
     public class SweepTest : MonoBehaviour
     {

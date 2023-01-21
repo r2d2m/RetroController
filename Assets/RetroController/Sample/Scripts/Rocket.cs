@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
 
-namespace vnc.Samples
+namespace epiplon.Samples
 {
     /// <summary>
     /// The purpose of this is to show how can you propel the controller

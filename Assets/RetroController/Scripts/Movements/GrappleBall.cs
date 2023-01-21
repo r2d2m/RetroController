@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
-using UnityEngine.Events;
 
-namespace vnc.Movements
+namespace epiplon.Movements
 {
     [RequireComponent(typeof(Rigidbody))]
     public class GrappleBall : MonoBehaviour {

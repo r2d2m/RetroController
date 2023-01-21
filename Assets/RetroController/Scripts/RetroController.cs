@@ -1,11 +1,11 @@
 ﻿using AshNet.Util.Collections;
+using epiplon.Utils;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using vnc.Utils;
 
-namespace vnc
+namespace epiplon
 {
     /// <summary>
     /// The main component, here goes all the controller functionality.
@@ -1008,7 +1008,7 @@ namespace vnc
         /// <param name="c">Collider to be checked</param>
         public virtual void CheckPlatform(Collider c)
         {
-            if (c.CompareTag(Profile.PlatformTag))
+            if (c.gameObject.layer == Profile.PlatformLayer)
             {
                 // on a platform
                 // send the platform message that the player collided

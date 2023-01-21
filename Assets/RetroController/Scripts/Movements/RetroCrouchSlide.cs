@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace vnc.Movements
+namespace epiplon.Movements
 {
     public class RetroCrouchSlide : RetroMovement
     {

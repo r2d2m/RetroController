@@ -1,9 +1,8 @@
-﻿using System.Reflection;
+﻿using epiplon.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
-using vnc.Editor.Utils;
 
-namespace vnc.Editor
+namespace epiplon.Editor
 {
     [CustomEditor(typeof(RetroControllerProfile))]
     public class RetroControllerProfileEditor : UnityEditor.Editor
