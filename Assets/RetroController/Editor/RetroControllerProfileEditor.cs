@@ -7,14 +7,14 @@ namespace epiplon.Editor
     [CustomEditor(typeof(RetroControllerProfile))]
     public class RetroControllerProfileEditor : UnityEditor.Editor
     {
-        SerializedProperty waterTag, ladderTag, platformTag;
+        SerializedProperty waterTag, ladderTag, platformLayer;
         GUIStyle labelStyle = null;
 
         private void OnEnable()
         {
             waterTag = serializedObject.FindProperty("WaterTag");
             ladderTag = serializedObject.FindProperty("LadderTag");
-            platformTag = serializedObject.FindProperty("PlatformTag");
+            platformLayer = serializedObject.FindProperty("PlatformLayer");
 
             if (labelStyle == null)
             {
@@ -36,7 +36,7 @@ namespace epiplon.Editor
             EditorGUILayout.Space();
             waterTag.stringValue = EditorGUILayout.TagField("Water Tag", waterTag.stringValue);
             ladderTag.stringValue = EditorGUILayout.TagField("Ladder Tag", ladderTag.stringValue);
-            platformTag.stringValue = EditorGUILayout.TagField("Platform Tag", platformTag.stringValue);
+            platformLayer.intValue = EditorGUILayout.LayerField("Platform Layer", platformLayer.intValue);
             EditorGUILayout.Space();
 
             GUILayout.Space(10);
