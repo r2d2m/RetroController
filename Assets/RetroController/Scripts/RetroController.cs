@@ -156,6 +156,11 @@ namespace vnc
             FixedPosition = transform.position;
         }
 
+        private void Start()
+        {
+            RetroControllerSystem.Instance.Controllers.Add(this);
+        }
+
         /// <summary>
         /// Main update method
         /// </summary>
@@ -217,17 +222,6 @@ namespace vnc
             wasOnStep = WalkedOnStep;
 
             _rigidbody.MovePosition(FixedPosition);
-        }
-
-        /// <summary>
-        /// Automatically updates the controller in physics steps
-        /// </summary>
-        protected virtual void FixedUpdate()
-        {
-            if (!updateController)
-                return;
-
-            UpdateController();
         }
 
         /// <summary>
